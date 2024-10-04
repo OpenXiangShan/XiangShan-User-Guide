@@ -3,9 +3,9 @@ file_authors_:
 - yimingyan <1650150317@qq.com> 
 ---
 
-## 内存模型
+### 内存模型
 
-### 内存属性
+#### 内存属性
 
 {{var_processor_name}} 支持三种内存类型，分别是可高速缓存内存、不可高速缓存内存和不可缓存外设。
 
@@ -19,7 +19,7 @@ file_authors_:
 
 同时 {{var_processor_name}} 还支持 atomic（支持原子指令）属性和 c（支持高速缓存）属性。
 
-### 内存一致性模型
+#### 内存一致性模型
 
 可高速缓存内存采用 RVWMO（RISC-V Weak Memory Ordering）内存模型。在该模型下，多核之间内存实际的读写顺序和程序给定的访问顺序会不一致。因此 RISC-V 的指令集架构中提供了 Fence 指令来保证内存访问的同步。同时 RISC-V 的 A 扩展中还提供了 LR/SC 指令和 AMO 指令来进行加锁和原子操作。
 
