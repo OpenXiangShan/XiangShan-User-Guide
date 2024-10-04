@@ -5,24 +5,26 @@ file_authors_:
 
 ## 总线接口
 
-{{var_processor_name}} 的总线接口具有 256 位宽度，支持 CHI Issue E.b。关于该协议的详细内容，请参考 AMBA® CHI Architecture Specification。
+{{var_processor_name}} 的总线接口具有 256 位宽度，支持 CHI Issue B 或 Issue E.b 的子集。
+关于该协议的详细内容，请参考 AMBA® CHI Architecture Specification。
 
 ### 支持的响应类型
 
-RespErr 可以表示响应正常或是错误。{{var_processor_name}} 支持的响应类型如下。
+CHI 协议的 RespErr 可以表示响应正常或是错误。{{var_processor_name}} 支持的响应类型如下。
 
 | RespErr的值 | 响应类型                 |
 | ----------- | ----------------------- |
 | 0b00        | Normal Okay             |
 | 0b01        | Exclusive Okay          |
-| 0x10        | Data Error，即 DERR      |
 | 0x11        | Non-data Error，即 NDERR |
+
+由于 {{var_processor_name}} 不具有数据校验码，因此不支持 DERR。
 
 ### 不同总线响应下的行为
 
 * Normal Okay：普通传输访问成功，或 exclusive 传输访问失败；读传输 exclusive 访问失败代表总线不支持 exclusive 传输，产生访问错误异常，写传输 exclusive 访问失败仅代表抢锁失败，不会返回异常。
 * Exclusive Okay：exclusive 访问成功。
-* DERR/NDERR：访问出错，读传输产生访问错误异常，写传输忽略此错误。
+* NDERR：访问出错，读传输产生访问错误异常，写传输忽略此错误。
 
 ### 接口信号
 
@@ -122,94 +124,114 @@ Table: TXRSP 通道信号
 
 #### flit 格式
 
+位宽为空，代表此信号与上一行的信号是共用的。
+信号名后面标注\*，代表此信号仅适用于 CHI Issue E.b。
+位宽后面标注\*，代表此信号在 CHI Issue B 和 Issue E.b 中具有不同的位宽，两个位宽中标注\*的是 E.b 中的位宽。
+
 Table: Data flit
 
-| 信号名         | 功能描述           |
-| -------------- | ----------------- |
-| QoS[3:0]       | Quality of Service，数值越大优先级越高。 |
-| TgtID[10:0]    | 目标 ID。 |
-| SrcID[10:0]    | 来源 ID。 |
-| TxnID[11:0]    | 事务 ID。 |
-| HomeNID[10:0]  | Home 节点 ID，请求者在发送 CompAck 时把这个 ID 作为 TgtID。|
-| Opcode[3:0]    | 操作码。 |
-| RespErr[1:0]   | 相应错误码。 |
-| Resp[2:0]      | 响应状态。 |
-| DataSource[3:0]，{1'b0，FwdState[2:0]}  | DataSource：数据来源。FwdState：指示从监听者发送到请求者的 CompData 中的状态。 |
-| CBusy[2:0]     | 完成者的繁忙程度，其编码由具体的实现决定。 |
-| DBID[11:0]     | 数据缓冲区 ID，用于请求方的 TxnID。 |
-| CCID[1:0]      | 关键数据块的 ID。 |
-| DataID[1:0]    | 正在被传输的数据块的 ID。0b00 表示 [255:0]，0b10表示 [511:256]。 |
-| TagOp[1:0]     | 表示要对 Tag 执行的操作。 |
-| Tag[7:0]       | n 组 4 位 tag，每个 tag 绑定对应顺序的 16B 数据，地址对齐。 |
-| TU[1:0]        | 指示要更新的 tag。 |
-| TraceTag       | 标记，用于跟踪。 |
-| RSVDC[3:0]     | 保留给用户使用，其含义由具体的实现决定。 |
-| BE[31:0]       | 字节使能。表示每个字节是否有效。 |
-| Data[255:0]    | 数据。 |
+| 信号名                   | 位宽     | 功能描述           |
+| ----------------------- | -------- | ------------------ |
+| QoS                     | 4        | Quality of Service，数值越大优先级越高。 |
+| TgtID                   | id_width | 目标 ID。 |
+| SrcID                   | id_width | 来源 ID。 |
+| TxnID                   | 8/12\*   | 事务 ID。 |
+| HomeNID                 | id_width | Home 节点 ID，请求者在发送 CompAck 时把这个 ID 作为 TgtID。|
+| Opcode                  | 3/4\*    | 操作码。 |
+| RespErr                 | 2        | 相应错误码。 |
+| Resp                    | 3        | 响应状态。 |
+| DataSource              | 3/4\*    | 数据来源。 |
+| {1'b0，FwdState[2:0]}\* |          | 指示从监听者发送到请求者的 CompData 中的状态。 |
+| {1'b0, DataPull[2:0]}\* |          |
+| CBusy                   | 3        | 完成者的繁忙程度，其编码由具体的实现决定。 |
+| DBID                    | 8/12\*   | 数据缓冲区 ID，用于请求方的 TxnID。 |
+| CCID                    | 2        | 关键数据块的 ID。 |
+| DataID                  | 2        | 正在被传输的数据块的 ID。0b00 表示 [255:0]，0b10表示 [511:256]。 |
+| TagOp                   | 2        | 表示要对 Tag 执行的操作。 |
+| Tag                     | 8        | n 组 4 位 tag，每个 tag 绑定对应顺序的 16B 数据，地址对齐。 |
+| TU                      | 2        | 指示要更新的 tag。 |
+| TraceTag                | 1        | 标记，用于跟踪。 |
+| RSVDC                   | 4        | 保留给用户使用，其含义由具体的实现决定。 |
+| BE                      | 32       | 字节使能。表示每个字节是否有效。 |
+| Data                    | 256      | 数据。 |
 
 Table: Request flit
 
-| 信号名               | 功能描述 |
-| ------------------- | ------- |
-| QoS[3:0]            | Quality of Service，数值越大优先级越高。 |
-| TgtID[10:0]         | 目标 ID。 |
-| SrcID[10:0]         | 来源 ID。 |
-| TxnID[11:0]         | 事务 ID。 |
-| ReturnNID[10:0], StashNID[10:0], {4'b0, SLCRepHint[6:0]} | ReturnNID：需要回复的节点 ID。StashNID：Stash 请求的目标 ID。 SLCRepHint：替换提示。|
-| StashNIDValid，Endian，Deep | StashNIDValid：用于 Stash 事务，表示 StashNID 是否有效。Endian：用于原子事务，0 表示小端，1 表示大端。Deep：在响应之前必须先写入最终目的地。|
-| ReturnTxnID[11：0]，{6'b0，StashLPIDValid，StashLPID[4:0]} | RetuenTxnID：用于DMT。StashLPIDValid：用于 stash 事务，StashLPID 的有效信号。StashLPID：用于 Stash 事务。 |
-| Opcode[6:0]         | 操作码。 |
-| Size[2:0]           | 数据大小。 |
-| Addr[44:0]          | 地址。 |
-| NS                  | 用于指示物理地址空间。 |
-| LikelyShared        | 表示请求的数据是否可能与另一个请求节点共享。 |
-| AllowRetry          | 是否允许重试。 |
-| Order[1:0]          | 用于指定事务的顺序要求。 |
-| PCrdType[3:0]       | Credit 类型。 |
-| MemAttr[3:0]        | 本次事务的属性。 |
-| SnpAttr，DoDWT      | SnoopAttr：Snoop 属性。DoDWT：执行 DWT, 影响 DBIDResp 的 TgtID 和 TxnID 取值。 |
-| PGroupID[7:0]，StashGroupID[7:0]，TagGroupID[7:0]，{3'b0，LPID[4:0]} | PGroupID：用于 PCMO 事务。StashGroupID：用于 StashOnceSep 事务。TagGroupID：用于标记。LPID：逻辑处理器 ID，用于一个请求者包含多个逻辑处理器的情况。 |
-| Excl，SnoopMe       | Excl：用于 exclusive 事务。SnoopMe：用于原子事务，指定是否必须向请求者发送 Snoop。 |
-| ExpCompAck          | 表示事务是否包含了一个 CompAck 响应。|
-| TagOp[1:0]          | 表示要对 Tag 执行的操作。 |
-| TraceTag            | 标记，用于跟踪。 |
-| MPAM[10:0]          | 内存性能与监控总线。 |
-| RSVDC[3:0]          | 保留给用户使用，其含义由具体的实现决定。可以是任何值。 |
+| 信号名                   | 位宽     | 功能描述 |
+| ----------------------- | -------- | ------- |
+| QoS                     | 4        | Quality of Service，数值越大优先级越高。 |
+| TgtID                   | id_width | 目标 ID。 |
+| SrcID                   | id_width | 来源 ID。 |
+| TxnID                   | 8/12\*   | 事务 ID。 |
+| ReturnNID               | id_width | 需要回复的节点 ID。 |
+| StashNID                |          | Stash 请求的目标 ID。 |
+| {4'b0, SLCRepHint[6:0]}\* |          | SLCRepHint：SLC 替换提示。 |
+| StashNIDValid           | 1        | 用于 Stash 事务，表示 StashNID 是否有效。|
+| Endian                  |          | 用于原子事务，0 表示小端，1 表示大端。|
+| Deep                    |          | 在响应之前是否必须先写入最终目的地。|
+| ReturnTxnID             | 8/12\*   | 用于DMT。|
+| {6'b0，StashLPIDValid，StashLPID[4:0]}\* | | StashLPIDValid：用于 stash 事务，StashLPID 的有效信号。StashLPID：用于 Stash 事务。 |
+| Opcode                  | 6/7\*    | 操作码。 |
+| Size                    | 3        | 数据大小。 |
+| Addr                    | RAW      | 地址。 |
+| NS                      | 1        | 用于指示物理地址空间。 |
+| LikelyShared            | 1        | 表示请求的数据是否可能与另一个请求节点共享。 |
+| AllowRetry              | 1        | 是否允许重试。 |
+| Order                   | 2        | 用于指定事务的顺序要求。 |
+| PCrdType                | 4        | Credit 类型。 |
+| MemAttr                 | 4        | 本次事务的属性。 |
+| SnpAttr                 | 1        | Snoop 属性。 |
+| DoDWT                   |          | 执行 DWT, 影响 DBIDResp 的 TgtID 和 TxnID 取值。 |
+| PGroupID                | 5/8\*    | 用于 PCMO 事务。 |
+| StashGroupID            |          | 用于 StashOnceSep 事务。 |
+| TagGroupID              |          | 用于标记。 |
+| {3'b0，LPID[4:0]}\*     |          | 逻辑处理器 ID，用于一个请求者包含多个逻辑处理器的情况。 |
+| Excl                    | 1        | 用于 exclusive 事务。 |
+| SnoopMe                 |          | 用于原子事务，指定是否必须向请求者发送 Snoop。 |
+| ExpCompAck              | 1        | 表示事务是否包含了一个 CompAck 响应。|
+| TagOp                   | 2        | 表示要对 Tag 执行的操作。 |
+| TraceTag                | 1        | 标记，用于跟踪。 |
+| RSVDC                   | 4        | 保留给用户使用，其含义由具体的实现决定。可以是任何值。 |
 
 Table: Response flit
 
-| 信号名         | 功能描述           |
-| ------------- | ----------------- |
-| QoS[3:0]      | Quality of Service，数值越大优先级越高。 |
-| TgtID[10:0]   | 目标 ID。 |
-| SrcID[10:0]   | 来源 ID。 |
-| TxnID[11:0]   | 事务 ID。 |
-| Opcode[4:0]   | 操作码。 |
-| RespErr[1:0]  | 相应错误码。 |
-| Resp[2:0]     | 响应状态。 |
-| FwdState[2:0]，{2'b0，DataPull} | FwdState：用于 DCT，指示从监听者发送到请求者的 CompData 中的状态。DataPull：用于 Stash 事务，指示 Snoop 响应是否需要 Data Pull。 |
-| CBusy[2:0]    | 完成者的繁忙程度，其编码由具体的实现决定。 |
-| DBID[11:0]，{4'b0，PGroupID[7:0]}，{4'b0，StashGroupID[7:0]}，{4'b0，TagGroupID[7:0]} | DBID：数据缓冲区 ID，用于请求方的 TxnID。b0，PGroupID：用于 Persistent CMO 事务。StashGroupID：用于 Stash 事务。TagGroupID：用于标记。 |
-| PCrdType[3:0] | Credit 类型。 |
-| TagOp[1:0]    | 表示要对 Tag 执行的操作。 |
-| TraceTag      | 标记，用于跟踪。 |
+| 信号名         | 位宽     | 功能描述          |
+| ------------- | -------- |----------------- |
+| QoS           | 4        | Quality of Service，数值越大优先级越高。 |
+| TgtID         | id_width | 目标 ID。 |
+| SrcID         | id_width | 来源 ID。 |
+| TxnID         | 8/12\*   | 事务 ID。 |
+| Opcode        | 4/5\*    | 操作码。 |
+| RespErr       | 2        | 响应错误码。 |
+| Resp          | 3        | 响应状态。 |
+| FwdState      | 3        | 用于 DCT，指示从监听者发送到请求者的 CompData 中的状态。 |
+| {2'b0，DataPull} |       | 用于 Stash 事务，指示 Snoop 响应是否需要 Data Pull。 |
+| CBusy         | 3        | 完成者的繁忙程度，其编码由具体的实现决定。 |
+| DBID          | 8/12\*   | 数据缓冲区 ID，用于请求方的 TxnID。 |
+| {4'b0，PGroupID[7:0]}     | | 用于 Persistent CMO 事务。 |
+| {4'b0，StashGroupID[7:0]} | | 用于 Stash 事务。 |
+| {4'b0，TagGroupID[7:0]}   | | 用于标记。 |
+| PCrdType      | 4 | Credit 类型。 |
+| TagOp         | 2 | 表示要对 Tag 执行的操作。 |
+| TraceTag      | 1 | 标记，用于跟踪。 |
 
 Table: Snoop flit
 
-| 信号名               | 功能描述           |
-| ------------------- | ----------------- |
-| QoS[3:0]            | Quality of Service，数值越大优先级越高。 |
-| SrcID[10:0]         | 来源 ID。 |
-| TxnID[11:0]         | 事务 ID。 |
-| FwdNID[10:0]        | 指示 CompData 响应可以转发到哪个请求者。 |
-| FwdTxnID[11:0]，{6'b0，StashLPIDValid[0:0]，StashLPID[4:0]}，{4'b0，VMIDExt[7:0]} | FwdTxnID：用于 DCT。StashLPIDValid：用于 Stash 事务，StashLPID 的有效位。StashLPID：用于 Stash 事务。VMIDExt：用于 DVM 事务。|
-| Opcode[4:0]         | 操作码。 |
-| Addr[44:0]          | 地址。 |
-| NS                  | 用于指示物理地址空间。 |
-| DoNotGoToSD         | 指示是否要求 Snoopee 不转换到 SD 状态。 |
-| RetToSrc            | 该字段请求 Snoopee 将缓存行的副本返回给 Home。 |
-| TraceTag            | 标记，用于跟踪。 |
-| MPAM[10:0]          | 内存性能与监控总线。 |
+| 信号名                | 位宽     | 功能描述           |
+| -------------------- | -------- | ----------------- |
+| QoS                  | 4        | Quality of Service，数值越大优先级越高。 |
+| SrcID                | id_width | 来源 ID。 |
+| TxnID                | 8/12\*   | 事务 ID。 |
+| FwdNID               | id_width | 指示 CompData 响应可以转发到哪个请求者。 |
+| FwdTxnID             | 8/12\*   | 用于 DCT。|
+| {6'b0，StashLPIDValid[0:0]，StashLPID[4:0]}\* | | StashLPIDValid：用于 Stash 事务，StashLPID 的有效位。StashLPID：用于 Stash 事务。 |
+| {4'b0，VMIDExt[7:0]}\* |          | VMIDExt：用于 DVM 事务。|
+| Opcode               | 5        | 操作码。 |
+| Addr                 | SAW      | 地址。 |
+| NS                   | 1        | 用于指示物理地址空间。 |
+| DoNotGoToSD          | 1        | 指示是否要求 Snoopee 不转换到 SD 状态。 |
+| RetToSrc             | 1        | 该字段请求 Snoopee 将缓存行的副本返回给 Home。 |
+| TraceTag             | 1        | 标记，用于跟踪。 |
 
 ### 支持的 Coherency Transaction 类型
 
