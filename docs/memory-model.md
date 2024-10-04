@@ -1,6 +1,7 @@
 ---
 file_authors_:
 - yimingyan <1650150317@qq.com> 
+- Yujunjie <yujunjie21@mails.ucas.ac.cn> 
 ---
 
 ### 内存模型
