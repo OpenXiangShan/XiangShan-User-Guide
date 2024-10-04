@@ -46,14 +46,14 @@ CHI 使用不同的通道传输不同的消息，传输的消息包括：
 后文将会列出这些通道包含的信号。
 除了这些通道外，总线接口还包含以下的信号。 
 
-| 信号名               | I/O | 初始值 | 功能描述           |
-| -------------------- | --- | ----- | ----------------- |
-| chi_rx_linkactiveack | O   |       | 决定 RX 的状态。 |
-| chi_rx_linkactivereq | I   | -     | 决定 RX 的状态。 |
-| chi_tx_linkactiveact | I   | -     | 决定 TX 的状态。 |
-| chi_tx_linkactivereq | O   |       | 决定 TX 的状态。 |
-| chi_rxsactive        | I   | -     | 表示 RX 有正在进行的事务。 |
-| chi_txsactive        | O   |       | 表示 TX 有正在进行的事务。 |
+| 信号名               | I/O | 功能描述           |
+| -------------------- | --- | ----------------- |
+| chi_rx_linkactiveack | O   | 决定 RX 的状态。 |
+| chi_rx_linkactivereq | I   | 决定 RX 的状态。 |
+| chi_tx_linkactiveact | I   | 决定 TX 的状态。 |
+| chi_tx_linkactivereq | O   | 决定 TX 的状态。 |
+| chi_rxsactive        | I   | 表示 RX 有正在进行的事务。 |
+| chi_txsactive        | O   | 表示 TX 有正在进行的事务。 |
 
 RX 的 linkactiveack 和 linkactivereq 决定了 RX 的状态；TX 的 linkactiveack 和 linkactivereq 决定了 TX 的状态。
 
@@ -68,57 +68,57 @@ RX 的 linkactiveack 和 linkactivereq 决定了 RX 的状态；TX 的 linkactiv
 
 Table: RXDAT 通道信号
 
-| 信号名              | I/O | 初始值 | 功能描述                                      |
-| ------------------- | --- | ----- | -------------------------------------------- |
-| chi_rx_dat_flitv    | I   | -     | flit 的有效信号，高电平表示 flit 有效           |
-| chi_rx_dat_lcrdv    | O   |       | L-Credit 有效信号                             |
-| chi_rx_dat_flit     | I   | -     | RXDAT 通道的 flit                             |
-| chi_rx_dat_flitpend | I   | -     | flit 的 pending 信号，表示接下来会传输一个 flit |
+| 信号名              | I/O | 功能描述                                      |
+| ------------------- | --- | -------------------------------------------- |
+| chi_rx_dat_flitv    | I   | flit 的有效信号，高电平表示 flit 有效           |
+| chi_rx_dat_lcrdv    | O   | L-Credit 有效信号                             |
+| chi_rx_dat_flit     | I   | RXDAT 通道的 flit                             |
+| chi_rx_dat_flitpend | I   | flit 的 pending 信号，表示接下来会传输一个 flit |
 
 Table: RXRSP 通道信号
 
-| 信号名              | I/O | 初始值 | 功能描述                                      |
-| ------------------- | --- | ----- | -------------------------------------------- |
-| chi_rx_rsp_flitv    | I   | -     | flit 的有效信号，高电平表示 flit 有效           |
-| chi_rx_rsp_lcrdv    | O   |       | L-Credit 的有效信号                           |
-| chi_rx_rsp_flit     | I   | -     | RXRSP 通道的 flit                             |
-| chi_rx_rsp_flitpend | I   | -     | flit 的 pending 信号，表示接下来会传输一个 flit |
+| 信号名              | I/O | 功能描述                                      |
+| ------------------- | --- | -------------------------------------------- |
+| chi_rx_rsp_flitv    | I   | flit 的有效信号，高电平表示 flit 有效           |
+| chi_rx_rsp_lcrdv    | O   | L-Credit 的有效信号                           |
+| chi_rx_rsp_flit     | I   | RXRSP 通道的 flit                             |
+| chi_rx_rsp_flitpend | I   | flit 的 pending 信号，表示接下来会传输一个 flit |
 
 Table: RXSNP 通道信号
 
-| 信号名              | I/O | 初始值 | 功能描述                                      |
-| ------------------- | --- | ----- | -------------------------------------------- |
-| chi_rx_snp_flitv    | I   | -     | flit 的有效信号，高电平表示 flit 有效           |
-| chi_rx_snp_lcrdv    | O   |       | L-Credit 的有效信号                           |
-| chi_rx_snp_flit     | I   | -     | RXSNP 通道的 flit                             |
-| chi_rx_snp_flitpend | I   | -     | flit 的 pending 信号，表示接下来会传输一个 flit |
+| 信号名              | I/O | 功能描述                                      |
+| ------------------- | --- | -------------------------------------------- |
+| chi_rx_snp_flitv    | I   | flit 的有效信号，高电平表示 flit 有效           |
+| chi_rx_snp_lcrdv    | O   | L-Credit 的有效信号                           |
+| chi_rx_snp_flit     | I   | RXSNP 通道的 flit                             |
+| chi_rx_snp_flitpend | I   | flit 的 pending 信号，表示接下来会传输一个 flit |
 
 Table: TXDAT 通道信号
 
-| 信号名              | I/O | 初始值 | 功能描述                                      |
-| ------------------- | --- | ----- | -------------------------------------------- |
-| chi_tx_dat_flitv    | O   |       | flit 的有效信号，高电平表示 flit 有效           |
-| chi_tx_dat_lcrdv    | I   | -     | L-Credit 的有效信号                           |
-| chi_tx_dat_flit     | O   |       | TXDAT 通道的 flit                             |
-| chi_tx_dat_flitpend | O   |       | flit 的 pending 信号，表示接下来会传输一个 flit |
+| 信号名              | I/O | 功能描述                                      |
+| ------------------- | --- | -------------------------------------------- |
+| chi_tx_dat_flitv    | O   | flit 的有效信号，高电平表示 flit 有效           |
+| chi_tx_dat_lcrdv    | I   | L-Credit 的有效信号                           |
+| chi_tx_dat_flit     | O   | TXDAT 通道的 flit                             |
+| chi_tx_dat_flitpend | O   | flit 的 pending 信号，表示接下来会传输一个 flit |
 
 Table: TXREQ 通道信号
 
-| 信号名              | I/O | 初始值 | 功能描述                                      |
-| ------------------- | --- | ----- | -------------------------------------------- |
-| chi_tx_req_flitv    | O   |       | flit 的有效信号，高电平表示 flit 有效           |
-| chi_tx_req_lcrdv    | I   | -     | L-Credit 的有效信号                           |
-| chi_tx_req_flit     | O   |       | TXREQ 通道的 flit                             |
-| chi_tx_req_flitpend | O   |       | flit 的 pending 信号，表示接下来会传输一个 flit |
+| 信号名              | I/O | 功能描述                                      |
+| ------------------- | --- | -------------------------------------------- |
+| chi_tx_req_flitv    | O   | flit 的有效信号，高电平表示 flit 有效           |
+| chi_tx_req_lcrdv    | I   | L-Credit 的有效信号                           |
+| chi_tx_req_flit     | O   | TXREQ 通道的 flit                             |
+| chi_tx_req_flitpend | O   | flit 的 pending 信号，表示接下来会传输一个 flit |
 
 Table: TXRSP 通道信号
 
-| 信号名              | I/O | 初始值 | 功能描述                                      |
-| ------------------- | --- | ----- | -------------------------------------------- |
-| chi_tx_rsp_flitv    | O   |       | flit 的有效信号，高电平表示 flit 有效           |
-| chi_tx_rsp_lcrdv    | I   | -     | L-Credit 的有效信号                           |
-| chi_tx_rsp_flit     | O   |       | TXRSP 通道的 flit                             |
-| chi_tx_rsp_flitpend | O   |       | flit 的 pending 信号，表示接下来会传输一个 flit |
+| 信号名              | I/O | 功能描述                                      |
+| ------------------- | --- | -------------------------------------------- |
+| chi_tx_rsp_flitv    | O   | flit 的有效信号，高电平表示 flit 有效           |
+| chi_tx_rsp_lcrdv    | I   | L-Credit 的有效信号                           |
+| chi_tx_rsp_flit     | O   | TXRSP 通道的 flit                             |
+| chi_tx_rsp_flitpend | O   | flit 的 pending 信号，表示接下来会传输一个 flit |
 
 #### flit 格式
 
@@ -212,3 +212,21 @@ Table: Snoop flit
 | MPAM[10:0]          | 内存性能与监控总线。 |
 
 ### 支持的 Coherency Transaction 类型
+
+* SnpShared
+* SnpClean
+* SnpOnce
+* SnpNotSharedDirty
+* SnpUniqueStash
+* SnpMakeInvalidStash
+* SnpUnique
+* SnpCleanShared
+* SnpCleanInvalid
+* SnpMakeInvalid
+* SnpStashUnique
+* SnpStashShared
+* SnpSharedFwd
+* SnpCleanFwd
+* SnpOnceFwd
+* SnpNotSharedDirtyFwd
+* SnpUniqueFwd
