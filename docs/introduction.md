@@ -23,7 +23,7 @@ TODO 图片。香山开源组件。
 ### 简介
 如上所述，XS-K220是香山开源发行版的重要组成部分。与昆明湖V1和昆明湖V2R1相比，增加了大量符合RISC-V规范的指令和IP；与昆明湖V2R1相比，是香山系列IP中首个支持CHI协议的IP。
 
-XS-K220系列IP包块CPU Core(含L2)，核内中断控制器(AIA IMSIC)，Timer和Debug等模块。
+XS-K220系列IP包块CPU Core(含L2)，核内中断控制器(AIA IMSIC)，Timer和Debug等模块。Core core(含L2)+IMSIC以单核形式交付，可以对接会员的CHI异步桥或使用香山开源异步桥。Timer和Debug按SOC CPU数量提供生成好的verilog。以下特性以单核为例描述，集成请见integration guide。
 
 注1：Trace不在交付清单中，可以为有需要的客户提供demo。
 

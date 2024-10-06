@@ -79,68 +79,67 @@ TODO 表格? 序号需要修正
 
 ### 指令集支持情况
 #### 非特权指令
-TODO 表格? 序号需要修正
-序	指令集
-1	A
-2	C
-3	D
-4	F
-5	H
-6	M
-34	V
-35	Za64rs
-36	Zba
-37	Zbb
-38	Zbc
-39	Zbs
-40	Zcmop
-41	Zfa
-42	Zfhmin
-43	Zicbom
-44	Zicbop
-45	Zicboz
-46	Ziccamoa
-47	Ziccif
-48	Zicclsm（支持标量）
-49	Ziccrse
-50	Zicntr
-51	Zicond
-52	Zicsr
-53	Zifencei
-54	Zihpm
-55	Zkt
-56	Zvbb
-57	Zvfhmin
-58	Zvkt
+指令集           |解释                   |备注
+----------------|----------------------------------
+A               | 原子指令
+C               | 压缩指令
+D               | 双精度浮点指令
+F               | 单精度浮点指令
+M               | 整数乘除法
+V               | 向量指令
+Za64rs          |
+Zba             |
+Zbb             |
+Zbc             |
+Zbs             |
+Zcmop           |
+Zfa             |
+Zfhmin          |
+Zicbom          |
+Zicbop          |
+Zicboz          |
+Ziccamoa        |
+Ziccif          |
+Zicclsm         |（支持标量）             |
+Ziccrse         |
+Zicntr          |
+Zicond          |
+Zicsr           |
+Zifencei        |
+Zihpm           |
+Zkt             |
+Zvbb            |
+Zvfhmin         |
+Zvkt            |
 
 #### 特权指令
-TODO 表格? 序号需要修正
-序	| 指令集        | 所属章节
-7	| debug         | debug.md
-8	| Sdext         | debug.md
-9	| Sdtrig        | debug.md
-10	| Shcounterenw  | performance-monitor.md
-11	| Shgatpa       |
-12	| Shtvala       |
-13	| Shvsatpa      |
-14	| Shvstvala     |
-15	| Shvstvecd     |
-18	| Ss1p13        |
-19	| Ssccptr       | performance-monitor.md
-20	| Sscofpmf      | performance-monitor.md
-21	| Sscounterenw  | performance-monitor.md
-22	| Ssstateen     |
-23	| Sstc          |
-24	| Sstvala       |
-25	| Sstvecd       |
-26	| Ssu64xl       |
-27	| Sv39          |
-28	| Sv48          |
-29	| Svade         |
-30	| Svbare        |
-31	| Svinval       |
-32	| Svnapot       |
-33	| Svpbmt        |
+指令集        | 含义          | 所属章节
+--------------|---------------|----------------------------
+H             | 虚拟化扩展    | exception-and-interrupt.md
+Sdext         | 外部调试扩展  | debug.md
+Sdtrig        | Hardware trigger extension | debug.md
+Shcounterenw  | 非只读的HPM counter在H mode的Counter-Enable(hcounteren)必须是可写的 | performance-monitor.md
+Shgatpa       |               | exception-and-interrupt.md
+Shtvala       |               | exception-and-interrupt.md
+Shvsatpa      |               | exception-and-interrupt.md
+Shvstvala     |               | exception-and-interrupt.md
+Shvstvecd     |               | exception-and-interrupt.md
+Ss1p13        |               | exception-and-interrupt.md
+Ssccptr       |               | performance-monitor.md
+Sscofpmf      |               | performance-monitor.md
+Sscounterenw  | 非只读的HPM counter在s mode的counteren(scounteren)必须是可写的 | performance-monitor.md
+Ssstateen     |               | exception-and-interrupt.md
+Sstc          |               | interruption-controller.md
+Sstvala       |               | exception-and-interrupt.md
+Sstvecd       |               | exception-and-interrupt.md
+Ssu64xl       |               | exception-and-interrupt.md
+Sv39          |               | memory-model.md
+Sv48          |               | memory-model.md
+Svade         |               | memory-model.md
+Svbare        |               | exception-and-interrupt.md
+Svinval       |               | exception-and-interrupt.md
+Svnapot       |               | memory-model.md
+Svpbmt        |               | memory-model.md
 
 ### 非指令集支持情况
 debug和中断部分分别详见[]和[]。
