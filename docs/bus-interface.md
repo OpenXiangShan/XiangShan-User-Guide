@@ -5,9 +5,50 @@ file_authors_:
 
 ## 总线接口 {#sec:bus-interface}
 
-{{var_processor_name}} 的总线接口具有 256 位宽度，支持 CHI Issue B 或 Issue E.b 的子集。
-关于该协议的详细内容，请参考 AMBA® CHI Architecture Specification。
+{{var_processor_name}} 支持 AMBA® CHI Architecture Specification Issue B 或 Issue E.b。
 
+除非特殊说明，本章全部内容都是基于 CHI Issue E.b。
+
+### 概述
+
+<!-- 简单介绍支持什么特性 -->
+
+### 接口信号
+
+<!-- link 握手信号；6 个通道的 I/O、位宽、功能描述 -->
+
+#### 接口特性与参数列表
+
+<!-- https://bosc.yuque.com/uuichs/yhmtnw/asulw0eobeokdg4p#Z4rw -->
+<!-- https://bosc.yuque.com/uuichs/yhmtnw/mswl6ewlb3x98pfv#dQVN -->
+
+#### Flit 格式
+
+<!-- https://bosc.yuque.com/uuichs/yhmtnw/mswl6ewlb3x98pfv#f7UT -->
+<!-- 信号描述可写可不写，看情况吧 -->
+
+##### REQ
+
+##### SNP
+
+##### DAT
+
+##### RSP
+
+#### 主设备接口的 Outstanding 能力
+
+
+### 支持的事务列表
+
+<!-- https://bosc.yuque.com/uuichs/yhmtnw/mswl6ewlb3x98pfv#gePW -->
+
+### 支持的传输类型
+
+<!-- 这里介绍部分字段的取值范围？比如 RespErr 只支持 NDERR/OK -->
+
+
+<!-- TODO: Remove this -->
+<!-- 
 ### 支持的响应类型
 
 CHI 协议的 RespErr 可以表示响应正常或是错误。 {{var_processor_name}} 支持的响应类型如下。
@@ -251,4 +292,4 @@ Table: Snoop flit
 * SnpCleanFwd
 * SnpOnceFwd
 * SnpNotSharedDirtyFwd
-* SnpUniqueFwd
+* SnpUniqueFwd -->
