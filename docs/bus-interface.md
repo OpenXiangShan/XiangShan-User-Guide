@@ -10,7 +10,7 @@ file_authors_:
 
 ### 支持的响应类型
 
-CHI 协议的 RespErr 可以表示响应正常或是错误。{{var_processor_name}} 支持的响应类型如下。
+CHI 协议的 RespErr 可以表示响应正常或是错误。 {{var_processor_name}} 支持的响应类型如下。
 
 | RespErr的值 | 响应类型                 |
 | ----------- | ----------------------- |
