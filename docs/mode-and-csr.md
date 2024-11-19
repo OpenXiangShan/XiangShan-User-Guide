@@ -40,7 +40,7 @@ Table: {{var_processor_name}} 支持的特权模式列表
 监管模式（Supervisor mode，S 模式）由监管级 ISA 规定，虚拟化扩展将之扩充为为虚拟机管理扩展的监管模式（Hypervisor-extended supervisor mode，HS 模式）。S/HS 模式通常用于操作系统和虚拟机管理程序，其具有以下特性：
 
 * S/HS 模式下可访问 S、H、VS、U CSR，不可访问 M CSR 和调试模式 CSR。
-* S 模式的取值、访存通常需要根据 satp 寄存器进行虚拟地址翻译，但以下情况除外：
+* S 模式的取指、访存通常需要根据 satp 寄存器进行虚拟地址翻译，但以下情况除外：
   * 使用 HLV、HLVX、HSV 等虚拟机加载存储指令时，按照 `hstatus` .SPVP 字段指定的虚拟模式（VS 或 VU）进行两阶段地址翻译。
 * S 模式总是需要进行 PMP 检查。
 * S 模式不可执行 M 模式特权指令。
@@ -50,7 +50,7 @@ Table: {{var_processor_name}} 支持的特权模式列表
 用户模式（User mode，U 模式）具有以下特性：
 
 * U 模式仅可访问非特权 CSR，主要包括浮点、向量和非特权计数器 CSR。
-* U 模式的取值、访存通常需要根据 satp 寄存器进行虚拟地址翻译，但以下情况除外：
+* U 模式的取指、访存通常需要根据 satp 寄存器进行虚拟地址翻译，但以下情况除外：
   * 当 `hstatus` .HU = 1 时，使用 HLV、HLVX、HSV 等虚拟机加载存储指令时，按照 `hstatus` .SPVP 字段指定的虚拟模式（VS 或 VU）进行两阶段地址翻译。
 * U 模式总是需要进行 PMP 检查。
 * U 模式通常不可执行特权指令，部分情况下存在例外。
@@ -61,7 +61,7 @@ Table: {{var_processor_name}} 支持的特权模式列表
 
 * VS 模式下可访问 S、U CSR，但不可访问 M、H、VS CSR。
 * VS 模式下访问特定的 S 模式寄存器，会被重定向到对应的 VS 寄存器。
-* VS 模式下的取值、访存通常需要根据 hgatp、vsatp 寄存器进行两阶段地址翻译。
+* VS 模式下的取指、访存通常需要根据 hgatp、vsatp 寄存器进行两阶段地址翻译。
 * VS 模式总是需要进行 PMP 检查。
 * VS 模式不可执行 M 模式特权指令，亦不可执行 H 特权指令。
 
@@ -70,7 +70,7 @@ Table: {{var_processor_name}} 支持的特权模式列表
 虚拟用户模式（Virtual user mode，VU 模式）由虚拟化扩展引入，具有以下特性：
 
 * VU 模式仅可访问非特权 CSR，主要包括浮点、向量和非特权计数器 CSR。
-* VU 模式下的取值、访存通常需要根据 hgatp、vsatp 寄存器进行两阶段地址翻译。
+* VU 模式下的取指、访存通常需要根据 hgatp、vsatp 寄存器进行两阶段地址翻译。
 * VU 模式总是需要进行 PMP 检查。
 * VU 模式通常不可执行特权指令。
 
