@@ -22,7 +22,7 @@ PMU 的基本用法如下：
 
 * 通过 mcountinhibit 寄存器关闭所有性能事件监测。
 * 初始化各个监测单元性能事件计数器，包括：mcycle, minstret, mhpmcounter3 - mhpmcounter31。
-* 配置各个监测单元性能事件选择器，包括: mhpmcounter3 - mhpmcounter31。{{var_processor_name}} 对每个事件选择器可以配置最多四种事件组合，将事件索引值、事件组合方法、采样特权级写入事件选择器后，即可在规定的采样特权级下对配置的事件正常计数，并根据组合后结果累加到事件计数器中。
+* 配置各个监测单元性能事件选择器，包括: mhpmcounter3 - mhpmcounter31。 {{var_processor_name}} 对每个事件选择器可以配置最多四种事件组合，将事件索引值、事件组合方法、采样特权级写入事件选择器后，即可在规定的采样特权级下对配置的事件正常计数，并根据组合后结果累加到事件计数器中。
 * 配置 xcounteren 进行访问权限授权
 * 通过 mcountinhibit 寄存器开启所有性能事件监测，开始计数。
 

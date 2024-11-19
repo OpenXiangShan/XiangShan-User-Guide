@@ -70,7 +70,7 @@ L2 TLB 为指令和数据共用，L2 TLB 包含六个主要单元：
 
 #### 地址转换流程
 
-MMU 负责将虚拟地址翻译成物理地址，并用翻译得到的物理地址进行访存。{{var_processor_name}} 支持 Sv39/Sv48 分页机制，虚拟地址长度为 39/48 位，低 12 位是页内偏移，支持 Sv39 时高 27 位分为三段（每段 9 位），也就是三级页表，支持 Sv48 时高 36 位分为四段（每段 9 位），也就是四级页表。
+MMU 负责将虚拟地址翻译成物理地址，并用翻译得到的物理地址进行访存。 {{var_processor_name}} 支持 Sv39/Sv48 分页机制，虚拟地址长度为 39/48 位，低 12 位是页内偏移，支持 Sv39 时高 27 位分为三段（每段 9 位），也就是三级页表，支持 Sv48 时高 36 位分为四段（每段 9 位），也就是四级页表。
 
  {{var_processor_name}} 的物理地址为 48 位，虚拟地址和物理地址的结构如图所示。遍历页表需要进行四次内存访问，需要通过 TLB 对页表做缓存。
 
@@ -142,7 +142,7 @@ CPU 要访问某个虚拟地址，若 TLB 命中，则从 TLB 中直接获取物
 
 {{var_processor_name}} 支持 H 拓展，在非虚拟化模式且未执行虚拟化访存指令时，地址翻译过程与未加入 H 拓展时基本一致，在虚拟化模式或者执行虚拟化访存指令时，需要判断是否开启两阶段地址翻译。
 
-CPU 根据 vsatp 与 hgatp 开启两阶段翻译，vsatp 结构如下图所示（{{var_processor_name}} 中 SXLEN 固定为 64）
+CPU 根据 vsatp 与 hgatp 开启两阶段翻译，vsatp 结构如下图所示（ {{var_processor_name}} 中 SXLEN 固定为 64）
 
 ![vsatp 结构](figs/vsatp.png)
 
@@ -410,11 +410,11 @@ MMU 可能产生的异常以及处理流程如下表
 |  | 产生 access fault | 交付给 L1 TLB，L1 TLB 根据请求来源交付处理 |
 |  | ecc 校验出错 | 无效掉当前项，返回 miss 结果并重新进行 Page Walk |
 
-另外，根据 RISC-V 手册，Page Fault 的优先级高于 Access Fault，但是如果 Page Table Walk 过程中，出现了 PMP 检查或 PMA 检查的 Access Fault，此时页表项为非法，会发生 Page Fault 和 Access Fault 一起出现的特殊情况，{{var_processor_name}} 选择报 Access Fault。其余情况下均满足 Page Fault 的优先级高于Access Fault。
+另外，根据 RISC-V 手册，Page Fault 的优先级高于 Access Fault，但是如果 Page Table Walk 过程中，出现了 PMP 检查或 PMA 检查的 Access Fault，此时页表项为非法，会发生 Page Fault 和 Access Fault 一起出现的特殊情况， {{var_processor_name}} 选择报 Access Fault。其余情况下均满足 Page Fault 的优先级高于Access Fault。
 
 ### 内存访问顺序
 
-在不同的场景下，{{var_processor_name}} 对地址空间的访问过程不同，简要归纳如下：
+在不同的场景下， {{var_processor_name}} 对地址空间的访问过程不同，简要归纳如下：
 
 场景1：CPU 不进行 VA-PA 转换
 
