@@ -1,7 +1,8 @@
 ---
 title: "香山开源处理器用户手册"
-subtitle: "版本123456"
+subtitle: "文档版本"
 author: "香山团队·北京开源芯片研究院"
+date: "\\today"
 var_processor_name: "昆明湖V2R2-930"
 figureTitle: "图"
 tableTitle: "表"

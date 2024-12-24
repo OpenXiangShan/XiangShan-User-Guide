@@ -1,3 +1,5 @@
+VERSION = $(shell git describe --always)
+
 SRCS = 
 SRCS += docs/preface.md
 SRCS += docs/introduction.md
@@ -21,6 +23,7 @@ DEPS =
 DEPS += resources/meta-vars.lua
 DEPS += resources/template.tex
 
+PANDOC_FLAGS += --variable=version:"$(VERSION)"
 PANDOC_FLAGS += --from=markdown+table_captions+multiline_tables+grid_tables+header_attributes
 PANDOC_FLAGS += --top-level-division=part
 PANDOC_FLAGS += --table-of-contents
