@@ -54,7 +54,7 @@ Table: M interrupt file
 Table: S/VS interrupt file
 
 | 寄存器      | 地址偏移 | 位宽 | 属性 | 复位值 | 描述                                         |
-| :---------- | :------- | :--- | :--- | :----- | :---------------------------------------- |
+| :------------- | :------- | :--- | :--- | :----- | :------------------------------------- |
 | setipnum_le     | 0x0000   | 32   | WO   | 32'h0  | interrupt file 访问寄存器。写入数据为MSI 中断ID，读取值为0.默认支持最高8bit中断ID写入。                                            |
 | setipnum_le_s   | 0x0000   | 32   | WO   | 32'h0  | interrupt file 访问寄存器。写入数据为MSI 中断ID，读取值为0.默认支持最高8bit中断ID写入，MSI ID 超过8bit访问，硬件自动截断低8bit.      |
 | setipnum_le_vs1 | 0x1000   | 32   | WO   | 32'h0  | VS 1 interrupt file 访问寄存器。写入数据为MSI 中断ID，读取值为0.默认支持最高8bit中断ID写入，MSI ID 超过8bit访问，硬件自动截断低8bit. |
