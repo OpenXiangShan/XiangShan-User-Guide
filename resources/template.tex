@@ -31,6 +31,7 @@ $endfor$
   \usepackage[utf8]{inputenc}
   \usepackage{textcomp} % provide euro and other symbols
 \else % if luatex or xetex
+\usepackage{fontspec}
 $if(mathspec)$
   \ifXeTeX
     \usepackage{mathspec} % this also loads fontspec
@@ -88,6 +89,14 @@ $endif$
 $for(fontfamilies)$
   \newfontfamily{$fontfamilies.name$}[$for(fontfamilies.options)$$fontfamilies.options$$sep$,$endfor$]{$fontfamilies.font$}
 $endfor$
+
+\newfontfamily\SourceHanSansCN{Source Han Sans CN}
+\setCJKfamilyfont{SourceHanSansCN}{Source Han Sans CN}
+\newfontfamily\SourceHanSansCNMedium{Source Han Sans CN Medium}
+\setCJKfamilyfont{SourceHanSansCNMedium}{Source Han Sans CN Medium}
+\newfontfamily\SourceHanSansCNBold{Source Han Sans CN Bold}
+\setCJKfamilyfont{SourceHanSansCNBold}{Source Han Sans CN Bold}
+
 $if(mathfont)$
 $if(mathspec)$
   \ifXeTeX
@@ -199,9 +208,9 @@ $endif$
 \IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
 \makesavenoteenv{longtable}
 $endif$
-$if(graphics)$
+\usepackage[absolute]{textpos}
 \usepackage{graphicx}
-\graphicspath{{docs/}{build/}}
+\graphicspath{{docs/}{build/}{resources}}
 \makeatletter
 \newsavebox\pandoc@box
 \newcommand*\pandocbounded[1]{% scales image to fit in text height/width
@@ -216,7 +225,6 @@ $if(graphics)$
 % Set default figure placement to htbp
 \def\fps@figure{htbp}
 \makeatother
-$endif$
 $if(svg)$
 \usepackage{svg}
 $endif$
@@ -427,14 +435,69 @@ $endif$
 $if(has-frontmatter)$
 \frontmatter
 $endif$
-$if(title)$
-\maketitle
-$if(abstract)$
-\begin{abstract}
-$abstract$
-\end{abstract}
-$endif$
-$endif$
+
+% $if(title)$
+% \maketitle
+% $if(abstract)$
+% \begin{abstract}
+% $abstract$
+% \end{abstract}
+% $endif$
+% $endif$
+
+\newgeometry{
+  top=1.25in,
+  bottom=1in,
+  right=0.75in,
+  left=0.75in
+}
+
+\begin{titlepage}
+  \noindent
+  \parbox{\textwidth}
+  {
+    \linespread{1.3}\fontsize{48}{48}\SourceHanSansCNBold\CJKfamily{SourceHanSansCNBold}
+    $title-latex$
+    $if(title-line1)$
+      $title-line1$
+    $else$
+      $title$
+    $endif$
+    $if(title-line2)$
+      \\$title-line2$
+    $endif$
+    $if(title-line3)$
+      \\$title-line3$
+    $endif$
+  }
+
+  \vspace{36pt}
+
+  \noindent
+  \parbox{\textwidth}
+  {
+    \fontsize{26}{26}\SourceHanSansCN\CJKfamily{SourceHanSansCN}
+    $i18n-applicable$\ $var_processor_name$
+  }
+
+  \vspace{72pt}
+
+  \noindent
+  \parbox{\textwidth}
+  {
+    \fontsize{14}{14}\SourceHanSansCN\CJKfamily{SourceHanSansCN}
+    $version$\\
+    \today
+  }
+
+  \begin{textblock*}{17cm}(2cm,26.5cm)
+    \raggedleft
+    \includegraphics[height=1cm]{XiangShan-Community.pdf}  % 图片1
+  \end{textblock*}
+
+\end{titlepage}
+
+\restoregeometry
 
 $for(include-before)$
 $include-before$

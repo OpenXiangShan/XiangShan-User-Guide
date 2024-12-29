@@ -13,4 +13,7 @@ wget -qO- "https://yihui.org/tinytex/install-bin-unix.sh" | sh
 tlmgr install ctex setspace subfig caption
 # tlmgr install svg transparent ifplatform catchfile
 
+# Get Source Han Sans Fonts
 wget -O ~/.local/share/fonts/SourceHanSansCN-Regular.otf https://github.com/adobe-fonts/source-han-sans/raw/refs/heads/release/SubsetOTF/CN/SourceHanSansCN-Regular.otf
+wget -O ~/.local/share/fonts/SourceHanSansCN-Medium.otf https://github.com/adobe-fonts/source-han-sans/raw/refs/heads/release/SubsetOTF/CN/SourceHanSansCN-Medium.otf
+wget -O ~/.local/share/fonts/SourceHanSansCN-Bold.otf https://github.com/adobe-fonts/source-han-sans/raw/refs/heads/release/SubsetOTF/CN/SourceHanSansCN-Bold.otf
