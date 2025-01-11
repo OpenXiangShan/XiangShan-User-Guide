@@ -4,9 +4,10 @@ file_authors_:
 - Xu Zefan <xuzefan@mail.ustc.edu.cn>
 - Tang Haojin <tanghaojin@outlook.com>
 ---
-## 特权模式与控制状态寄存器
 
-### 处理器模式
+# 特权模式与控制状态寄存器 {#sec:mode-and-csr}
+
+## 处理器模式
 
 {{var_processor_name}} 支持 RISC-V 特权架构手册规定的以下 6 种特权模式。
 
@@ -23,7 +24,7 @@ Table: {{var_processor_name}} 支持的特权模式列表
 
 {{var_processor_name}} 初始化时处在 M 模式。对于一般场景，各模式权限高低为 M > S > U；对于虚拟化场景，各模式权限高低为 M > HS > VS > VU。
 
-#### 机器模式
+### 机器模式
 
 机器模式（Machine mode，M 模式）由机器级 ISA 规定，具有最高的权限。M 模式通常用于机器固件，具有以下特性：
 
@@ -35,7 +36,7 @@ Table: {{var_processor_name}} 支持的特权模式列表
   * 加载、存储操作按照上述条件以其他特权模式执行时，按照其特权模式进行 PMP 检查。
   * 某个 PMP 项被锁定时，取指、访存操作均需检查此 PMP 项权限。
 
-#### 监管模式
+### 监管模式
 
 监管模式（Supervisor mode，S 模式）由监管级 ISA 规定，虚拟化扩展将之扩充为为虚拟机管理扩展的监管模式（Hypervisor-extended supervisor mode，HS 模式）。S/HS 模式通常用于操作系统和虚拟机管理程序，其具有以下特性：
 
@@ -45,7 +46,7 @@ Table: {{var_processor_name}} 支持的特权模式列表
 * S 模式总是需要进行 PMP 检查。
 * S 模式不可执行 M 模式特权指令。
 
-#### 用户模式
+### 用户模式
 
 用户模式（User mode，U 模式）具有以下特性：
 
@@ -55,7 +56,7 @@ Table: {{var_processor_name}} 支持的特权模式列表
 * U 模式总是需要进行 PMP 检查。
 * U 模式通常不可执行特权指令，部分情况下存在例外。
 
-#### 虚拟监管模式
+### 虚拟监管模式
 
 虚拟监管模式（Virtual supervisor mode，VS 模式）由虚拟化扩展引入，具有以下特性：
 
@@ -65,7 +66,7 @@ Table: {{var_processor_name}} 支持的特权模式列表
 * VS 模式总是需要进行 PMP 检查。
 * VS 模式不可执行 M 模式特权指令，亦不可执行 H 特权指令。
 
-#### 虚拟用户模式
+### 虚拟用户模式
 
 虚拟用户模式（Virtual user mode，VU 模式）由虚拟化扩展引入，具有以下特性：
 
@@ -74,15 +75,15 @@ Table: {{var_processor_name}} 支持的特权模式列表
 * VU 模式总是需要进行 PMP 检查。
 * VU 模式通常不可执行特权指令。
 
-#### 调试模式
+### 调试模式
 
 调试模式（Debug mode，Debug 模式）由调试扩展（Debug 扩展）引入，其特性和细节请参考 [@sec:debug] [调试](debug.md)。
 
-### 控制和状态寄存器（Control and Status Registers）
+## 控制和状态寄存器（Control and Status Registers）
 
 我们将以权限的不同对控制和状态寄存器（CSRs）进行分组介绍。
 
-#### 用户模式可读写的 CSRs
+### 用户模式可读写的 CSRs
 
 {{var_processor_name}} 中实现的权限为用户模式可读写（URW）的 RISC-V 的 CSRs 如下表所示：
 
@@ -101,7 +102,7 @@ Table: {{var_processor_name}} 支持的 URW 的 CSRs 列表
 | vtype |   U   | 0xC21 |   向量数据类型寄存器   | 非特权向量 |
 | vlenb |   U   | 0xC22 | 向量寄存器字节数寄存器 | 非特权向量 |
 
-#### 用户模式只读的 CSRs
+### 用户模式只读的 CSRs
 
 {{var_processor_name}} 中实现的权限为用户模式只读（URO）的 RISC-V 的 CSRs 如下表所示：
 
@@ -116,7 +117,7 @@ Table: {{var_processor_name}} 支持的 URO 的 CSRs 列表
 |     ...     |  ...  |  ...  |          ...          |      ...      |
 | hpmcounter31 |   U   | 0xC1F |    用户模式计数器31    | 用户模式计数器 |
 
-#### 监管模式可读写的 CSRs
+### 监管模式可读写的 CSRs
 
 {{var_processor_name}} 中实现的权限为监管模式可读写（SRW）的 RISC-V 的 CSRs 如下表所示：
 
@@ -146,7 +147,7 @@ Table: {{var_processor_name}} 支持的 SRW 的 CSRs 列表
 | smblockctl |    S    | 0x5C3 |    推测状态内存阻塞控制寄存器    | 推测状态分支预测控制 |
 |   srnctl   |    S    | 0x5C4 |     推测状态运行时控制寄存器     |  推测状态运行时控制  |
 
-#### 监管模式只读的 CSRs
+### 监管模式只读的 CSRs
 
 {{var_processor_name}} 中实现的权限为监管模式只读（SRO）的 RISC-V 的 CSRs 如下表所示：
 
@@ -156,7 +157,7 @@ Table: {{var_processor_name}} 支持的 SRO 的 CSRs 列表
 | :---: | :----: | :---: | :--------------: | :------: |
 | stopi |   S   | 0xDB0 | 监管模式顶层中断 | 监管中断 |
 
-#### 虚拟监管模式可读写的 CSRs
+### 虚拟监管模式可读写的 CSRs
 
 {{var_processor_name}} 中实现的权限为虚拟监管模式可读写（HRW）的 RISC-V 的 CSRs 如下表所示：
 
@@ -196,7 +197,7 @@ Table: {{var_processor_name}} 支持的 HRW 的 CSRs 列表
 |   hgatp   |    HS    | 0x680 |  虚拟机模式客户地址转换和保护寄存器  |    虚拟机保护和转换    |
 |  hcontext  | HS/Debug | 0x6A8 |        虚拟机模式上下文寄存器        |       调试寄存器       |
 
-#### 虚拟监管模式只读的 CSRs
+### 虚拟监管模式只读的 CSRs
 
 {{var_processor_name}} 中实现的权限为虚拟监管模式只读（HRO）的 RISC-V 的 CSRs 如下表所示：
 
@@ -207,7 +208,7 @@ Table: {{var_processor_name}} 支持的 HRO 的 CSRs 列表
 | hgeip |   HS   | 0xE12 | 虚拟机模式客户机外部中断挂起寄存器 | 虚拟机陷入处理 |
 | vstopi |   VS   | 0xEB0 |        虚拟监管模式顶层中断        | 虚拟监管级中断 |
 
-#### 机器模式可读写的 CSRs
+### 机器模式可读写的 CSRs
 
 {{var_processor_name}} 中实现的权限为机器模式可读写（MRW）的 RISC-V 的 CSRs 如下表所示：
 
@@ -270,7 +271,7 @@ Table: {{var_processor_name}} 支持的 MRW 的 CSRs 列表
 |      ...      |   ...   |  ...  |                  ...                  |         ...         |
 | mhpmcounter31 |    M    | 0xB1F |        机器模式性能监测计数器31        |      机器计数器      |
 
-#### 机器模式只读的 CSRs
+### 机器模式只读的 CSRs
 
 {{var_processor_name}} 中实现的权限为机器模式只读（MRO）的 RISC-V 的 CSRs 如下表所示：
 
@@ -285,7 +286,7 @@ Table: {{var_processor_name}} 支持的 MRO 的 CSRs 列表
 | mconfigptr |   M   | 0xF15 |      配置数据结构指针      |   机器信息   |
 |   mtopi   |   M   | 0xFB0 |      机器模式顶层中断      | 机器陷入设置 |
 
-#### 调试模式可读写的 CSRs
+### 调试模式可读写的 CSRs
 
 {{var_processor_name}} 中实现的权限为调试模式可读写（DRW）的 RISC-V 的 CSRs 如下表所示：
 
@@ -298,11 +299,11 @@ Table: {{var_processor_name}} 支持的 DRW 的 CSRs 列表
 | dscratch0 | Debug | 0x7B2 |   调试模式暂存寄存器0   | 调试模式寄存器 |
 | dscratch1 | Debug | 0x7B3 |   调试模式暂存寄存器1   | 调试模式寄存器 |
 
-### 自定义 CSRs（Custom CSRs）
+## 自定义 CSRs（Custom CSRs）
 
 在上述实现的控制状态寄存器表中可以发现， {{var_processor_name}} 扩展了 RISC-V 的 CSRs，实现了一些 RISC-V 手册中未定义的 CSR，下面将对这些 CSR 进行介绍。
 
-#### sbpctl
+### sbpctl
 
 sbpctl 的地址为 0x5C0，其初始化值为下表的默认值，其每一 bit 的功能如下表所示
 
@@ -325,7 +326,7 @@ Table: sbpctl 的 bit 功能
 [^sbpctl-loop]: 当前 Loop 预测器尚未合入主线，该位无实际功能
 
 
-#### spfctl
+### spfctl
 
 spfctl 的地址为 0x5C1，其初始化值为下表的默认值 ，其每一 bit 的功能如下表所示:
 
@@ -346,7 +347,7 @@ Table: spfctl 的 bit 功能
 | 高位  |               目前高位无实际功能               |   0    |
 
 
-#### slvpredctl
+### slvpredctl
 
 slvpredctl 的地址为 0x5C2，其初始化值为下表的默认值 ，其每一 bit 的功能如下表所示
 
@@ -360,7 +361,7 @@ Table: slvpredctl 的 bit 功能
 |  4-8  | 访存违例预测器的 reset 间隔，设该位域的值为 x，则间隔为 2^(10+x) |   6   |
 | 其余位 |                         目前其余位无功能                         |   0   |
 
-#### smblockctl
+### smblockctl
 
 smblockctl 的地址为 0x5C3，其初始化值为下表的默认值 ，其每一 bit 的功能如下表所示
 
@@ -375,7 +376,7 @@ Table: smblockctl 的 bit 功能
 |   7   | 控制是否支持 uncache 的 outstanding 访问，设 1 代表开启 |   0   |
 | 其余位 |                    目前其余位无功能                    |   0   |
 
-#### srnctl
+### srnctl
 
 srnctl 的地址为 0x5C4，其初始化值为下表的默认值 ，其每一 bit 的功能如下表所示
 

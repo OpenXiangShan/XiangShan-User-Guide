@@ -4,11 +4,11 @@ file_authors_:
 - Yujunjie <yujunjie21@mails.ucas.ac.cn>
 ---
 
-## 内存模型 {#sec:memory-model}
+# 内存模型 {#sec:memory-model}
 
-### 内存模型概述
+## 内存模型概述
 
-#### 内存属性
+### 内存属性
 
 {{var_processor_name}} 支持三种内存类型，分别是可高速缓存内存、不可高速缓存内存和不可缓存外设。
 
@@ -22,15 +22,15 @@ file_authors_:
 
 同时 {{var_processor_name}} 还支持 atomic（支持原子指令）属性和 c（支持高速缓存）属性。
 
-#### 内存一致性模型
+### 内存一致性模型
 
 可高速缓存内存采用 RVWMO（RISC-V Weak Memory Ordering）内存模型。在该模型下，多核之间内存实际的读写顺序和程序给定的访问顺序会不一致。因此 RISC-V 的指令集架构中提供了 Fence 指令来保证内存访问的同步。同时 RISC-V 的 A 扩展中还提供了 LR/SC 指令和 AMO 指令来进行加锁和原子操作。
 
 不可高速缓存内存和不可缓存外设两种内存类型都是强有序（strongly ordered）的。
 
-### 虚拟内存管理
+## 虚拟内存管理
 
-#### MMU 概述
+### MMU 概述
 
 {{var_processor_name}} MMU（Memory Management Unit） 支持 RISC-V SV48 和 SV39 分页机制。其作用主要有：
 
@@ -39,7 +39,7 @@ file_authors_:
 - 虚拟化支持：支持虚拟化环境下通过两阶段地址翻译将客户机虚拟地址转换为主机物理地址；
 - 异常处理：各模块根据请求来源返回异常。
 
-#### TLB组织形式
+### TLB 组织形式
 
 MMU 主要利用 TLB（Translation Look-aside Buffer）来实现地址转换等功能。TLB 将 CPU 访存使用多个虚拟地址作为输入，转换前检查 TLB 的页面属性，再输出该虚拟地址对应的物理地址。
 
@@ -68,7 +68,7 @@ L2 TLB 为指令和数据共用，L2 TLB 包含六个主要单元：
 5. Miss Queue：缓存查询 Page Cache 和 Last Level Page Walker 的 miss 请求；
 6. Prefetcher：预取器。
 
-#### 地址转换流程
+### 地址转换流程
 
 MMU 负责将虚拟地址翻译成物理地址，并用翻译得到的物理地址进行访存。 {{var_processor_name}} 支持 Sv39/Sv48 分页机制，虚拟地址长度为 39/48 位，低 12 位是页内偏移，支持 Sv39 时高 27 位分为三段（每段 9 位），也就是三级页表，支持 Sv48 时高 36 位分为四段（每段 9 位），也就是四级页表。
 
@@ -140,7 +140,7 @@ CPU 要访问某个虚拟地址，若 TLB 命中，则从 TLB 中直接获取物
 
 这里额外说明，{{var_processor_name}} 不允许访问建立在 MMIO 地址空间的页表。如果在页表遍历过程中，查询得到某级页表的地址位于 MMIO 空间中，会上报 access fault 异常。
 
-#### 虚拟化两阶段地址转换
+### 虚拟化两阶段地址转换
 
 {{var_processor_name}} 支持 H 拓展，在非虚拟化模式且未执行虚拟化访存指令时，地址翻译过程与未加入 H 拓展时基本一致，在虚拟化模式或者执行虚拟化访存指令时，需要判断是否开启两阶段地址翻译。
 
@@ -172,7 +172,7 @@ VS-stage 负责将客户机虚拟地址转换成客户机物理地址，G-stage 
 
 ![VS 阶段为 Sv48、G 阶段为 Sv48x4 的两阶段地址翻译](figs/two-stage-translation-sv48-sv48x4.svg)
 
-#### 系统控制寄存器
+### 系统控制寄存器
 
 **MMU 地址转换寄存器（SATP）**
 
@@ -186,9 +186,9 @@ VS-stage 负责将客户机虚拟地址转换成客户机物理地址，G-stage 
 
 在虚拟化模式下，SATP 将被 VSATP 寄存器代替，并且其中的PPN为客户机根页表的客户机物理页号，而非真实的物理地址，需要进行第二阶段翻译才能得到真实物理地址。
 
-### 物理内存保护&物理地址属性
+## 物理内存保护&物理地址属性
 
-#### PMP概述
+### PMP概述
 
 {{var_processor_name}} 遵从 RISC-V 标准。PMP（Physical Memory Protection）单元负责对物理地址的访问权限进行检查，判定当前工作模式下 CPU 是否具备对该地址的读/写/执行权限。
 
@@ -204,7 +204,7 @@ PMA 与 PMP 配合使用，共同管理和控制物理内存的访问和属性�
 - 支持分布式 PMP 与分布式 PMA；
 - 支持异常处理。
 
-#### PMP 控制寄存器
+### PMP 控制寄存器
 
 {{var_processor_name}} 默认 PMP 为 16 项，可以通过参数化修改，采用分布复制式实现方法。PMP 表项主要由一个 8bit 的配置寄存器与一个 64bit 的地址寄存器构成，默认没有初始值。
 
@@ -253,7 +253,7 @@ PMP 地址寄存器的格式如下表
 | [63:34] | 0 | PMP 地址寄存器的高 30 位为 0 |
 | [33:0] | address | 存储 PMP 表项配置的地址的 [35:2] 位 |
 
-#### PMA 属性寄存器
+### PMA 属性寄存器
 
 PMA 的实现采用类似 PMP 的方式，PMA 寄存器默认拥有初始值， 需手动设置与平台地址属性一致。PMA 寄存器利用了 M 态 CSR 的保留寄存器地址空间，默认为 16 项。
 
@@ -387,7 +387,7 @@ PMA 寄存器的条目信息如下表
 | 0x80000000  | false | false      | 1     | false | true  | true  |
 | 0x480000000 | true  | true       | 1     | true  | true  | true  |
 
-### 异常处理机制
+## 异常处理机制
 
 {{var_processor_name}} MMU 模块可能产生 4 种异常，包括 guest page fault、page fault、access fault以及 L2 TLB page cache 的 ECC 校验出错。根据请求来源分别交付给对应模块处理。
 
@@ -414,7 +414,7 @@ MMU 可能产生的异常以及处理流程如下表
 
 另外，根据 RISC-V 手册，Page Fault 的优先级高于 Access Fault，但是如果 Page Table Walk 过程中，出现了 PMP 检查或 PMA 检查的 Access Fault，此时页表项为非法，会发生 Page Fault 和 Access Fault 一起出现的特殊情况， {{var_processor_name}} 选择报 Access Fault。其余情况下均满足 Page Fault 的优先级高于Access Fault。
 
-### 内存访问顺序
+## 内存访问顺序
 
 在不同的场景下， {{var_processor_name}} 对地址空间的访问过程不同，简要归纳如下：
 

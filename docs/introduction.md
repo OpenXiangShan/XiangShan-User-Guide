@@ -3,7 +3,7 @@ file_authors_:
 - ZHANG Jian <zhangjian@bosc.ac.cn>
 ---
 
-## 概述 {#sec:introduction}
+# 概述 {#sec:introduction}
 
 本章是 {{var_processor_name}} 的概述。 {{var_processor_name}} 是北京开源芯片研究院香山处理器团队（以下简称香山团队）研发的第三代微架构——昆明湖——的 V2R2 版本。
 
@@ -17,14 +17,14 @@ file_authors_:
 
 为了支持昆明湖的研发和在目标场景落地，香山团队持续开发迭代其它相关组件，包括性能模拟器 xs-gem5，指令集仿真器 NEMU，在线比较框架 difftest 等。本文是昆明湖处理器和 CPU 核相关 IP 的说明，其它组件见相应文档。
 
-### 简介
+## 简介
 如上所述， {{var_processor_name}} 是香山的重要组成部分。与昆明湖 V1 和昆明湖 V2R1 相比，增加了大量符合 RISC-V 规范的指令和 IP；与昆明湖 V2R1 相比，是香山系列 IP 中首个支持 CHI 协议的 IP。
 
 {{var_processor_name}} 系列 IP 包括 CPU Core（含L2），核内中断控制器（AIA IMSIC），Timer 和 Debug 等模块。
 
-### 特性 {#feature}
+## 特性 {#sec:feature}
 
-#### 处理器核特性
+### 处理器核特性
 
 - 支持 RV64 及其扩建指令集
 - 支持 RVV 1.0，VLEN 128bit x 2
@@ -33,7 +33,7 @@ file_authors_:
 - 最大支持 48 位物理地址，支持 39 位和 48 位虚拟地址
 - 支持 timer 中断，支持 RVA23-Sstc 特性
 
-#### Cache和TLB特性
+### Cache 和 TLB 特性
 
 - ICache 64KB，支持 Parity
 - DCache，最高 64KB，支持 ECC
@@ -41,18 +41,18 @@ file_authors_:
 - L2 作为 {{var_processor_name}} 的总线出口，不支持关闭
 - 支持一级和二级 TLB
 
-#### 总线接口
+### 总线接口
 
 - 支持 TileLink v1 总线
 - 支持 CHI Issue B 和 CHI Issue E.b 的子集，事务和 flit 字段详见总线接口章节；CHI 版本配置方法见总线接口章节
 
-#### 中断
+### 中断
 
 - 符合 AIA 1.0 的 CSR
 - 符合 AIA 1.0 的 IMSIC (注1)
 - 符合 RISC-V priviledge 的 NMI，提供单独的 NMI 信号，允许用于自行选择连接，详见中断章节
 
-#### Debug特性
+### Debug 特性
 
 - 支持 DebugModule spec 0.13；
 - 支持 HPM；
@@ -65,12 +65,12 @@ file_authors_:
 注2：E-trace 核外 trace IP 暂不在 {{var_processor_name}} 开源清单中，如需了解可与我们联系。
 
 <!--
-### 可配置选项
+## 可配置选项
 DCache size
 L2 size
 CHI版本
 
-### 标准遵从
+## 标准遵从
 unpriviledge
 priviledge
 
@@ -93,9 +93,7 @@ Svinval Extension  | 1.0     | Ratified
 Svadu Extension    | 1.0     | Ratified 未支持
 Hypervisor ISA     | 1.0     | Ratified
 
-备注：C920把标准遵从和版本说明放到了一起，感觉这样不太清晰。参考N2的写法暂时分开了。
-
-### 版本说明
+## 版本说明
 0.1 draft
 0.5 alpha: 早期用户版本
 

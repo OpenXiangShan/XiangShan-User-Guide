@@ -3,11 +3,11 @@ file_authors_:
 - ChengGuanghui <wissycgh@gmail.com> 
 ---
 
-## 调试 {#sec:debug}
+# 调试 {#sec:debug}
 
 本章是昆明湖的调试模块的设计文档。昆明湖 debug 兼容 RISC-V Debug V0.13 手册标准。对外调试接口支持 JTAG。调试接口是软件与处理器交互的通道。用户可以通过调试接口获取CPU的状态，包括寄存器和存储器内容，以及其他片上设备的信息。支持程序下载。
 
-### Debug Module
+## Debug Module
 如下图所示。昆明湖的 debug 工作是由调试软件（GDB）、调试代理服务程序(openocd)、调试器(debug module wrapper)等组件一起配合完成的，
 其中调试器包括 JtagDTM， DMI， DM。
 调试接口在整个 CPU 调试环境中的位置如下图所示。
@@ -27,7 +27,7 @@ file_authors_:
 * 支持软断点(ebreak 指令)、硬断点（trigger）和内存断点（trigger）。
 * 支持读写CSR和内存，支持 progbuf 和 sysbus 两种访存方式。
 
-### Trigger Module
+## Trigger Module
 当前昆明湖 trigger module 的实现情况如下：
 
 * 昆明湖 trigger module 当前实现的 debug 相关的 CSR 如下表所示。 

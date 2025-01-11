@@ -3,9 +3,9 @@ file_authors_:
 - zengjinhong <zengjinhong21@mails.ucas.ac.cn>
 ---
 
-## 异常与中断 {#sec:exception-and-interrupt}
+# 异常与中断 {#sec:exception-and-interrupt}
 
-### 概述
+## 概述
 
 异常和中断是处理器从正常程序执行流跳转到特权模式的一种机制，用于应对各种意外或预期的事件。这些机制帮助处理器解决执行过程中遇到的问题，维护系统的稳定性，处理外部事件的响应。
 
@@ -21,7 +21,7 @@ file_authors_:
   2. 软件中断：由软件触发，用于与操作系统交互或执行某些系统级别的任务。
 * 陷入（Trap）是一种处理器从用户模式或较低特权级别切换到特权模式（如内核模式）处理事件的机制。处理器通过陷入机制捕获异常或中断，保存上下文信息，并跳转到相应的处理程序。处理完成后，处理器通过返回指令（如 mret 或 sret）恢复之前的执行状态，继续执行原来的程序。
 
-### 异常
+## 异常
 
 {{var_processor_name}} 支持多种异常，如下表所示：
 
@@ -61,7 +61,7 @@ Table: {{var_processor_name}} 支持的异常列表
 
 我们以机器模式为例，介绍异常处理的步骤。
 
-#### 异常响应
+### 异常响应
 
 第一步：处理器保存发生异常的 PC 到 mepc 中。
 
@@ -71,7 +71,7 @@ Table: {{var_processor_name}} 支持的异常列表
 
 第四步：根据 mtvec 取对应的指令并执行。
 
-#### 异常返回
+### 异常返回
 
 异常返回通过 mret 指令实现，该指令执行下列操作。
 
@@ -79,7 +79,7 @@ Table: {{var_processor_name}} 支持的异常列表
 * 根据 mstatus 的 MPIE 位恢复 mstatus 的 MIE 位。
 * 将当前的 Privilege Mode 改为 mstatus 的 MPP 位，且如果 MPP 位为机器模式，则将 Virtual Mode 置为 0，否则置为 mstatus 的 MPV 位。
 
-### 中断
+## 中断
 
 {{var_processor_name}} 支持多种中断，如下表所示：
 
@@ -105,7 +105,7 @@ Table: {{var_processor_name}} 支持的中断列表
 
 我们以机器模式为例，介绍中断处理的步骤
 
-#### 中断优先级
+### 中断优先级
 
 {{var_processor_name}} 的中断优先级，如下表所示：
 
@@ -135,7 +135,7 @@ Table: {{var_processor_name}} 中断优先级
 |            | Custom Group 3 | 51, 25, 50 | 最低优先级 Custom 中断             |
 |    最低    |                | 49, 24, 48 |                                    |
 
-#### 中断响应
+### 中断响应
 
 第一步：处理器执行完当前指令后，将下一条指令的 PC 存入 mepc。
 
@@ -145,7 +145,7 @@ Table: {{var_processor_name}} 中断优先级
 
 第四步：根据 mtvec 取对应的指令并执行。
 
-#### 中断返回
+### 中断返回
 
 * 根据 mepc 恢复 PC。
 * 根据 mstatus 的 MPIE 位恢复 mstatus 的 MIE 位。

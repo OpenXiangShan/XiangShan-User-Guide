@@ -3,12 +3,12 @@ file_authors_:
 - Sun Jiru <yuyake02@outlook.com> 
 ---
 
-## 总线接口 {#sec:bus-interface}
+# 总线接口 {#sec:bus-interface}
 
 {{var_processor_name}} 的总线接口具有 256 位宽度，支持 CHI Issue B 或 Issue E.b 的子集。
 关于该协议的详细内容，请参考 AMBA® CHI Architecture Specification。
 
-### 支持的响应类型
+## 支持的响应类型
 
 CHI 协议的 RespErr 可以表示响应正常或是错误。 {{var_processor_name}} 支持的响应类型如下。
 
@@ -20,13 +20,13 @@ CHI 协议的 RespErr 可以表示响应正常或是错误。 {{var_processor_na
 
 由于 {{var_processor_name}} 不具有数据校验码，因此不支持 DERR。
 
-### 不同总线响应下的行为
+## 不同总线响应下的行为
 
 * Normal Okay：普通传输访问成功，或 exclusive 传输访问失败；读传输 exclusive 访问失败代表总线不支持 exclusive 传输，产生访问错误异常，写传输 exclusive 访问失败仅代表抢锁失败，不会返回异常。
 * Exclusive Okay：exclusive 访问成功。
 * NDERR：访问出错，读传输产生访问错误异常，写传输忽略此错误。
 
-### 接口信号
+## 接口信号
 
 CHI 使用不同的通道传输不同的消息，传输的消息包括：
 
@@ -66,7 +66,7 @@ RX 的 linkactiveack 和 linkactivereq 决定了 RX 的状态；TX 的 linkactiv
 | RUN        | 1               | 1               |
 | DEACTIVATE | 0               | 1               |
 
-#### 通道信号
+### 通道信号
 
 Table: RXDAT 通道信号
 
@@ -122,7 +122,7 @@ Table: TXRSP 通道信号
 | chi_tx_rsp_flit     | O   | TXRSP 通道的 flit                             |
 | chi_tx_rsp_flitpend | O   | flit 的 pending 信号，表示接下来会传输一个 flit |
 
-#### flit 格式
+### flit 格式
 
 位宽为空，代表此信号与上一行的信号是共用的。
 信号名后面标注\*，代表此信号仅适用于 CHI Issue E.b。
@@ -233,7 +233,7 @@ Table: Snoop flit
 | RetToSrc             | 1        | 该字段请求 Snoopee 将缓存行的副本返回给 Home。 |
 | TraceTag             | 1        | 标记，用于跟踪。 |
 
-### 支持的 Coherency Transaction 类型
+## 支持的 Coherency Transaction 类型
 
 * SnpShared
 * SnpClean

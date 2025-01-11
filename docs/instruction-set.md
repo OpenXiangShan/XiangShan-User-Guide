@@ -3,9 +3,9 @@ file_authors_:
 - Tang Haojin <tanghaojin@outlook.com> 
 ---
 
-## 指令集 {#sec:instruction-set}
+# 指令集 {#sec:instruction-set}
 
-### 支持的指令集扩展
+## 支持的指令集扩展
 
 i, m, a, f, d, c, b, v, h,
 sdtrig, sha, shcounterenw, shgatpa, shlcofideleg, shtvala, shvsatpa, shvstvala,
