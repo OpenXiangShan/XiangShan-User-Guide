@@ -1,4 +1,4 @@
-name: build PDF version of document
+name: build document with pandoc
 
 on:
   push:
@@ -26,8 +26,14 @@ jobs:
         run: |
           make
       
-      - name: Upload artifacts
+      - name: Upload built pdf
         uses: actions/upload-artifact@v4
         with:
-          name: xiangshan-user-guide
+          name: xiangshan-user-guide-pdf
           path: xiangshan-user-guide.pdf
+      
+      - name: Upload built html
+        uses: actions/upload-artifact@v4
+        with:
+          name: xiangshan-user-guide-html
+          path: xiangshan-user-guide.html
