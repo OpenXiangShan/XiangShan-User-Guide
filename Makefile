@@ -14,7 +14,7 @@ PANDOC_FLAGS += --variable=version:"$(VERSION)"
 PANDOC_FLAGS += --from=markdown+table_captions+multiline_tables+grid_tables+header_attributes-implicit_figures
 PANDOC_FLAGS += --table-of-contents
 PANDOC_FLAGS += --number-sections
-# PANDOC_FLAGS += --filter pandoc-crossref
+PANDOC_FLAGS += --filter pandoc-crossref
 PANDOC_FLAGS += --lua-filter=include-files.lua
 PANDOC_FLAGS += --metadata=include-auto
 PANDOC_FLAGS += --lua-filter=resources/meta_vars.lua
