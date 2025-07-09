@@ -26,5 +26,5 @@ i18n-applicable: "适用于"
 
 
 ``` {.include}
-docs/.index.md
+docs/zh/.index.md
 ```

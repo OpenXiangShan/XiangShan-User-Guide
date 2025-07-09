@@ -35,5 +35,5 @@ jobs:
         with:
           name: xiangshan-user-guide-pdf
           path: |
-            xiangshan-user-guide.pdf
-            xiangshan-user-guide-twoside.pdf
+            xiangshan-user-guide-zh.pdf
+            xiangshan-user-guide-twoside-zh.pdf
