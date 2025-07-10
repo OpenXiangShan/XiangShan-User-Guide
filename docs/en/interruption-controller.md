@@ -3,7 +3,7 @@ file_authors_:
 - Zhao Hong <zhaohong@bosc.ac.cn>
 ---
 
-# 中断控制器 {#sec:interruption-controller}
+# Interruption Controller {#sec:interruption-controller}
 
 {{processor_name}} 中，中断控制器包括 IMSIC 外部中断控制器，CLINT 本地中断控制器，下面进行详细说明。
 

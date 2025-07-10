@@ -3,7 +3,7 @@ file_authors_:
 - zehao Liu <liuzehao19@mails.ucas.ac.cn>
 ---
 
-# 性能监测单元 {#sec:performance-monitor}
+# Performance Monitor {#sec:performance-monitor}
 
 {{processor_name}} 性能监测单元（PMU）根据 RISC-V 特权手册实现了基本的硬件性能监测功能，并额外支持 sstc 以及
 sscofpmf 拓展，用于统计处理器运行中的部分硬件信息和线程信息，供软件开发人员进行程序优化。
