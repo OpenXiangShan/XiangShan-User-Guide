@@ -7,6 +7,9 @@ site_name: XiangShan User Guide
 repo_url: https://github.com/OpenXiangShan/XiangShan-User-Guide
 repo_name: XiangShan-User-Guide
 
+theme:
+  language: en
+
 markdown_extensions:
   replace_variables:
       yaml_file: docs/variables-en.yml
