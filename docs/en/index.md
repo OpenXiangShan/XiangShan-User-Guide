@@ -1,12 +1,14 @@
-# 前言 {.unnumbered .unlisted}
+# Preface {.unnumbered .unlisted}
 
-本文档为《香山开源处理器用户手册》，适用于 {{processor_name}} 。
+This document is _XiangShan Open-Source Processor User Guide_, which is
+applicable to {{processor_name}}.
 
-您可从以下渠道获取最新版的本文档：
+You can obtain an latest version of this document from:
 
-* 网页版：[https://docs.xiangshan.cc/projects/user-guide/](https://docs.xiangshan.cc/projects/user-guide/)
-* PDF
-  文件：[https://github.com/OpenXiangShan/XiangShan-User-Guide/releases](https://github.com/OpenXiangShan/XiangShan-User-Guide/releases)
+* Website:
+  [https://docs.xiangshan.cc/projects/user-guide/](https://docs.xiangshan.cc/projects/user-guide/)
+* PDF file:
+  [https://github.com/OpenXiangShan/XiangShan-User-Guide/releases](https://github.com/OpenXiangShan/XiangShan-User-Guide/releases)
 
 您可访问香山文档网站 [docs.xiangshan.cc](https://docs.xiangshan.cc/) 获取更多文档。
 
