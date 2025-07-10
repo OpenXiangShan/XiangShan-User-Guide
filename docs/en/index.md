@@ -1,7 +1,7 @@
 # Preface {.unnumbered .unlisted}
 
 This document is _XiangShan Open-Source Processor User Guide_, which is
-applicable to {{processor_name}}.
+applicable to {{processor_name}} .
 
 You can obtain an latest version of this document from:
 
