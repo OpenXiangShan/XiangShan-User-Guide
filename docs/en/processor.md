@@ -3,7 +3,7 @@ file_authors_:
 - Tang Haojin <tanghaojin@outlook.com>
 ---
 
-# 处理器简介 {#sec:processor}
+# Processor Profile {#sec:processor}
 
 ## 结构框图
 
