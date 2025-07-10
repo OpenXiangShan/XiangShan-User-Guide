@@ -1,0 +1,28 @@
+INHERIT: utils/mkdocs-base.yml
+
+docs_dir: 'docs/en'
+site_dir: 'site/en'
+
+site_name: XiangShan User Guide
+repo_url: https://github.com/OpenXiangShan/XiangShan-User-Guide
+repo_name: XiangShan-User-Guide
+
+markdown_extensions:
+  replace_variables:
+      yaml_file: docs/variables-en.yml
+
+nav:
+  - Preface: index.md
+  - Introduction: introduction.md
+  - Microarchitecture: processor.md
+  - Instruction Set: instruction-set.md
+  - Data Registers: registers.md
+  - Privileged Modes and Control Status Registers: mode-and-csr.md
+  - Exceptions and Interrupts: exception-and-interrupt.md
+  - Memory Model: memory-model.md
+  - Memory Subsystem: memory-subsystem.md
+  - Vector: vector.md
+  - Interrupt Controller: interruption-controller.md
+  - Bus Interface: bus-interface.md
+  - Debug Module: debug.md
+  - Performance Monitor: performance-monitor.md
