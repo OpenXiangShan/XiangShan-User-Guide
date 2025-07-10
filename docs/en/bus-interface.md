@@ -3,7 +3,7 @@ file_authors_:
 - Sun Jiru <yuyake02@outlook.com>
 ---
 
-# 总线接口 {#sec:bus-interface}
+# Bus Interface {#sec:bus-interface}
 
 {{processor_name}} 的总线接口具有 256 位宽度，支持 CHI Issue B 或 Issue E.b 的子集。
 关于该协议的详细内容，请参考 AMBA® CHI Architecture Specification。
