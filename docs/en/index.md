@@ -10,7 +10,8 @@ You can obtain an latest version of this document from:
 * PDF file:
   [https://github.com/OpenXiangShan/XiangShan-User-Guide/releases](https://github.com/OpenXiangShan/XiangShan-User-Guide/releases)
 
-您可访问香山文档网站 [docs.xiangshan.cc](https://docs.xiangshan.cc/) 获取更多文档。
+You could visist XiangShan Document Center
+[docs.xiangshan.cc](https://docs.xiangshan.cc/) to get more documents.
 
 ## 声明 {.unnumbered .unlisted}
 
