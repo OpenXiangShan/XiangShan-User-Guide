@@ -3,9 +3,9 @@ file_authors_:
 - zengjinhong <zengjinhong21@mails.ucas.ac.cn>
 ---
 
-# 异常与中断 {#sec:exception-and-interrupt}
+# Exception and Interrupt {#sec:exception-and-interrupt}
 
-## 概述
+## Overview
 
 异常和中断是处理器从正常程序执行流跳转到特权模式的一种机制，用于应对各种意外或预期的事件。这些机制帮助处理器解决执行过程中遇到的问题，维护系统的稳定性，处理外部事件的响应。
 

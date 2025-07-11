@@ -4,7 +4,7 @@ file_authors_:
 - yimingyan <1650150317@qq.com>
 ---
 
-# 内存子系统 {#sec:memory-subsystem}
+# Memory Subsystem
 
 ## L1 指令 Cache
 

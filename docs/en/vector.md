@@ -4,7 +4,7 @@ file_authors_:
 - WangZhiZun <some@example.com>
 ---
 
-# 向量 {#sec:vector}
+# Vector {#sec:vector}
 
 ## 版本支持
 
