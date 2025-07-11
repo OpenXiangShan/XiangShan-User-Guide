@@ -14,6 +14,9 @@ jobs:
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
+    strategy:
+      matrix:
+        lang: [zh, en]
 
     steps:
       - name: Checkout repository
@@ -22,18 +25,18 @@ jobs:
           submodules: true
           fetch-tags: true
 
-      - name: build
+      - name: Build PDFs
         env:
           HOME: /root
         run: |
           git config --global --add safe.directory $(pwd)
-          make pdf
-          make pdf TWOSIDE=1
+          make pdf-one LANG=${{ matrix.lang }}
+          make pdf-one LANG=${{ matrix.lang }} TWOSIDE=1
 
-      - name: Upload built pdf
+      - name: Upload built PDFs
         uses: actions/upload-artifact@v4
         with:
-          name: xiangshan-user-guide-pdf
+          name: xiangshan-user-guide-${{ matrix.lang }}
           path: |
-            xiangshan-user-guide-zh.pdf
-            xiangshan-user-guide-twoside-zh.pdf
+            xiangshan-user-guide-${{ matrix.lang }}.pdf
+            xiangshan-user-guide-${{ matrix.lang }}-twoside.pdf
