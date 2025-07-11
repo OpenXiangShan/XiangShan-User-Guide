@@ -5,7 +5,7 @@ file_authors_:
 
 # Instruction Set {#sec:instruction-set}
 
-## Supported ISA Extensions
+## Supported extension of the chain of command
 
 i, m, a, f, d, c, b, v, h, sdtrig, sha, shcounterenw, shgatpa, shlcofideleg,
 shtvala, shvsatpa, shvstvala, shvstvecd, smaia, smcsrind, smdbltrp, smmpm,
