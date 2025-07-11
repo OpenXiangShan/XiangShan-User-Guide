@@ -39,4 +39,4 @@ jobs:
           name: xiangshan-user-guide-${{ matrix.lang }}
           path: |
             xiangshan-user-guide-${{ matrix.lang }}.pdf
-            xiangshan-user-guide-${{ matrix.lang }}-twoside.pdf
+            xiangshan-user-guide-twoside-${{ matrix.lang }}.pdf
