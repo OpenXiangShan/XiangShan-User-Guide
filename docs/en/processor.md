@@ -5,7 +5,7 @@ file_authors_:
 
 # Processor Profile {#sec:processor}
 
-## 结构框图
+## Block Diagram
 
 {{processor_name}} 的结构框图如 [@fig:kmh-multicore] 所示。
 
