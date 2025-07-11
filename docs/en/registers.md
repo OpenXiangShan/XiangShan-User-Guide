@@ -2,9 +2,9 @@
 file_authors_:
 - zengjinhong <zengjinhong21@mails.ucas.ac.cn>
 ---
-# 数据寄存器 {#sec:registers}
+# Registers {#sec:registers}
 
-## 通用寄存器
+## General Purpose Registers
 
 {{processor_name}} 具有 32 个 64 位的通用寄存器，其功能可以参照 RISC-V 的手册定义，如下表
 

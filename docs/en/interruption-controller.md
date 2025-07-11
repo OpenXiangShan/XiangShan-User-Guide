@@ -5,7 +5,9 @@ file_authors_:
 
 # Interruption Controller {#sec:interruption-controller}
 
-{{processor_name}} 中，中断控制器包括 IMSIC 外部中断控制器，CLINT 本地中断控制器，下面进行详细说明。
+In {{processor_name}}, the interrupt controller includes the IMSIC external
+interrupt controller and the CLINT local interrupt controller. The following is
+a detailed description.
 
 ## CLINT 中断控制器
 

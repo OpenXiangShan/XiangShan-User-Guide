@@ -3,10 +3,15 @@ file_authors_:
 - ChengGuanghui <wissycgh@gmail.com>
 ---
 
-# 调试 {#sec:debug}
+# Debug Module {#sec:debug}
 
-本章是昆明湖的调试模块的设计文档。昆明湖 debug 兼容 RISC-V Debug V0.13 手册标准。对外调试接口支持
-JTAG。调试接口是软件与处理器交互的通道。用户可以通过调试接口获取CPU的状态，包括寄存器和存储器内容，以及其他片上设备的信息。支持程序下载。
+This chapter is the design document for the Kunminghu debug module. The
+Kunminghu debug module is compatible with the RISC-V Debug V0.13 Specification.
+The external debug interface supports JTAG. The debug interface serves as a
+communication channel between software and the processor. Users can obtain the
+state of the CPU, including register and memory contents, as well as information
+from other on-chip devices, through the debug interface. It also supports
+program download.
 
 ## Debug Module
 如下图所示。昆明湖的 debug 工作是由调试软件（GDB）、调试代理服务程序(openocd)、调试器(debug module

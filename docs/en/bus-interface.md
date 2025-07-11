@@ -5,8 +5,9 @@ file_authors_:
 
 # Bus Interface {#sec:bus-interface}
 
-{{processor_name}} 的总线接口具有 256 位宽度，支持 CHI Issue B 或 Issue E.b 的子集。
-关于该协议的详细内容，请参考 AMBA® CHI Architecture Specification。
+The bus interface of {{processor_name}} has a width of 256 bits and supports a
+subset of AMBA CHI Issue B or Issue E.b. For detailed information about this
+protocol, please refer to the AMBA® CHI Architecture Specification.
 
 ## 支持的响应类型
 

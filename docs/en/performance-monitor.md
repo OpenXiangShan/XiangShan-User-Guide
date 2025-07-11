@@ -5,8 +5,12 @@ file_authors_:
 
 # Performance Monitor {#sec:performance-monitor}
 
-{{processor_name}} 性能监测单元（PMU）根据 RISC-V 特权手册实现了基本的硬件性能监测功能，并额外支持 sstc 以及
-sscofpmf 拓展，用于统计处理器运行中的部分硬件信息和线程信息，供软件开发人员进行程序优化。
+The Performance Monitoring Unit (PMU) of {{processor_name}} implements basic
+hardware performance monitoring functions according to the RISC-V Privileged
+Specification and additionally supports the sstc and sscofpmf extensions. These
+features are used to collect certain hardware and thread information during
+processor operation, which can assist software developers in program
+optimization.
 
 性能监测单元统计的软硬件信息主要分为以下几种：
 
