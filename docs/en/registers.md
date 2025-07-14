@@ -6,50 +6,58 @@ file_authors_:
 
 ## General Purpose Registers
 
-{{processor_name}} 具有 32 个 64 位的通用寄存器，其功能可以参照 RISC-V 的手册定义，如下表
+{{processor_name}} has 32 general-purpose 64-bit registers, whose functions can
+be referred to in the RISC-V Unprivileged Specification, as shown in the
+following table
 
-Table: 通用寄存器
+Table: General-purpose registers
 
-| 寄存器    | ABI名称 | 描述         | 保存者  |
-| ------ | ----- | ---------- | ---- |
-| x0     | zero  | 硬件连线0      | \    |
-| x1     | ra    | 返回地址       | 调用者  |
-| x2     | sp    | 堆栈指针       | 被调用者 |
-| x3     | gp    | 全局指针       | \    |
-| x4     | tp    | 线程指针       | \    |
-| x5     | t0    | 临时/备用链接寄存器 | 调用者  |
-| x6-7   | t1-2  | 临时寄存器      | 调用者  |
-| x8     | s0/fp | 保留寄存器/帧指针  | 被调用者 |
-| x9     | s1    | 保留寄存器      | 被调用者 |
-| x10-11 | a0-1  | 函数参数/返回值   | 调用者  |
-| x12-17 | a2-7  | 函数参数       | 调用者  |
-| x18-27 | s2-11 | 保留寄存器      | 被调用者 |
-| x28-31 | t3-6  | 临时寄存器      | 调用者  |
+| Register | ABI Name | Description                       | Preserved |
+| -------- | -------- | --------------------------------- | --------- |
+| x0       | zero     | Hardwired to 0                    | \         |
+| x1       | ra       | Return Address                    | Caller    |
+| x2       | sp       | stack pointer                     | callee    |
+| x3       | gp       | Global Pointer                    | \         |
+| x4       | tp       | Thread pointer                    | \         |
+| x5       | t0       | Temporary/Alternate Link Register | Caller    |
+| x6-7     | t1-2     | Temporary registers               | Caller    |
+| x8       | s0/fp    | Reserved Register/Frame Pointer   | callee    |
+| x9       | s1       | reserved register                 | callee    |
+| x10-11   | a0-1     | Function parameters/return values | Caller    |
+| x12-17   | a2-7     | function parameters               | Caller    |
+| x18-27   | s2-11    | reserved register                 | callee    |
+| x28-31   | t3-6     | Temporary registers               | Caller    |
 
-## 浮点寄存器
+## Floating-Point Registers
 
-{{processor_name}} 支持 RV64 的 F 扩展与 D 扩展，具有 32 个 64 位的浮点寄存器，其功能可以参照 RISC-V
-的手册定义，如下表
+{{processor_name}} supports the RV64 F and D extensions, featuring 32 64-bit
+floating-point registers. Their functionality can be referenced in the RISC-V
+manual definitions, as outlined in the following table:
 
-Table: 浮点寄存器
+Table: Floating-Point Registers
 
-| 寄存器    | ABI名称  | 描述       | 保存者  |
-| ------ | ------ | -------- | ---- |
-| f0-7   | ft0-7  | 浮点临时寄存器  | 调用者  |
-| f8-9   | fs0-1  | 浮点保留寄存器  | 被调用者 |
-| f10-11 | fa0-1  | 浮点参数/返回值 | 调用者  |
-| f12-17 | fa2-7  | 浮点参数     | 调用者  |
-| f18-27 | fs2-11 | 浮点保留寄存器  | 被调用者 |
-| f28-31 | ft8-11 | 浮点临时寄存器  | 调用者  |
+| Register | ABI Name | Description                            | Preserved |
+| -------- | -------- | -------------------------------------- | --------- |
+| f0-7     | ft0-7    | Floating-point Temporary Register      | Caller    |
+| f8-9     | fs0-1    | Floating-point saved registers         | callee    |
+| f10-11   | fa0-1    | Floating-Point Arguments/Return Values | Caller    |
+| f12-17   | fa2-7    | Floating-point Argument                | Caller    |
+| f18-27   | fs2-11   | Floating-point saved registers         | callee    |
+| f28-31   | ft8-11   | Floating-point Temporary Register      | Caller    |
 
-{{processor_name}} 同时支持单精度浮点运算与双精度浮点运算，在进行单精度浮点运算时，只使用浮点寄存器的低 32 位。
-{{processor_name}} 还支持 zfa 扩展中的半精度运算，它们仅仅使用浮点寄存器的低 16 位。
+The {{processor_name}} supports both single-precision and double-precision
+floating-point operations. When performing single-precision floating-point
+operations, only the lower 32 bits of the floating-point registers are utilized.
+Additionally, the {{processor_name}} supports half-precision operations from the
+zfa extension, which exclusively use the lower 16 bits of the floating-point
+registers.
 
-### 浮点寄存器与通用寄存器间传输数据
+### Data transfer between floating-point registers and general-purpose registers
 
-通用寄存器与浮点寄存器之间可以进行数据传输，精度为单精度，该功能通过传输指令实现。
+Data transfer between general-purpose registers and floating-point registers is
+possible with single-precision accuracy, achieved through transfer instructions.
 
-通用寄存器到浮点寄存器：
+General-purpose registers to floating-point registers:
 
 1. FMV.W.X
 2. FCVT.S.W
@@ -57,7 +65,7 @@ Table: 浮点寄存器
 4. FCVT.S.L
 5. FCVT.S.LU
 
-浮点寄存器到通用寄存器：
+Floating-point Register to General-purpose Register:
 
 1. FMV.X.W
 2. FCVT.W.S
@@ -65,22 +73,29 @@ Table: 浮点寄存器
 4. FCVT.L.S
 5. FCVT.LU.S
 
-## 向量寄存器
+## Vector Register
 
-{{processor_name}} 支持 RV64 的 V 扩展，具有 32 个 128 位的向量架构寄存器。
+{{processor_name}} supports the RV64 V extension, featuring 32 128-bit vector
+architectural registers.
 
-### 向量寄存器与通用寄存器间传输数据
+### Data Transfer Between Vector and General-Purpose Registers
 
-向量寄存器与通用寄存器间可以进行数据传输，该功能由 VMV 指令实现，如下所示：
+Data transfer between vector registers and general-purpose registers is enabled
+by the VMV instruction, as shown below:
 
-1. VMV.V.X 将通用寄存器的值传输给向量寄存器
-2. VMV.S.X 将通用寄存器的值传输给向量寄存器首元素
-3. VMV.X.S 将向量寄存器首元素传输给通用寄存器
+1. VMV.V.X Transfer Value from General-Purpose Register to Vector Register
+2. VMV.S.X transfers the value from a general-purpose register to the first
+   element of a vector register
+3. VMV.X.S Transfer First Element of Vector Register to General-Purpose Register
 
-### 向量寄存器与浮点寄存器间传输数据
+### Data transfer between vector registers and floating-point registers
 
-向量寄存器与浮点寄存器间可以进行数据传输，该功能由 VFMV 指令实现，如下所示：
+Data can be transferred between vector registers and floating-point registers,
+implemented by the VFMV instruction as shown below:
 
-1. VFMV.V.F 将浮点寄存器的值传输给向量寄存器
-2. VFMV.S.F 将浮点寄存器的值传输给向量寄存器首元素
-3. VFMV.F.S 将向量寄存器首元素传输给浮点寄存器
+1. VFMV.V.F transfers the value from a floating-point register to a vector
+   register
+2. VFMV.S.F transfers the value from a floating-point register to the first
+   element of a vector register
+3. VFMV.F.S transfers the first element of a vector register to a floating-point
+   register

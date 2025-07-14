@@ -16,7 +16,7 @@ The software and hardware information collected by the performance monitoring
 unit can be mainly classified into the following categories:
 
 * The clock cycles executed by the hart (cycle)
-* Number of instructions committed by the hardware thread (minstret)
+* Number of instructions committed by the hart (minstret)
 * Hardware Timer (time)
 * Performance Event Statistics of Processor Key Components (hpmcounter3 -
   hpmcounter31, countovf)
@@ -28,15 +28,14 @@ unit can be mainly classified into the following categories:
 The basic usage of PMU is as follows:
 
 * Disable all performance event monitoring via the mcountinhibit register.
-* Initialize performance event counters for each monitoring unit, including:
-  mcycle, minstret, mhpmcounter3 - mhpmcounter31.
-* Configure each performance event selector for monitoring units, including:
-  mhpmcounter3 - mhpmcounter31. {{processor_name}} allows up to four event
-  combinations per event selector. After writing the event index value, event
-  combination method, and sampling privilege level into the event selector,
-  normal counting of configured events can proceed under the specified sampling
-  privilege level, with results accumulated into the event counter based on the
-  combined outcome.
+* Initialize echo performance event counters, including: mcycle, minstret,
+  mhpmcounter3 - mhpmcounter31.
+* Configure each performance event selector, including: mhpmcounter3 -
+  mhpmcounter31. {{processor_name}} allows up to four event combinations per
+  event selector. After writing the event index value, event combination method,
+  and sampling privilege level into the event selector, normal counting of
+  configured events can proceed under the specified sampling privilege level,
+  with results accumulated into the event counter based on the combined outcome.
 * Configure xcounteren for access permission authorization
 * Enable all performance event monitoring via mcountinhibit register and start
   counting.

@@ -9,35 +9,42 @@ The bus interface of {{processor_name}} has a width of 256 bits and supports a
 subset of AMBA CHI Issue B or Issue E.b. For detailed information about this
 protocol, please refer to the AMBA® CHI Architecture Specification.
 
-## 支持的响应类型
+## Supported Response Types
 
-CHI 协议的 RespErr 可以表示响应正常或是错误。 {{processor_name}} 支持的响应类型如下。
+The RespErr in the CHI protocol can indicate either a normal or an error
+response. The response types supported by {{processor_name}} are as follows.
 
-| RespErr的值 | 响应类型                   |
-| :-------: | ---------------------- |
-|   0b00    | Normal Okay            |
-|   0b01    | Exclusive Okay         |
-|   0x11    | Non-data Error，即 NDERR |
+| Value of RespErr | Response type          |
+| :--------------: | ---------------------- |
+|       0b00       | Normal Okay            |
+|       0b01       | Exclusive Okay         |
+|       0x11       | Non-data Error (NDERR) |
 
-由于 {{processor_name}} 不具有数据校验码，因此不支持 DERR。
+Since {{processor_name}} does not have data error checking codes, it does not
+support DERR.
 
-## 不同总线响应下的行为
+## Behavior under different bus responses.
 
-* Normal Okay：普通传输访问成功，或 exclusive 传输访问失败；读传输 exclusive 访问失败代表总线不支持 exclusive
-  传输，产生访问错误异常，写传输 exclusive 访问失败仅代表抢锁失败，不会返回异常。
-* Exclusive Okay：exclusive 访问成功。
-* NDERR：访问出错，读传输产生访问错误异常，写传输忽略此错误。
+* Normal Okay: Indicates successful normal transfer access or failed exclusive
+  transfer access. A failed exclusive read transfer implies the bus does not
+  support exclusive transfers, triggering an access error exception. A failed
+  exclusive write transfer only indicates lock acquisition failure without
+  raising an exception.
+* Exclusive Okay: Exclusive access successful.
+* NDERR: Access error, read transactions generate access error exceptions, write
+  transactions ignore this error.
 
-## 接口信号
+## Interface signals
 
-CHI 使用不同的通道传输不同的消息，传输的消息包括：
+CHI uses different channels to transmit various messages, including:
 
-* 数据（DAT）
-* 请求（REQ）
-* 响应（RSP）
-* 监听（SNP）
+* Data (DAT)
+* Request (REQ)
+* Response (RSP)
+* Snoop (SNP)
 
-以 TX 字母为前缀的通道用于发送消息，以 RX 字母为前缀的通道用于接收消息。 {{processor_name}} 一共有 6 个通道：
+Channels prefixed with TX are for sending messages, while those prefixed with RX
+are for receiving messages. {{processor_name}} has a total of 6 channels:
 
 * RXDAT
 * RXRSP
@@ -46,194 +53,197 @@ CHI 使用不同的通道传输不同的消息，传输的消息包括：
 * TXREQ
 * TXRSP
 
-后文将会列出这些通道包含的信号。 除了这些通道外，总线接口还包含以下的信号。
+The signals included in these channels will be listed later. In addition to
+these channels, the bus interface also includes the following signals.
 
-| 信号名                  | I/O | 功能描述            |
-| -------------------- | --- | --------------- |
-| chi_rx_linkactiveack | O   | 决定 RX 的状态。      |
-| chi_rx_linkactivereq | I   | 决定 RX 的状态。      |
-| chi_tx_linkactiveact | I   | 决定 TX 的状态。      |
-| chi_tx_linkactivereq | O   | 决定 TX 的状态。      |
-| chi_rxsactive        | I   | 表示 RX 有正在进行的事务。 |
-| chi_txsactive        | O   | 表示 TX 有正在进行的事务。 |
+| Signal Name          | I/O | Functional Description                                |
+| -------------------- | --- | ----------------------------------------------------- |
+| chi_rx_linkactiveack | O   | Determines the state of RX.                           |
+| chi_rx_linkactivereq | I   | Determines the state of RX.                           |
+| chi_tx_linkactiveact | I   | Determines the state of TX.                           |
+| chi_tx_linkactivereq | O   | Determines the state of TX.                           |
+| chi_rxsactive        | I   | Indicates that there is an ongoing transaction in RX. |
+| chi_txsactive        | O   | Indicates TX has ongoing transactions.                |
 
-RX 的 linkactiveack 和 linkactivereq 决定了 RX 的状态；TX 的 linkactiveack 和 linkactivereq
-决定了 TX 的状态。
+The state of RX is determined by linkactiveack and linkactivereq of RX; the
+state of TX is determined by linkactiveack and linkactivereq of TX.
 
-| 状态         | linkactivatereq | linkactivateack |
+| Status     | linkactivatereq | linkactivateack |
 | ---------- | --------------- | --------------- |
 | STOP       | 0               | 0               |
 | ACTIVATE   | 1               | 0               |
 | RUN        | 1               | 1               |
 | DEACTIVATE | 0               | 1               |
 
-### 通道信号
+### Channel Signals
 
-Table: RXDAT 通道信号
+Table: RXDAT Channel Signals
 
-| 信号名                 | I/O | 功能描述                              |
-| ------------------- | --- | --------------------------------- |
-| chi_rx_dat_flitv    | I   | flit 的有效信号，高电平表示 flit 有效          |
-| chi_rx_dat_lcrdv    | O   | L-Credit 有效信号                     |
-| chi_rx_dat_flit     | I   | RXDAT 通道的 flit                    |
-| chi_rx_dat_flitpend | I   | flit 的 pending 信号，表示接下来会传输一个 flit |
+| Signal Name         | I/O | Functional Description                                                         |
+| ------------------- | --- | ------------------------------------------------------------------------------ |
+| chi_rx_dat_flitv    | I   | The valid signal of the flit, high level indicates the flit is valid.          |
+| chi_rx_dat_lcrdv    | O   | L-Credit valid signal                                                          |
+| chi_rx_dat_flit     | I   | RXDAT channel flit                                                             |
+| chi_rx_dat_flitpend | I   | The pending signal of a flit, indicating that a flit will be transmitted next. |
 
-Table: RXRSP 通道信号
+Table: RXRSP Channel Signals
 
-| 信号名                 | I/O | 功能描述                              |
-| ------------------- | --- | --------------------------------- |
-| chi_rx_rsp_flitv    | I   | flit 的有效信号，高电平表示 flit 有效          |
-| chi_rx_rsp_lcrdv    | O   | L-Credit 的有效信号                    |
-| chi_rx_rsp_flit     | I   | RXRSP 通道的 flit                    |
-| chi_rx_rsp_flitpend | I   | flit 的 pending 信号，表示接下来会传输一个 flit |
+| Signal Name         | I/O | Functional Description                                                         |
+| ------------------- | --- | ------------------------------------------------------------------------------ |
+| chi_rx_rsp_flitv    | I   | The valid signal of the flit, high level indicates the flit is valid.          |
+| chi_rx_rsp_lcrdv    | O   | Valid signal for L-Credit                                                      |
+| chi_rx_rsp_flit     | I   | Flit of RXRSP channel                                                          |
+| chi_rx_rsp_flitpend | I   | The pending signal of a flit, indicating that a flit will be transmitted next. |
 
-Table: RXSNP 通道信号
+Table: RXSNP Channel Signals
 
-| 信号名                 | I/O | 功能描述                              |
-| ------------------- | --- | --------------------------------- |
-| chi_rx_snp_flitv    | I   | flit 的有效信号，高电平表示 flit 有效          |
-| chi_rx_snp_lcrdv    | O   | L-Credit 的有效信号                    |
-| chi_rx_snp_flit     | I   | RXSNP 通道的 flit                    |
-| chi_rx_snp_flitpend | I   | flit 的 pending 信号，表示接下来会传输一个 flit |
+| Signal Name         | I/O | Functional Description                                                         |
+| ------------------- | --- | ------------------------------------------------------------------------------ |
+| chi_rx_snp_flitv    | I   | The valid signal of the flit, high level indicates the flit is valid.          |
+| chi_rx_snp_lcrdv    | O   | Valid signal for L-Credit                                                      |
+| chi_rx_snp_flit     | I   | Flit of RXSNP channel                                                          |
+| chi_rx_snp_flitpend | I   | The pending signal of a flit, indicating that a flit will be transmitted next. |
 
-Table: TXDAT 通道信号
+Table: TXDAT Channel Signals
 
-| 信号名                 | I/O | 功能描述                              |
-| ------------------- | --- | --------------------------------- |
-| chi_tx_dat_flitv    | O   | flit 的有效信号，高电平表示 flit 有效          |
-| chi_tx_dat_lcrdv    | I   | L-Credit 的有效信号                    |
-| chi_tx_dat_flit     | O   | TXDAT 通道的 flit                    |
-| chi_tx_dat_flitpend | O   | flit 的 pending 信号，表示接下来会传输一个 flit |
+| Signal Name         | I/O | Functional Description                                                         |
+| ------------------- | --- | ------------------------------------------------------------------------------ |
+| chi_tx_dat_flitv    | O   | The valid signal of the flit, high level indicates the flit is valid.          |
+| chi_tx_dat_lcrdv    | I   | Valid signal for L-Credit                                                      |
+| chi_tx_dat_flit     | O   | Flit of TXDAT channel                                                          |
+| chi_tx_dat_flitpend | O   | The pending signal of a flit, indicating that a flit will be transmitted next. |
 
-Table: TXREQ 通道信号
+Table: TXREQ Channel Signals
 
-| 信号名                 | I/O | 功能描述                              |
-| ------------------- | --- | --------------------------------- |
-| chi_tx_req_flitv    | O   | flit 的有效信号，高电平表示 flit 有效          |
-| chi_tx_req_lcrdv    | I   | L-Credit 的有效信号                    |
-| chi_tx_req_flit     | O   | TXREQ 通道的 flit                    |
-| chi_tx_req_flitpend | O   | flit 的 pending 信号，表示接下来会传输一个 flit |
+| Signal Name         | I/O | Functional Description                                                         |
+| ------------------- | --- | ------------------------------------------------------------------------------ |
+| chi_tx_req_flitv    | O   | The valid signal of the flit, high level indicates the flit is valid.          |
+| chi_tx_req_lcrdv    | I   | Valid signal for L-Credit                                                      |
+| chi_tx_req_flit     | O   | Flit of TXREQ channel                                                          |
+| chi_tx_req_flitpend | O   | The pending signal of a flit, indicating that a flit will be transmitted next. |
 
-Table: TXRSP 通道信号
+Table: TXRSP Channel Signals
 
-| 信号名                 | I/O | 功能描述                              |
-| ------------------- | --- | --------------------------------- |
-| chi_tx_rsp_flitv    | O   | flit 的有效信号，高电平表示 flit 有效          |
-| chi_tx_rsp_lcrdv    | I   | L-Credit 的有效信号                    |
-| chi_tx_rsp_flit     | O   | TXRSP 通道的 flit                    |
-| chi_tx_rsp_flitpend | O   | flit 的 pending 信号，表示接下来会传输一个 flit |
+| Signal Name         | I/O | Functional Description                                                         |
+| ------------------- | --- | ------------------------------------------------------------------------------ |
+| chi_tx_rsp_flitv    | O   | The valid signal of the flit, high level indicates the flit is valid.          |
+| chi_tx_rsp_lcrdv    | I   | Valid signal for L-Credit                                                      |
+| chi_tx_rsp_flit     | O   | Flit of TXRSP channel                                                          |
+| chi_tx_rsp_flitpend | O   | The pending signal of a flit, indicating that a flit will be transmitted next. |
 
-### flit 格式
+### flit format
 
-位宽为空，代表此信号与上一行的信号是共用的。 信号名后面标注\*，代表此信号仅适用于 CHI Issue E.b。 位宽后面标注\*，代表此信号在 CHI
-Issue B 和 Issue E.b 中具有不同的位宽，两个位宽中标注\*的是 E.b 中的位宽。
+Empty bit width indicates this signal shares with the previous line's signal.
+Signal name annotated with * means this signal only applies to CHI Issue E.b.
+Bit width annotated with * indicates this signal has different widths in CHI
+Issue B and Issue E.b, with the * marking E.b's width.
 
 Table: Data flit
 
-| 信号名                     | 位宽       | 功能描述                                            |
-| ----------------------- | -------- | ----------------------------------------------- |
-| QoS                     | 4        | Quality of Service，数值越大优先级越高。                   |
-| TgtID                   | id_width | 目标 ID。                                          |
-| SrcID                   | id_width | 来源 ID。                                          |
-| TxnID                   | 8/12\*   | 事务 ID。                                          |
-| HomeNID                 | id_width | Home 节点 ID，请求者在发送 CompAck 时把这个 ID 作为 TgtID。     |
-| Opcode                  | 3/4\*    | 操作码。                                            |
-| RespErr                 | 2        | 相应错误码。                                          |
-| Resp                    | 3        | 响应状态。                                           |
-| DataSource              | 3/4\*    | 数据来源。                                           |
-| {1'b0，FwdState[2:0]}\*  |          | 指示从监听者发送到请求者的 CompData 中的状态。                    |
-| {1'b0, DataPull[2:0]}\* |          |                                                 |
-| CBusy                   | 3        | 完成者的繁忙程度，其编码由具体的实现决定。                           |
-| DBID                    | 8/12\*   | 数据缓冲区 ID，用于请求方的 TxnID。                          |
-| CCID                    | 2        | 关键数据块的 ID。                                      |
-| DataID                  | 2        | 正在被传输的数据块的 ID。0b00 表示 [255:0]，0b10表示 [511:256]。 |
-| TagOp                   | 2        | 表示要对 Tag 执行的操作。                                 |
-| Tag                     | 8        | n 组 4 位 tag，每个 tag 绑定对应顺序的 16B 数据，地址对齐。         |
-| TU                      | 2        | 指示要更新的 tag。                                     |
-| TraceTag                | 1        | 标记，用于跟踪。                                        |
-| RSVDC                   | 4        | 保留给用户使用，其含义由具体的实现决定。                            |
-| BE                      | 32       | 字节使能。表示每个字节是否有效。                                |
-| Data                    | 256      | 数据。                                             |
+| Signal Name            | Bit width | Functional Description                                                                          |
+| ---------------------- | --------- | ----------------------------------------------------------------------------------------------- |
+| QoS                    | 4         | Quality of Service, higher values indicate higher priority.                                     |
+| TgtID                  | id_width  | Target ID.                                                                                      |
+| SrcID                  | id_width  | Source ID.                                                                                      |
+| TxnID                  | 8/12*     | Transaction ID.                                                                                 |
+| HomeNID                | id_width  | Home node ID, which the requester uses as TgtID when sending CompAck.                           |
+| Opcode                 | 3/4*      | Opcode.                                                                                         |
+| RespErr                | 2         | Corresponding error code.                                                                       |
+| Resp                   | 3         | Response status.                                                                                |
+| DataSource             | 3/4*      | Data source.                                                                                    |
+| {1'b0, FwdState[2:0]}* |           | Indicates the status in the CompData sent from the snooper to the requester.                    |
+| {1'b0, DataPull[2:0]}* |           |                                                                                                 |
+| CBusy                  | 3         | The busy level of the completer, with encoding determined by specific implementation.           |
+| DBID                   | 8/12*     | Data buffer ID, used for requester's TxnID.                                                     |
+| CCID                   | 2         | ID of the critical data block.                                                                  |
+| DataID                 | 2         | The ID of the data block being transmitted. 0b00 represents [255:0], 0b10 represents [511:256]. |
+| TagOp                  | 2         | Indicates the operation to be performed on the Tag.                                             |
+| Tag                    | 8         | n groups of 4-bit tags, each tag bound to corresponding 16B data in order, address-aligned.     |
+| TU                     | 2         | Indicates the tag to be updated.                                                                |
+| TraceTag               | 1         | Tag, used for tracking.                                                                         |
+| RSVDC                  | 4         | Reserved for user-defined purposes, with meanings determined by specific implementations.       |
+| BE                     | 32        | Byte enable. Indicates whether each byte is valid.                                              |
+| Data                   | 256       | Data.                                                                                           |
 
 Table: Request flit
 
-| 信号名                                    | 位宽       | 功能描述                                                              |
-| -------------------------------------- | -------- | ----------------------------------------------------------------- |
-| QoS                                    | 4        | Quality of Service，数值越大优先级越高。                                     |
-| TgtID                                  | id_width | 目标 ID。                                                            |
-| SrcID                                  | id_width | 来源 ID。                                                            |
-| TxnID                                  | 8/12\*   | 事务 ID。                                                            |
-| ReturnNID                              | id_width | 需要回复的节点 ID。                                                       |
-| StashNID                               |          | Stash 请求的目标 ID。                                                   |
-| {4'b0, SLCRepHint[6:0]}\*              |          | SLCRepHint：SLC 替换提示。                                              |
-| StashNIDValid                          | 1        | 用于 Stash 事务，表示 StashNID 是否有效。                                     |
-| Endian                                 |          | 用于原子事务，0 表示小端，1 表示大端。                                             |
-| Deep                                   |          | 在响应之前是否必须先写入最终目的地。                                                |
-| ReturnTxnID                            | 8/12\*   | 用于DMT。                                                            |
-| {6'b0，StashLPIDValid，StashLPID[4:0]}\* |          | StashLPIDValid：用于 stash 事务，StashLPID 的有效信号。StashLPID：用于 Stash 事务。 |
-| Opcode                                 | 6/7\*    | 操作码。                                                              |
-| Size                                   | 3        | 数据大小。                                                             |
-| Addr                                   | RAW      | 地址。                                                               |
-| NS                                     | 1        | 用于指示物理地址空间。                                                       |
-| LikelyShared                           | 1        | 表示请求的数据是否可能与另一个请求节点共享。                                            |
-| AllowRetry                             | 1        | 是否允许重试。                                                           |
-| Order                                  | 2        | 用于指定事务的顺序要求。                                                      |
-| PCrdType                               | 4        | Credit 类型。                                                        |
-| MemAttr                                | 4        | 本次事务的属性。                                                          |
-| SnpAttr                                | 1        | Snoop 属性。                                                         |
-| DoDWT                                  |          | 执行 DWT, 影响 DBIDResp 的 TgtID 和 TxnID 取值。                           |
-| PGroupID                               | 5/8\*    | 用于 PCMO 事务。                                                       |
-| StashGroupID                           |          | 用于 StashOnceSep 事务。                                               |
-| TagGroupID                             |          | 用于标记。                                                             |
-| {3'b0，LPID[4:0]}\*                     |          | 逻辑处理器 ID，用于一个请求者包含多个逻辑处理器的情况。                                     |
-| Excl                                   | 1        | 用于 exclusive 事务。                                                  |
-| SnoopMe                                |          | 用于原子事务，指定是否必须向请求者发送 Snoop。                                        |
-| ExpCompAck                             | 1        | 表示事务是否包含了一个 CompAck 响应。                                           |
-| TagOp                                  | 2        | 表示要对 Tag 执行的操作。                                                   |
-| TraceTag                               | 1        | 标记，用于跟踪。                                                          |
-| RSVDC                                  | 4        | 保留给用户使用，其含义由具体的实现决定。可以是任何值。                                       |
+| Signal Name                            | Bit width | Functional Description                                                                                     |
+| -------------------------------------- | --------- | ---------------------------------------------------------------------------------------------------------- |
+| QoS                                    | 4         | Quality of Service, higher values indicate higher priority.                                                |
+| TgtID                                  | id_width  | Target ID.                                                                                                 |
+| SrcID                                  | id_width  | Source ID.                                                                                                 |
+| TxnID                                  | 8/12*     | Transaction ID.                                                                                            |
+| ReturnNID                              | id_width  | Node ID requiring a response.                                                                              |
+| StashNID                               |           | The target ID of the Stash request.                                                                        |
+| {4'b0, SLCRepHint[6:0]}*               |           | SLCRepHint: SLC replacement hint.                                                                          |
+| StashNIDValid                          | 1         | Used for Stash transactions, indicating whether StashNID is valid.                                         |
+| Endian                                 |           | Used for atomic transactions, 0 indicates little-endian, 1 indicates big-endian.                           |
+| Deep                                   |           | Whether the final destination must be written before responding.                                           |
+| ReturnTxnID                            | 8/12*     | For DMT.                                                                                                   |
+| {6'b0, StashLPIDValid, StashLPID[4:0]} |           | StashLPIDValid: Valid signal for StashLPID in stash transactions. StashLPID: Used for Stash transactions.  |
+| Opcode                                 | 6/7*      | Opcode.                                                                                                    |
+| Size                                   | 3         | Data size.                                                                                                 |
+| Addr                                   | RAW       | Address.                                                                                                   |
+| NS                                     | 1         | Indicates the physical address space.                                                                      |
+| LikelyShared                           | 1         | Indicates whether the requested data may be shared with another requesting node.                           |
+| AllowRetry                             | 1         | Whether retry is allowed.                                                                                  |
+| Order                                  | 2         | Used to specify the order requirements of transactions.                                                    |
+| PCrdType                               | 4         | Credit type.                                                                                               |
+| MemAttr                                | 4         | Attributes of this transaction.                                                                            |
+| SnpAttr                                | 1         | Snoop attribute.                                                                                           |
+| DoDWT                                  |           | Execute DWT, affecting the TgtID and TxnID values of DBIDResp.                                             |
+| PGroupID                               | 5/8*      | Used for PCMO transactions.                                                                                |
+| StashGroupID                           |           | Used for StashOnceSep transactions.                                                                        |
+| TagGroupID                             |           | Used for tagging.                                                                                          |
+| {3'b0, LPID[4:0]}*                     |           | Logical processor ID, used when a requester contains multiple logical processors.                          |
+| Excl                                   | 1         | For exclusive transactions.                                                                                |
+| SnoopMe                                |           | For atomic transactions, specifies whether a Snoop must be sent to the requester.                          |
+| ExpCompAck                             | 1         | Indicates whether the transaction includes a CompAck response.                                             |
+| TagOp                                  | 2         | Indicates the operation to be performed on the Tag.                                                        |
+| TraceTag                               | 1         | Tag, used for tracking.                                                                                    |
+| RSVDC                                  | 4         | Reserved for user-defined purposes, with meaning determined by specific implementations. Can be any value. |
 
 Table: Response flit
 
-| 信号名                      | 位宽       | 功能描述                                   |
-| ------------------------ | -------- | -------------------------------------- |
-| QoS                      | 4        | Quality of Service，数值越大优先级越高。          |
-| TgtID                    | id_width | 目标 ID。                                 |
-| SrcID                    | id_width | 来源 ID。                                 |
-| TxnID                    | 8/12\*   | 事务 ID。                                 |
-| Opcode                   | 4/5\*    | 操作码。                                   |
-| RespErr                  | 2        | 响应错误码。                                 |
-| Resp                     | 3        | 响应状态。                                  |
-| FwdState                 | 3        | 用于 DCT，指示从监听者发送到请求者的 CompData 中的状态。    |
-| {2'b0，DataPull}          |          | 用于 Stash 事务，指示 Snoop 响应是否需要 Data Pull。 |
-| CBusy                    | 3        | 完成者的繁忙程度，其编码由具体的实现决定。                  |
-| DBID                     | 8/12\*   | 数据缓冲区 ID，用于请求方的 TxnID。                 |
-| {4'b0，PGroupID[7:0]}     |          | 用于 Persistent CMO 事务。                  |
-| {4'b0，StashGroupID[7:0]} |          | 用于 Stash 事务。                           |
-| {4'b0，TagGroupID[7:0]}   |          | 用于标记。                                  |
-| PCrdType                 | 4        | Credit 类型。                             |
-| TagOp                    | 2        | 表示要对 Tag 执行的操作。                        |
-| TraceTag                 | 1        | 标记，用于跟踪。                               |
+| Signal Name               | Bit width | Functional Description                                                                 |
+| ------------------------- | --------- | -------------------------------------------------------------------------------------- |
+| QoS                       | 4         | Quality of Service, higher values indicate higher priority.                            |
+| TgtID                     | id_width  | Target ID.                                                                             |
+| SrcID                     | id_width  | Source ID.                                                                             |
+| TxnID                     | 8/12*     | Transaction ID.                                                                        |
+| Opcode                    | 4/5*      | Opcode.                                                                                |
+| RespErr                   | 2         | Response error code.                                                                   |
+| Resp                      | 3         | Response status.                                                                       |
+| FwdState                  | 3         | Used for DCT, indicating the state in CompData sent from the snooper to the requester. |
+| {2'b0, DataPull}          |           | For Stash transactions, indicates whether the Snoop response requires Data Pull.       |
+| CBusy                     | 3         | The busy level of the completer, with encoding determined by specific implementation.  |
+| DBID                      | 8/12*     | Data buffer ID, used for requester's TxnID.                                            |
+| {4'b0, PGroupID[7:0]}     |           | Used for Persistent CMO transactions.                                                  |
+| {4'b0, StashGroupID[7:0]} |           | For Stash transactions.                                                                |
+| {4'b0, TagGroupID[7:0]}   |           | Used for tagging.                                                                      |
+| PCrdType                  | 4         | Credit type.                                                                           |
+| TagOp                     | 2         | Indicates the operation to be performed on the Tag.                                    |
+| TraceTag                  | 1         | Tag, used for tracking.                                                                |
 
 Table: Snoop flit
 
-| 信号名                                         | 位宽       | 功能描述                                                             |
-| ------------------------------------------- | -------- | ---------------------------------------------------------------- |
-| QoS                                         | 4        | Quality of Service，数值越大优先级越高。                                    |
-| SrcID                                       | id_width | 来源 ID。                                                           |
-| TxnID                                       | 8/12\*   | 事务 ID。                                                           |
-| FwdNID                                      | id_width | 指示 CompData 响应可以转发到哪个请求者。                                        |
-| FwdTxnID                                    | 8/12\*   | 用于 DCT。                                                          |
-| {6'b0，StashLPIDValid[0:0]，StashLPID[4:0]}\* |          | StashLPIDValid：用于 Stash 事务，StashLPID 的有效位。StashLPID：用于 Stash 事务。 |
-| {4'b0，VMIDExt[7:0]}\*                       |          | VMIDExt：用于 DVM 事务。                                               |
-| Opcode                                      | 5        | 操作码。                                                             |
-| Addr                                        | SAW      | 地址。                                                              |
-| NS                                          | 1        | 用于指示物理地址空间。                                                      |
-| DoNotGoToSD                                 | 1        | 指示是否要求 Snoopee 不转换到 SD 状态。                                       |
-| RetToSrc                                    | 1        | 该字段请求 Snoopee 将缓存行的副本返回给 Home。                                   |
-| TraceTag                                    | 1        | 标记，用于跟踪。                                                         |
+| Signal Name                                  | Bit width | Functional Description                                                                                           |
+| -------------------------------------------- | --------- | ---------------------------------------------------------------------------------------------------------------- |
+| QoS                                          | 4         | Quality of Service, higher values indicate higher priority.                                                      |
+| SrcID                                        | id_width  | Source ID.                                                                                                       |
+| TxnID                                        | 8/12*     | Transaction ID.                                                                                                  |
+| FwdNID                                       | id_width  | Indicates to which requester the CompData response can be forwarded.                                             |
+| FwdTxnID                                     | 8/12*     | Used for DCT.                                                                                                    |
+| {6'b0, StashLPIDValid[0:0], StashLPID[4:0]}* |           | StashLPIDValid: Used for Stash transactions, the valid bit of StashLPID. StashLPID: Used for Stash transactions. |
+| {4'b0, VMIDExt[7:0]}*                        |           | VMIDExt: Used for DVM transactions.                                                                              |
+| Opcode                                       | 5         | Opcode.                                                                                                          |
+| Addr                                         | SAW       | Address.                                                                                                         |
+| NS                                           | 1         | Indicates the physical address space.                                                                            |
+| DoNotGoToSD                                  | 1         | Indicates whether the Snoopee is required not to transition to the SD state.                                     |
+| RetToSrc                                     | 1         | This field requests the Snoopee to return a copy of the cache line to Home.                                      |
+| TraceTag                                     | 1         | Tag, used for tracking.                                                                                          |
 
-## 支持的 Coherency Transaction 类型
+## Supported Coherency Transaction types.
 
 * SnpShared
 * SnpClean
