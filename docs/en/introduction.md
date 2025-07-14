@@ -5,10 +5,10 @@ file_authors_:
 
 # Introduction {#sec:introduction}
 
-This chapter provides an overview of the {{processor_name}}. The
+This chapter provides an overview of the {{processor_name}} . The
 {{processor_name}} is the V2R2 version of the third-generation
 microarchitecture, Kunminghu, developed by the Xiangshan Processor Team at the
-Beijing Insitute of OpenSource Chip (hereinafter referred to as the Xiangshan
+Beijing Insitute of Open Source Chip (hereinafter referred to as the Xiangshan
 Team).
 
 昆明湖的目标是面向服务器和高性能嵌入式场景的通用 CPU，计划通过三次迭代完成这一目标。
