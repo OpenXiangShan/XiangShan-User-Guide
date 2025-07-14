@@ -5,393 +5,445 @@ file_authors_:
 - Tang Haojin <tanghaojin@outlook.com>
 ---
 
-# 特权模式与控制状态寄存器 {#sec:mode-and-csr}
+# Privilege Modes and Control and Status Registers (CSRs) {#sec:mode-and-csr}
 
-## 处理器模式
+## Processor mode
 
-{{processor_name}} 支持 RISC-V 特权架构手册规定的以下 6 种特权模式。
+{{processor_name}} supports the following six privilege modes as specified in
+the RISC-V Privileged Architecture Manual.
 
-Table: {{processor_name}} 支持的特权模式列表
+Table: List of privilege modes supported by {{processor_name}}
 
-| 名称                              |  缩写  | PRV |  V  |
-| ------------------------------- | :--: | :-: | :-: |
-| 机器模式（Machine mode）              |  M   |  3  |  0  |
-| 监管模式（Supervisor mode）           | HS/S |  1  |  0  |
-| 用户模式（User mode）                 |  U   |  0  |  0  |
-| 虚拟监管模式（Virtual supervisor mode） |  VS  |  1  |  1  |
-| 虚拟用户模式（Virtual user mode）       |  VU  |  0  |  1  |
-| 调试模式（Debug mode）                |  D   |     |     |
+| Name                    | Abbreviation | PRV |  V  |
+| ----------------------- | :----------: | :-: | :-: |
+| Machine mode            |      M       |  3  |  0  |
+| Supervisor mode         |     HS/S     |  1  |  0  |
+| User mode               |      U       |  0  |  0  |
+| Virtual Supervisor Mode |      VS      |  1  |  1  |
+| Virtual user mode       |      VU      |  0  |  1  |
+| Debug Mode              |      D       |     |     |
 
-{{processor_name}} 初始化时处在 M 模式。对于一般场景，各模式权限高低为 M > S > U；对于虚拟化场景，各模式权限高低为 M > HS
-> VS > VU。
+The {{processor_name}} initializes in M mode. For general scenarios, the
+privilege hierarchy is M > S > U; for virtualization scenarios, the hierarchy is
+M > HS > VS > VU.
 
-### 机器模式
+### Machine mode
 
-机器模式（Machine mode，M 模式）由机器级 ISA 规定，具有最高的权限。M 模式通常用于机器固件，具有以下特性：
+Machine mode (M-mode), defined by the machine-level ISA, possesses the highest
+privilege level. M-mode is typically used for machine firmware and exhibits the
+following characteristics:
 
-* M 模式下可以访问全部的 M、S、H、VS、U CSR，但不可访问部分调试模式 CSR。
-* M 模式通常以物理地址取指、访存，不进行虚拟地址翻译，但以下情况除外：
-  * `mstatus` .MPRV = 1 时，加载（Load）和存储（Store）操作按 MPP 字段指定的模式进行虚拟地址翻译。
-  * 使用 HLV、HLVX、HSV 等虚拟机加载存储指令时，按照 `hstatus` 字段的 SPVP 字段指定的虚拟模式（VS 或
-    VU）进行两阶段地址翻译。
-* M 模式取指、访存通常不进行 PMP 检查，默认情况下具有权限，但以下情况除外：
-  * 加载、存储操作按照上述条件以其他特权模式执行时，按照其特权模式进行 PMP 检查。
-  * 某个 PMP 项被锁定时，取指、访存操作均需检查此 PMP 项权限。
+* In M-mode, all M, S, H, VS, and U CSRs are accessible, but some debug-mode
+  CSRs remain inaccessible.
+* Machine mode typically fetches instructions and accesses memory using physical
+  addresses, without virtual address translation, except in the following cases:
+  * `mstatus` .MPRV = 1 When MPRV is set to 1, load and store operations perform
+    virtual address translation according to the mode specified by the MPP
+    field.
+  * When using virtual machine load/store instructions such as HLV, HLVX, and
+    HSV, two-stage address translation is performed according to the virtual
+    mode (VS or VU) specified by the SPVP field in `hstatus`.
+* M-mode instruction fetch and memory access typically do not undergo PMP checks
+  and have permissions by default, except in the following cases:
+  * When load/store operations are executed in other privilege modes under the
+    above conditions, PMP checks are performed according to their respective
+    privilege modes.
+  * When a PMP entry is locked, both instruction fetch and memory access
+    operations must check the permissions of this PMP entry.
 
-### 监管模式
+### Supervisor mode
 
-监管模式（Supervisor mode，S 模式）由监管级 ISA
-规定，虚拟化扩展将之扩充为为虚拟机管理扩展的监管模式（Hypervisor-extended supervisor mode，HS 模式）。S/HS
-模式通常用于操作系统和虚拟机管理程序，其具有以下特性：
+Supervisor mode (S-mode) is defined by the supervisor-level ISA, and the
+virtualization extension expands it into Hypervisor-extended supervisor mode
+(HS-mode). S/HS-mode is typically used for operating systems and hypervisors,
+with the following characteristics:
 
-* S/HS 模式下可访问 S、H、VS、U CSR，不可访问 M CSR 和调试模式 CSR。
-* S 模式的取指、访存通常需要根据 satp 寄存器进行虚拟地址翻译，但以下情况除外：
-  * 使用 HLV、HLVX、HSV 等虚拟机加载存储指令时，按照 `hstatus` .SPVP 字段指定的虚拟模式（VS 或 VU）进行两阶段地址翻译。
-* S 模式总是需要进行 PMP 检查。
-* S 模式不可执行 M 模式特权指令。
+* In S/HS mode, S, H, VS, and U CSRs are accessible, while M CSRs and debug mode
+  CSRs are not.
+* Fetch and memory access in S-mode typically require virtual address
+  translation based on the satp register, except in the following cases:
+  * When using virtual machine load/store instructions such as HLV, HLVX, and
+    HSV, two-stage address translation is performed according to the virtual
+    mode (VS or VU) specified by the `hstatus`.SPVP field.
+* S-mode always requires PMP checks.
+* S-mode cannot execute M-mode privileged instructions.
 
-### 用户模式
+### User mode
 
-用户模式（User mode，U 模式）具有以下特性：
+User mode (U-mode) has the following characteristics:
 
-* U 模式仅可访问非特权 CSR，主要包括浮点、向量和非特权计数器 CSR。
-* U 模式的取指、访存通常需要根据 satp 寄存器进行虚拟地址翻译，但以下情况除外：
-  * 当 `hstatus` .HU = 1 时，使用 HLV、HLVX、HSV 等虚拟机加载存储指令时，按照 `hstatus` .SPVP
-    字段指定的虚拟模式（VS 或 VU）进行两阶段地址翻译。
-* U 模式总是需要进行 PMP 检查。
-* U 模式通常不可执行特权指令，部分情况下存在例外。
+* U-mode can only access non-privileged CSRs, mainly including floating-point,
+  vector, and non-privileged counter CSRs.
+* Fetch and memory access in U-mode typically require virtual address
+  translation based on the satp register, except in the following cases:
+  * When `hstatus`.HU = 1, and using virtual machine load/store instructions
+    such as HLV, HLVX, and HSV, two-stage address translation is performed
+    according to the virtual mode (VS or VU) specified by the SPVP field in
+    `hstatus`.
+* U-mode always requires PMP checks.
+* U-mode typically cannot execute privileged instructions, with some exceptions
+  under specific circumstances.
 
-### 虚拟监管模式
+### Virtual Supervisor Mode
 
-虚拟监管模式（Virtual supervisor mode，VS 模式）由虚拟化扩展引入，具有以下特性：
+The Virtual Supervisor Mode (VS mode) introduced by virtualization extensions
+has the following characteristics:
 
-* VS 模式下可访问 S、U CSR，但不可访问 M、H、VS CSR。
-* VS 模式下访问特定的 S 模式寄存器，会被重定向到对应的 VS 寄存器。
-* VS 模式下的取指、访存通常需要根据 hgatp、vsatp 寄存器进行两阶段地址翻译。
-* VS 模式总是需要进行 PMP 检查。
-* VS 模式不可执行 M 模式特权指令，亦不可执行 H 特权指令。
+* In VS mode, S and U CSRs are accessible, but M, H, and VS CSRs are not.
+* Accessing specific S-mode registers in VS mode will be redirected to the
+  corresponding VS registers.
+* In VS mode, instruction fetch and memory access typically require two-stage
+  address translation based on the hgatp and vsatp registers.
+* VS mode always requires PMP checks.
+* VS mode cannot execute M-mode privileged instructions, nor H privileged
+  instructions.
 
-### 虚拟用户模式
+### Virtual user mode
 
-虚拟用户模式（Virtual user mode，VU 模式）由虚拟化扩展引入，具有以下特性：
+Virtual user mode (VU-mode), introduced by the virtualization extension, has the
+following characteristics:
 
-* VU 模式仅可访问非特权 CSR，主要包括浮点、向量和非特权计数器 CSR。
-* VU 模式下的取指、访存通常需要根据 hgatp、vsatp 寄存器进行两阶段地址翻译。
-* VU 模式总是需要进行 PMP 检查。
-* VU 模式通常不可执行特权指令。
+* VU-mode can only access non-privileged CSRs, primarily including
+  floating-point, vector, and non-privileged counter CSRs.
+* Instruction fetch and memory access in VU-mode generally require two-stage
+  address translation based on the hgatp and vsatp registers.
+* VU mode always requires PMP checks.
+* VU mode typically cannot execute privileged instructions.
 
-### 调试模式
+### Debug mode
 
-调试模式（Debug mode，Debug 模式）由调试扩展（Debug 扩展）引入，其特性和细节请参考 [@sec:debug]
-[调试](debug.md)。
+Debug mode (Debug mode) is introduced by the Debug extension, and its features
+and details can be found in [@sec:debug] [Debug](debug.md).
 
-## 控制和状态寄存器（Control and Status Registers）
+## Control and Status Registers (CSRs)
 
-我们将以权限的不同对控制和状态寄存器（CSRs）进行分组介绍。
+We will group and introduce Control and Status Registers (CSRs) based on their
+privilege levels.
 
-### 用户模式可读写的 CSRs
+### User mode readable and writable CSRs
 
-{{processor_name}} 中实现的权限为用户模式可读写（URW）的 RISC-V 的 CSRs 如下表所示：
+The CSRs implemented in {{processor_name}} with User Mode Read-Write (URW)
+permissions in RISC-V are shown in the following table:
 
-Table: {{processor_name}} 支持的 URW 的 CSRs 列表
+Table: List of URW CSRs Supported by {{processor_name}}
 
-|   名称   | 特权级 |  编号   |     描述      |  组别   |
-| :----: | :-: | :---: | :---------: | :---: |
-| fflags |  U  | 0x001 | 浮点异常累积状态寄存器 | 非特权浮点 |
-|  frm   |  U  | 0x002 | 浮点动态舍入模式寄存器 | 非特权浮点 |
-|  fcsr  |  U  | 0x003 | 浮点控制和状态寄存器  | 非特权浮点 |
-| vstart |  U  | 0x008 |  向量起始位置寄存器  | 非特权向量 |
-| vxsat  |  U  | 0x009 | 定点溢出标志位寄存器  | 非特权向量 |
-|  vxrm  |  U  | 0x00A |  定点舍入模式寄存器  | 非特权向量 |
-|  vcsr  |  U  | 0x00F | 向量控制和状态寄存器  | 非特权向量 |
-|   vl   |  U  | 0xC20 |   向量长度寄存器   | 非特权向量 |
-| vtype  |  U  | 0xC21 |  向量数据类型寄存器  | 非特权向量 |
-| vlenb  |  U  | 0xC22 | 向量寄存器字节数寄存器 | 非特权向量 |
+|  Name  | Privilege level | Number |                      Description                      |             Group             |
+| :----: | :-------------: | :----: | :---------------------------------------------------: | :---------------------------: |
+| fflags |        U        | 0x001  | Floating-point exception accumulation status register | Non-privileged floating-point |
+|  frm   |        U        | 0x002  |     Floating-Point Dynamic Rounding Mode Register     | Non-privileged floating-point |
+|  fcsr  |        U        | 0x003  |      Floating-point control and status register       | Non-privileged floating-point |
+| vstart |        U        | 0x008  |            Vector start position register             |     Non-privileged vector     |
+| vxsat  |        U        | 0x009  |          Fixed-point overflow flag register           |     Non-privileged vector     |
+|  vxrm  |        U        | 0x00A  |          Fixed-point rounding mode register           |     Non-privileged vector     |
+|  vcsr  |        U        | 0x00F  |          Vector control and status register           |     Non-privileged vector     |
+|   vl   |        U        | 0xC20  |                Vector Length Register                 |     Non-privileged vector     |
+| vtype  |        U        | 0xC21  |               Vector Data Type Register               |     Non-privileged vector     |
+| vlenb  |        U        | 0xC22  |          Vector register byte count register          |     Non-privileged vector     |
 
-### 用户模式只读的 CSRs
+### User-mode read-only CSRs
 
-{{processor_name}} 中实现的权限为用户模式只读（URO）的 RISC-V 的 CSRs 如下表所示：
+The RISC-V CSRs implemented in {{processor_name}} with user-mode read-only (URO)
+permissions are listed in the following table:
 
-Table: {{processor_name}} 支持的 URO 的 CSRs 列表
+Table: List of URO CSRs Supported by {{processor_name}}
 
-|      名称      | 特权级 |  编号   |     描述      |   组别    |
-| :----------: | :-: | :---: | :---------: | :-----: |
-|    cycle     |  U  | 0xC00 |  用户模式周期计数器  | 用户模式计数器 |
-|     time     |  U  | 0xC01 |  用户模式时间计数器  | 用户模式计数器 |
-|   instret    |  U  | 0xC02 | 用户模式退休指令计数器 | 用户模式计数器 |
-| hpmcounter3  |  U  | 0xC03 |  用户模式计数器3   | 用户模式计数器 |
-|     ...      | ... |  ...  |     ...     |   ...   |
-| hpmcounter31 |  U  | 0xC1F |  用户模式计数器31  | 用户模式计数器 |
+|     Name     | Privilege level | Number |              Description              |       Group       |
+| :----------: | :-------------: | :----: | :-----------------------------------: | :---------------: |
+|    cycle     |        U        | 0xC00  |        User mode cycle counter        | User mode counter |
+|     time     |        U        | 0xC01  |        User-mode time counter         | User mode counter |
+|   instret    |        U        | 0xC02  | User-mode retired instruction counter | User mode counter |
+| hpmcounter3  |        U        | 0xC03  |          User Mode Counter 3          | User mode counter |
+|     ...      |       ...       |  ...   |                  ...                  |        ...        |
+| hpmcounter31 |        U        | 0xC1F  |         User-mode Counter 31          | User mode counter |
 
-### 监管模式可读写的 CSRs
+### Supervisor mode readable/writable CSRs
 
-{{processor_name}} 中实现的权限为监管模式可读写（SRW）的 RISC-V 的 CSRs 如下表所示：
+The RISC-V CSRs implemented in {{processor_name}} with supervisor mode
+read-write (SRW) permissions are listed in the table below:
 
-Table: {{processor_name}} 支持的 SRW 的 CSRs 列表
+Table: List of SRW CSRs supported by {{processor_name}}
 
-|     名称     |   特权级   |  编号   |        描述         |     组别     |
-| :--------: | :-----: | :---: | :---------------: | :--------: |
-|  sstatus   |    S    | 0x100 |   监管模式处理器状态寄存器    |   监管陷入设置   |
-|    sie     |    S    | 0x104 |   监管模式中断使能控制寄存器   |   监管陷入设置   |
-|   stvec    |    S    | 0x105 |   监管模式陷入向量基址寄存器   |   监管陷入设置   |
-| scounteren |    S    | 0x106 |  监管模式计数器使能控制寄存器   |   监管陷入设置   |
-|  senvcfg   |    S    | 0x10A |    监管模式环境配置寄存器    |   监管环境配置   |
-|  sscratch  |    S    | 0x140 |  监管模式陷入临时数据备份寄存器  |   监管陷入处理   |
-|    sepc    |    S    | 0x141 |   监管模式陷入保留程序计数器   |   监管陷入处理   |
-|   scause   |    S    | 0x142 |   监管模式陷入事件原因寄存器   |   监管陷入处理   |
-|   stval    |    S    | 0x143 |   监管模式陷入事件向量寄存器   |   监管陷入处理   |
-|    sip     |    S    | 0x144 |  监管模式陷入事件等待状态寄存器  |   监管陷入处理   |
-|  stimecmp  |    S    | 0x14D |  监管模式计时器中断比较值寄存器  |   监管陷入设置   |
-|  siselect  |    S    | 0x150 | 监管模式间接寄存器选择信号寄存器  | 监管间接访问寄存器  |
-|   sireg    |    S    | 0x151 |  监管模式间接寄存器别名寄存器   | 监管间接访问寄存器  |
-|   stopei   |    S    | 0x15C |   监管模式顶部外部中断寄存器   |    监管中断    |
-|    satp    |    S    | 0x180 | 监管模式虚拟地址转换和保护寄存器  |  监管保护和转换   |
-|  scontext  | S/Debug | 0x5A8 |    监管模式上下文寄存器     |   调试寄存器    |
-|   sbpctl   |    S    | 0x5C0 |   推测状态分支预测控制寄存器   | 推测状态分支预测控制 |
-|   spfctl   |    S    | 0x5C1 |    推测状态预取控制寄存器    | 推测状态分支预测控制 |
-| slvpredctl |    S    | 0x5C2 | 推测状态LOAD违例预测控制寄存器 | 推测状态分支预测控制 |
-| smblockctl |    S    | 0x5C3 |   推测状态内存阻塞控制寄存器   | 推测状态分支预测控制 |
-|   srnctl   |    S    | 0x5C4 |   推测状态运行时控制寄存器    | 推测状态运行时控制  |
+|    Name    | Privilege level | Number |                             Description                             |                    Group                    |
+| :--------: | :-------------: | :----: | :-----------------------------------------------------------------: | :-----------------------------------------: |
+|  sstatus   |        S        | 0x100  |              Supervisor Mode Processor Status Register              |            Supervisor Trap Setup            |
+|    sie     |        S        | 0x104  |          Supervisor mode interrupt enable control register          |            Supervisor Trap Setup            |
+|   stvec    |        S        | 0x105  |          Supervisor mode trap vector base address register          |            Supervisor Trap Setup            |
+| scounteren |        S        | 0x106  |           Supervisor Mode Counter Enable Control Register           |            Supervisor Trap Setup            |
+|  senvcfg   |        S        | 0x10A  |         Supervisor mode environment configuration register          |    Supervisor Environment Configuration     |
+|  sscratch  |        S        | 0x140  |         Supervisor mode trap temporary data backup register         |          Supervisor trap handling           |
+|    sepc    |        S        | 0x141  |            Supervisor-mode Trap Reserved Program Counter            |          Supervisor trap handling           |
+|   scause   |        S        | 0x142  |                 Supervisor mode trap cause register                 |          Supervisor trap handling           |
+|   stval    |        S        | 0x143  |                   Supervisor Trap Vector Register                   |          Supervisor trap handling           |
+|    sip     |        S        | 0x144  |             Supervisor mode event wait status register              |          Supervisor trap handling           |
+|  stimecmp  |        S        | 0x14D  |       Supervisor-mode timer interrupt compare value register        |            Supervisor Trap Setup            |
+|  siselect  |        S        | 0x150  |      Supervisor Mode Indirect Register Select Signal Register       |     Supervisor Indirect Access Register     |
+|   sireg    |        S        | 0x151  |          Supervisor Mode Indirect Register Alias Register           |     Supervisor Indirect Access Register     |
+|   stopei   |        S        | 0x15C  |           Supervisor mode top external interrupt register           |            Supervisor Interrupt             |
+|    satp    |        S        | 0x180  | Supervisor mode virtual address translation and protection register |    Supervisor Protection and Translation    |
+|  scontext  |     S/Debug     | 0x5A8  |                  Supervisor Mode Context Register                   |               Debug registers               |
+|   sbpctl   |        S        | 0x5C0  |        Speculative State Branch Prediction Control Register         | Speculative state branch prediction control |
+|   spfctl   |        S        | 0x5C1  |             Speculative state prefetch control register             | Speculative state branch prediction control |
+| slvpredctl |        S        | 0x5C2  |    Speculative state LOAD violation prediction control register     | Speculative state branch prediction control |
+| smblockctl |        S        | 0x5C3  |           Speculative State Memory Block Control Register           | Speculative state branch prediction control |
+|   srnctl   |        S        | 0x5C4  |             Speculative State Runtime Control Register              |      Speculative state runtime control      |
 
-### 监管模式只读的 CSRs
+### Supervisor-mode read-only CSRs
 
-{{processor_name}} 中实现的权限为监管模式只读（SRO）的 RISC-V 的 CSRs 如下表所示：
+The RISC-V CSRs implemented in {{processor_name}} with Supervisor Read-Only
+(SRO) privilege are listed in the following table:
 
-Table: {{processor_name}} 支持的 SRO 的 CSRs 列表
+Table: List of SRO CSRs supported by {{processor_name}}
 
-|  名称   | 特权级 |  编号   |    描述    |  组别  |
-| :---: | :-: | :---: | :------: | :--: |
-| stopi |  S  | 0xDB0 | 监管模式顶层中断 | 监管中断 |
+| Name  | Privilege level | Number |             Description              |        Group         |
+| :---: | :-------------: | :----: | :----------------------------------: | :------------------: |
+| stopi |        S        | 0xDB0  | Supervisor-level top-level interrupt | Supervisor Interrupt |
 
-### 虚拟监管模式可读写的 CSRs
+### Virtual Supervisor-mode Read-Write CSRs
 
-{{processor_name}} 中实现的权限为虚拟监管模式可读写（HRW）的 RISC-V 的 CSRs 如下表所示：
+The CSRs implemented in {{processor_name}} with Virtual Supervisor Mode
+read-write (HRW) permissions are listed in the table below:
 
-Table: {{processor_name}} 支持的 HRW 的 CSRs 列表
+Table: List of HRW CSRs Supported by {{processor_name}}
 
-|     名称     |   特权级    |  编号   |           描述           |     组别      |
-| :--------: | :------: | :---: | :--------------------: | :---------: |
-|  vsstatus  |    VS    | 0x200 |     虚拟监管模式处理器状态寄存器     |    虚拟监管     |
-|    vsie    |    VS    | 0x204 |    虚拟监管模式中断使能控制寄存器     |    虚拟监管     |
-|   vstvec   |    VS    | 0x205 |    虚拟监管模式陷入向量基址寄存器     |    虚拟监管     |
-| vsscratch  |    VS    | 0x240 |   虚拟监管模式陷入临时数据备份寄存器    |    虚拟监管     |
-|   vsepc    |    VS    | 0x241 |    虚拟监管模式陷入保留程序计数器     |    虚拟监管     |
-|  vscause   |    VS    | 0x242 |    虚拟监管模式陷入事件原因寄存器     |    虚拟监管     |
-|   vstval   |    VS    | 0x243 |    虚拟监管模式陷入事件向量寄存器     |    虚拟监管     |
-|    vsip    |    VS    | 0x244 |   虚拟监管模式陷入事件等待状态寄存器    |    虚拟监管     |
-| vstimecmp  |    VS    | 0x24D |   虚拟监管模式计时器中断比较值寄存器    |    虚拟监管     |
-| vsiselect  |    VS    | 0x250 |   虚拟监管模式间接寄存器选择信号寄存器   | 虚拟监管间接访问寄存器 |
-|   vsireg   |    VS    | 0x251 |    虚拟监管模式间接寄存器别名寄存器    | 虚拟监管间接访问寄存器 |
-|  vstopei   |    VS    | 0x25C |    虚拟监管模式顶部外部中断寄存器     |   虚拟监管中断    |
-|   vsatp    |    VS    | 0x280 |   虚拟监管模式虚拟地址转换和保护寄存器   |    虚拟监管     |
-|  hstatus   |    HS    | 0x600 |     虚拟机模式处理器状态寄存器      |   虚拟机陷入设置   |
-|  hedeleg   |    HS    | 0x602 |     虚拟机模式陷入降级控制寄存器     |   虚拟机陷入设置   |
-|  hideleg   |    HS    | 0x603 |     虚拟机模式中断降级控制寄存器     |   虚拟机陷入设置   |
-|    hie     |    HS    | 0x604 |      虚拟机模式中断使能寄存器      |   虚拟机陷入设置   |
-| htimedelta |    HS    | 0x605 |      虚拟机模式虚拟化计时器       |   虚拟机计时器    |
-| hcounteren |    HS    | 0x606 |     虚拟机模式计数器使能寄存器      |   虚拟机陷入设置   |
-|   hgeie    |    HS    | 0x607 |   虚拟机模式客户机外部中断启用寄存器    |   虚拟机陷入设置   |
-|   hvien    |    HS    | 0x608 |     虚拟机模式虚拟中断使能寄存器     |   虚拟机陷入设置   |
-|   hvictl   |    HS    | 0x609 |     虚拟机模式虚拟中断控制寄存器     |   虚拟机陷入设置   |
-|  henvcfg   |    HS    | 0x60A |      虚拟机模式环境配置寄存器      |    虚拟机配置    |
-|   htval    |    HS    | 0x643 |     虚拟机模式陷入事件向量寄存器     |   虚拟机陷入处理   |
-|    hip     |    HS    | 0x644 |    虚拟机模式陷入事件等待状态寄存器    |   虚拟机陷入处理   |
-|    hvip    |    HS    | 0x645 |     虚拟机模式虚拟中断挂起寄存器     |   虚拟机陷入处理   |
-|  hviprio1  |    HS    | 0x646 | 虚拟机模式VS-Level中断优先级寄存器1 |   虚拟机陷入处理   |
-|  hviprio2  |    HS    | 0x647 | 虚拟机模式VS-Level中断优先级寄存器2 |   虚拟机陷入处理   |
-|   htinst   |    HS    | 0x64A |      虚拟机模式陷入指令寄存器      |   虚拟机陷入处理   |
-|   hgatp    |    HS    | 0x680 |   虚拟机模式客户地址转换和保护寄存器    |  虚拟机保护和转换   |
-|  hcontext  | HS/Debug | 0x6A8 |      虚拟机模式上下文寄存器       |    调试寄存器    |
+|    Name    | Privilege level | Number |                                 Description                                 |                    Group                    |
+| :--------: | :-------------: | :----: | :-------------------------------------------------------------------------: | :-----------------------------------------: |
+|  vsstatus  |       VS        | 0x200  |              Virtual Supervisor-mode Processor Status Register              |             Virtual supervision             |
+|    vsie    |       VS        | 0x204  |          Virtual Supervisor Mode Interrupt Enable Control Register          |             Virtual supervision             |
+|   vstvec   |       VS        | 0x205  |          Virtual supervisor mode trap vector base address register          |             Virtual supervision             |
+| vsscratch  |       VS        | 0x240  |         Virtual Supervisor Mode Trap Temporary Data Backup Register         |             Virtual supervision             |
+|   vsepc    |       VS        | 0x241  |            Virtual Supervisor Mode Trap Reserved Program Counter            |             Virtual supervision             |
+|  vscause   |       VS        | 0x242  |                 Virtual Supervisor Mode Trap Cause Register                 |             Virtual supervision             |
+|   vstval   |       VS        | 0x243  |                Virtual Supervisor Mode Trap Vector Register                 |             Virtual supervision             |
+|    vsip    |       VS        | 0x244  |           Virtual supervisor mode trap event wait status register           |             Virtual supervision             |
+| vstimecmp  |       VS        | 0x24D  |       Virtual supervisor-mode timer interrupt compare value register        |             Virtual supervision             |
+| vsiselect  |       VS        | 0x250  |     Virtual supervisor mode indirect register selection signal register     | Virtual Supervisor Indirect Access Register |
+|   vsireg   |       VS        | 0x251  |             Virtual Supervisor Indirect Register Alias Register             | Virtual Supervisor Indirect Access Register |
+|  vstopei   |       VS        | 0x25C  |           Virtual supervisor mode top external interrupt register           |        Virtual supervisor interrupt         |
+|   vsatp    |       VS        | 0x280  | Virtual Supervisor Mode Virtual Address Translation and Protection Register |             Virtual supervision             |
+|  hstatus   |       HS        | 0x600  |                  Virtual Machine Processor State Register                   |         Virtual Machine Trap Setup          |
+|  hedeleg   |       HS        | 0x602  |             Virtual machine mode trap demotion control register             |         Virtual Machine Trap Setup          |
+|  hideleg   |       HS        | 0x603  |         Virtual Machine Mode Interrupt Delegation Control Register          |         Virtual Machine Trap Setup          |
+|    hie     |       HS        | 0x604  |               Virtual machine-mode interrupt enable register                |         Virtual Machine Trap Setup          |
+| htimedelta |       HS        | 0x605  |                   Virtual Machine Mode Virtualized Timer                    |            Virtual Machine Timer            |
+| hcounteren |       HS        | 0x606  |                Virtual Machine Mode Counter Enable Register                 |         Virtual Machine Trap Setup          |
+|   hgeie    |       HS        | 0x607  |          Virtual Machine Guest External Interrupt Enable Register           |         Virtual Machine Trap Setup          |
+|   hvien    |       HS        | 0x608  |           Virtual machine mode virtual interrupt enable register            |         Virtual Machine Trap Setup          |
+|   hvictl   |       HS        | 0x609  |           Virtual machine mode virtual interrupt control register           |         Virtual Machine Trap Setup          |
+|  henvcfg   |       HS        | 0x60A  |           Virtual machine mode environment configuration register           |        Virtual machine configuration        |
+|   htval    |       HS        | 0x643  |               Virtual machine mode trap event vector register               |        Virtual machine trap handling        |
+|    hip     |       HS        | 0x644  |            Virtual Machine Mode Trap Event Wait Status Register             |        Virtual machine trap handling        |
+|    hvip    |       HS        | 0x645  |           Virtual Machine Mode Virtual Interrupt Pending Register           |        Virtual machine trap handling        |
+|  hviprio1  |       HS        | 0x646  |         Virtual machine mode VS-Level interrupt priority register 1         |        Virtual machine trap handling        |
+|  hviprio2  |       HS        | 0x647  |         Virtual Machine Mode VS-Level Interrupt Priority Register 2         |        Virtual machine trap handling        |
+|   htinst   |       HS        | 0x64A  |                  Virtual Machine Trap Instruction Register                  |        Virtual machine trap handling        |
+|   hgatp    |       HS        | 0x680  |   Virtual Machine Mode Guest Address Translation and Protection Register    | Virtual Machine Protection and Translation  |
+|  hcontext  |    HS/Debug     | 0x6A8  |                    Virtual machine mode context register                    |               Debug registers               |
 
-### 虚拟监管模式只读的 CSRs
+### Virtual supervisor mode read-only CSRs
 
-{{processor_name}} 中实现的权限为虚拟监管模式只读（HRO）的 RISC-V 的 CSRs 如下表所示：
+The RISC-V CSRs implemented in {{processor_name}} with virtual supervisor-mode
+read-only (HRO) permissions are listed in the table below:
 
-Table: {{processor_name}} 支持的 HRO 的 CSRs 列表
+Table: List of HRO CSRs supported by {{processor_name}}
 
-|   名称   | 特权级 |  编号   |        描述         |   组别    |
-| :----: | :-: | :---: | :---------------: | :-----: |
-| hgeip  | HS  | 0xE12 | 虚拟机模式客户机外部中断挂起寄存器 | 虚拟机陷入处理 |
-| vstopi | VS  | 0xEB0 |    虚拟监管模式顶层中断     | 虚拟监管级中断 |
+|  Name  | Privilege level | Number |                          Description                           |               Group                |
+| :----: | :-------------: | :----: | :------------------------------------------------------------: | :--------------------------------: |
+| hgeip  |       HS        | 0xE12  | Virtual Machine Mode Guest External Interrupt Pending Register |   Virtual machine trap handling    |
+| vstopi |       VS        | 0xEB0  |          Virtual supervisor mode top-level interrupt           | Virtual supervisor-level interrupt |
 
-### 机器模式可读写的 CSRs
+### Machine-mode readable/writable CSRs
 
-{{processor_name}} 中实现的权限为机器模式可读写（MRW）的 RISC-V 的 CSRs 如下表所示：
+The RISC-V CSRs implemented in {{processor_name}} with machine-mode read-write
+(MRW) permissions are listed in the following table:
 
-Table: {{processor_name}} 支持的 MRW 的 CSRs 列表
+Table: List of MRW CSRs Supported by {{processor_name}}
 
-|      名称       |   特权级   |  编号   |            描述            |     组别     |
-| :-----------: | :-----: | :---: | :----------------------: | :--------: |
-|    mstatus    |    M    | 0x300 |       机器模式处理器状态寄存器       |   机器陷入设置   |
-|     misa      |    M    | 0x301 |      机器模式处理器指令集寄存器       |   机器陷入设置   |
-|    medeleg    |    M    | 0x302 |      机器模式陷入降级控制寄存器       |   机器陷入设置   |
-|    mideleg    |    M    | 0x303 |      机器模式中断降级控制寄存器       |   机器陷入设置   |
-|      mie      |    M    | 0x304 |       机器模式中断使能寄存器        |   机器陷入设置   |
-|     mtvec     |    M    | 0x305 |      机器模式陷入向量基址寄存器       |   机器陷入设置   |
-|  mcounteren   |    M    | 0x306 |       机器模式计数器使能寄存器       |   机器陷入设置   |
-|     mvien     |    M    | 0x308 |      机器模式虚拟中断使能寄存器       |   机器陷入设置   |
-|     mvip      |    M    | 0x309 |      机器模式虚拟中断挂起寄存器       |   机器陷入设置   |
-|    menvcfg    |    M    | 0x30A |       机器模式环境配置寄存器        |    机器配置    |
-|   mstateen0   |    M    | 0x30C |       机器模式状态使能寄存器        |  机器状态使能扩展  |
-| mcountinhibit |    M    | 0x320 |       机器模式计数禁止寄存器        |  机器计数器配置   |
-|  mhpmevent3   |    M    | 0x323 |     机器模式性能监测事件选择寄存器3     |  机器计数器配置   |
-|      ...      |   ...   |  ...  |           ...            |    ...     |
-|  mhpmevent31  |    M    | 0x33F |    机器模式性能监测事件选择寄存器31     |  机器计数器配置   |
-|   mscratch    |    M    | 0x340 |     机器模式陷入临时数据备份寄存器      |   机器陷入处理   |
-|     mepc      |    M    | 0x341 |      机器模式陷入保留程序计数器       |   机器陷入处理   |
-|    mcause     |    M    | 0x342 |      机器模式陷入事件原因寄存器       |   机器陷入处理   |
-|     mtval     |    M    | 0x343 |      机器模式陷入事件向量寄存器       |   机器陷入处理   |
-|      mip      |    M    | 0x344 |     机器模式陷入事件等待状态寄存器      |   机器陷入处理   |
-|    mtinst     |    M    | 0x34A |       机器模式陷入指令寄存器        |   机器陷入处理   |
-|    mtval2     |    M    | 0x34B |      机器模式陷入事件向量寄存器2      |   机器陷入处理   |
-|   miselect    |    M    | 0x350 |     机器模式间接寄存器选择信号寄存器     | 机器间接访问寄存器  |
-|     mireg     |    M    | 0x351 |      机器模式间接寄存器别名寄存器      | 机器间接访问寄存器  |
-|    mtopei     |    M    | 0x35C |      机器模式顶部外部中断寄存器       |    机器中断    |
-|    pmpcfg0    |    M    | 0x3A0 |       物理内存保护配置寄存器0       |   机器内存保护   |
-|    pmpcfg2    |    M    | 0x3A2 |       物理内存保护配置寄存器2       |   机器内存保护   |
-|      ...      |   ...   |  ...  |           ...            |    ...     |
-|   pmpcfg14    |    M    | 0x3AE |      物理内存保护配置寄存器14       |   机器内存保护   |
-|   pmpaddr0    |    M    | 0x3B0 |       物理内存保护基址寄存器0       |   机器内存保护   |
-|      ...      |   ...   |  ...  |           ...            |    ...     |
-|   pmpaddr63   |    M    | 0x3EF |      物理内存保护基址寄存器63       |   机器内存保护   |
-|   mnscratch   |    M    | 0x740 |   机器模式不可屏蔽中断临时数据备份寄存器    | 机器不可屏蔽中断处理 |
-|     mnepc     |    M    | 0x741 |    机器模式不可屏蔽中断保留程序计数器     | 机器不可屏蔽中断处理 |
-|    mncause    |    M    | 0x742 |    机器模式不可屏蔽中断事件原因寄存器     | 机器不可屏蔽中断处理 |
-|   mnstatus    |    M    | 0x744 |     机器模式不可屏蔽处理器状态寄存器     | 机器不可屏蔽中断处理 |
-|    mseccfg    |    M    | 0x747 |       机器模式安全配置寄存器        |    机器配置    |
-|    tselect    | M/Debug | 0x7A0 |   Debug/Trace 触发器选择寄存器   |   调试寄存器    |
-|    tdata1     | M/Debug | 0x7A1 | 第一个 Debug/Trace 触发器数据寄存器 |   调试寄存器    |
-|    tdata2     | M/Debug | 0x7A2 | 第二个 Debug/Trace 触发器数据寄存器 |   调试寄存器    |
-|    tdata3     | M/Debug | 0x7A3 | 第三个 Debug/Trace 触发器数据寄存器 |   调试寄存器    |
-|     tinfo     | M/Debug | 0x7A4 |   Debug/Trace 触发器信息寄存器   |   调试寄存器    |
-|   tcontrol    | M/Debug | 0x7A2 |       机器模式触发器使能寄存器       |   调试寄存器    |
-|   mcontext    | M/Debug | 0x7A3 |        机器模式上下文寄存器        |   调试寄存器    |
-|    pmacfg0    |    M    | 0x7C0 |        PMA配置寄存器0         |   PMA配置    |
-|    pmacfg2    |    M    | 0x7C2 |        PMA配置寄存器2         |   PMA配置    |
-|   pmaaddr0    |    M    | 0x7C8 |        PMA地址寄存器0         |   PMA地址    |
-|      ...      |   ...   |  ...  |           ...            |    ...     |
-|   pmaaddr15   |    M    | 0x7D7 |        PMA地址寄存器15        |   PMA地址    |
-|    mcycle     |    M    | 0xB00 |        机器模式周期计数器         |   机器计数器    |
-|   minstret    |    M    | 0xB02 |       机器模式退役指令计数器        |   机器计数器    |
-| mhpmcounter3  |    M    | 0xB03 |       机器模式性能监测计数器3       |   机器计数器    |
-|      ...      |   ...   |  ...  |           ...            |    ...     |
-| mhpmcounter31 |    M    | 0xB1F |      机器模式性能监测计数器31       |   机器计数器    |
+|     Name      | Privilege level | Number |                            Description                             |                  Group                  |
+| :-----------: | :-------------: | :----: | :----------------------------------------------------------------: | :-------------------------------------: |
+|    mstatus    |        M        | 0x300  |               Machine mode processor status register               |           Machine Trap Setup            |
+|     misa      |        M        | 0x301  |          Machine-mode processor instruction set register           |           Machine Trap Setup            |
+|    medeleg    |        M        | 0x302  |           Machine Mode Trap Delegation Control Register            |           Machine Trap Setup            |
+|    mideleg    |        M        | 0x303  |         Machine mode interrupt delegation control register         |           Machine Trap Setup            |
+|      mie      |        M        | 0x304  |               Machine Mode Interrupt Enable Register               |           Machine Trap Setup            |
+|     mtvec     |        M        | 0x305  |           Machine Mode Trap Vector Base Address Register           |           Machine Trap Setup            |
+|  mcounteren   |        M        | 0x306  |                Machine mode counter enable register                |           Machine Trap Setup            |
+|     mvien     |        M        | 0x308  |           Machine-mode Virtual Interrupt Enable Register           |           Machine Trap Setup            |
+|     mvip      |        M        | 0x309  |          Machine-mode Virtual Interrupt Pending Register           |           Machine Trap Setup            |
+|    menvcfg    |        M        | 0x30A  |          Machine Mode Environment Configuration Register           |          Machine Configuration          |
+|   mstateen0   |        M        | 0x30C  |                Machine Mode Status Enable Register                 |     Machine State Enable Extension      |
+| mcountinhibit |        M        | 0x320  |               Machine mode counter inhibit register                |      Machine counter configuration      |
+|  mhpmevent3   |        M        | 0x323  |    Machine Mode Performance Monitoring Event Select Register 3     |      Machine counter configuration      |
+|      ...      |       ...       |  ...   |                                ...                                 |                   ...                   |
+|  mhpmevent31  |        M        | 0x33F  |    Machine-mode performance monitoring event select register 31    |      Machine counter configuration      |
+|   mscratch    |        M        | 0x340  |          Machine-mode trap temporary data backup register          |          Machine Trap Handling          |
+|     mepc      |        M        | 0x341  |             Machine Mode Trap Reserved Program Counter             |          Machine Trap Handling          |
+|    mcause     |        M        | 0x342  |                  Machine-mode trap cause register                  |          Machine Trap Handling          |
+|     mtval     |        M        | 0x343  |                 Machine-mode Trap Vector Register                  |          Machine Trap Handling          |
+|      mip      |        M        | 0x344  |            Machine mode trap event wait state register             |          Machine Trap Handling          |
+|    mtinst     |        M        | 0x34A  |               Machine-mode trap instruction register               |          Machine Trap Handling          |
+|    mtval2     |        M        | 0x34B  |                Machine-mode Trap Vector Register 2                 |          Machine Trap Handling          |
+|   miselect    |        M        | 0x350  |       Machine Mode Indirect Register Select Signal Register        |    Machine indirect access register     |
+|     mireg     |        M        | 0x351  |           Machine-mode indirect register alias register            |    Machine indirect access register     |
+|    mtopei     |        M        | 0x35C  |            Machine mode top external interrupt register            |            Machine Interrupt            |
+|    pmpcfg0    |        M        | 0x3A0  |        Physical Memory Protection Configuration Register 0         |        Machine Memory Protection        |
+|    pmpcfg2    |        M        | 0x3A2  |        Physical Memory Protection Configuration Register 2         |        Machine Memory Protection        |
+|      ...      |       ...       |  ...   |                                ...                                 |                   ...                   |
+|   pmpcfg14    |        M        | 0x3AE  |        Physical Memory Protection Configuration Register 14        |        Machine Memory Protection        |
+|   pmpaddr0    |        M        | 0x3B0  |         Physical Memory Protection Base Address Register 0         |        Machine Memory Protection        |
+|      ...      |       ...       |  ...   |                                ...                                 |                   ...                   |
+|   pmpaddr63   |        M        | 0x3EF  |        Physical Memory Protection Base Address Register 63         |        Machine Memory Protection        |
+|   mnscratch   |        M        | 0x740  | Machine-mode non-maskable interrupt temporary data backup register | Machine non-maskable interrupt handling |
+|     mnepc     |        M        | 0x741  |    Machine-mode non-maskable interrupt reserved program counter    | Machine non-maskable interrupt handling |
+|    mncause    |        M        | 0x742  |         Machine mode non-maskable interrupt cause register         | Machine non-maskable interrupt handling |
+|   mnstatus    |        M        | 0x744  |        Machine mode non-maskable processor status register         | Machine non-maskable interrupt handling |
+|    mseccfg    |        M        | 0x747  |            Machine-mode security configuration register            |          Machine Configuration          |
+|    tselect    |     M/Debug     | 0x7A0  |                Debug/Trace Trigger Select Register                 |             Debug registers             |
+|    tdata1     |     M/Debug     | 0x7A1  |              First Debug/Trace trigger data register               |             Debug registers             |
+|    tdata2     |     M/Debug     | 0x7A2  |              Second Debug/Trace Trigger Data Register              |             Debug registers             |
+|    tdata3     |     M/Debug     | 0x7A3  |            The third Debug/Trace Trigger Data Register             |             Debug registers             |
+|     tinfo     |     M/Debug     | 0x7A4  |              Debug/Trace Trigger Information Register              |             Debug registers             |
+|   tcontrol    |     M/Debug     | 0x7A2  |                Machine mode trigger enable register                |             Debug registers             |
+|   mcontext    |     M/Debug     | 0x7A3  |                   Machine-mode context register                    |             Debug registers             |
+|    pmacfg0    |        M        | 0x7C0  |                    PMA Configuration Register 0                    |            PMA Configuration            |
+|    pmacfg2    |        M        | 0x7C2  |                    PMA Configuration Register 2                    |            PMA Configuration            |
+|   pmaaddr0    |        M        | 0x7C8  |                       PMA address register 0                       |               PMA address               |
+|      ...      |       ...       |  ...   |                                ...                                 |                   ...                   |
+|   pmaaddr15   |        M        | 0x7D7  |                      PMA Address Register 15                       |               PMA address               |
+|    mcycle     |        M        | 0xB00  |                     Machine-mode cycle counter                     |             Machine Counter             |
+|   minstret    |        M        | 0xB02  |              Machine Mode Retired Instruction Counter              |             Machine Counter             |
+| mhpmcounter3  |        M        | 0xB03  |           Machine Mode Performance Monitoring Counter 3            |             Machine Counter             |
+|      ...      |       ...       |  ...   |                                ...                                 |                   ...                   |
+| mhpmcounter31 |        M        | 0xB1F  |           Machine-mode performance monitoring counter 31           |             Machine Counter             |
 
-### 机器模式只读的 CSRs
+### Machine-mode read-only CSRs
 
-{{processor_name}} 中实现的权限为机器模式只读（MRO）的 RISC-V 的 CSRs 如下表所示：
+The RISC-V CSRs implemented in {{processor_name}} with machine-mode read-only
+(MRO) permissions are listed in the table below:
 
-Table: {{processor_name}} 支持的 MRO 的 CSRs 列表
+Table: List of MRO CSRs supported by {{processor_name}}
 
-|     名称     | 特权级 |  编号   |      描述       |   组别   |
-| :--------: | :-: | :---: | :-----------: | :----: |
-| mvendorid  |  M  | 0xF11 |   供应商编号寄存器    |  机器信息  |
-|  marchid   |  M  | 0xF12 |    架构编号寄存器    |  机器信息  |
-|   mimpid   |  M  | 0xF13 | 机器模式硬件实现编号寄存器 |  机器信息  |
-|  mhartid   |  M  | 0xF14 | 机器模式逻辑内核编号寄存器 |  机器信息  |
-| mconfigptr |  M  | 0xF15 |   配置数据结构指针    |  机器信息  |
-|   mtopi    |  M  | 0xFB0 |   机器模式顶层中断    | 机器陷入设置 |
+|    Name    | Privilege level | Number |                   Description                    |        Group        |
+| :--------: | :-------------: | :----: | :----------------------------------------------: | :-----------------: |
+| mvendorid  |        M        | 0xF11  |                Vendor ID register                | Machine information |
+|  marchid   |        M        | 0xF12  |             Architecture ID Register             | Machine information |
+|   mimpid   |        M        | 0xF13  | Machine mode hardware implementation ID register | Machine information |
+|  mhartid   |        M        | 0xF14  |    Machine-mode logical core number register     | Machine information |
+| mconfigptr |        M        | 0xF15  |       Configuration Data Structure Pointer       | Machine information |
+|   mtopi    |        M        | 0xFB0  |         Machine mode top-level interrupt         | Machine Trap Setup  |
 
-### 调试模式可读写的 CSRs
+### Debug-mode readable/writable CSRs
 
-{{processor_name}} 中实现的权限为调试模式可读写（DRW）的 RISC-V 的 CSRs 如下表所示：
+The RISC-V CSRs implemented in {{processor_name}} with debug mode read-write
+(DRW) permissions are listed in the following table:
 
-Table: {{processor_name}} 支持的 DRW 的 CSRs 列表
+Table: List of DRW CSRs Supported by {{processor_name}}
 
-|    名称     |  特权级  |  编号   |      描述      |   组别    |
-| :-------: | :---: | :---: | :----------: | :-----: |
-|   dcsr    | Debug | 0x7B0 | 调试模式控制与状态寄存器 | 调试模式寄存器 |
-|    dpc    | Debug | 0x7B1 |  调试模式程序计数器   | 调试模式寄存器 |
-| dscratch0 | Debug | 0x7B2 |  调试模式暂存寄存器0  | 调试模式寄存器 |
-| dscratch1 | Debug | 0x7B3 |  调试模式暂存寄存器1  | 调试模式寄存器 |
+|   Name    | Privilege level | Number |              Description               |        Group        |
+| :-------: | :-------------: | :----: | :------------------------------------: | :-----------------: |
+|   dcsr    |      Debug      | 0x7B0  | Debug mode control and status register | Debug mode register |
+|    dpc    |      Debug      | 0x7B1  |       Debug mode program counter       | Debug mode register |
+| dscratch0 |      Debug      | 0x7B2  |     Debug-mode Scratch Register 0      | Debug mode register |
+| dscratch1 |      Debug      | 0x7B3  |    Debug mode temporary register 1     | Debug mode register |
 
-## 自定义 CSRs（Custom CSRs）
+## Custom CSRs
 
-在上述实现的控制状态寄存器表中可以发现， {{processor_name}} 扩展了 RISC-V 的 CSRs，实现了一些 RISC-V 手册中未定义的
-CSR，下面将对这些 CSR 进行介绍。
+In the control status register table of the aforementioned implementation, it
+can be observed that {{processor_name}} extends the CSRs of RISC-V, implementing
+some CSRs not defined in the RISC-V manual. The following will introduce these
+CSRs.
 
 ### sbpctl
 
-sbpctl 的地址为 0x5C0，其初始化值为下表的默认值，其每一 bit 的功能如下表所示
+The address of sbpctl is 0x5C0, with its initial value set to the default in the
+table below. Each bit's function is described in the following table.
 
-Table: sbpctl 的 bit 功能
+Table: Bit Functions of sbpctl
 
-|  位   |                   功能                    | 默认值 |
-| :--: | :-------------------------------------: | :-: |
-|  0   |         UBTB_ENABLE 设1代表开启uftb          |  1  |
-|  1   |          BTB_ENABLE 设1代表开启主ftb          |  1  |
-|  2   |  BIM_ENABLE 设1代表开启bim预测器[^sbpctl-bim]   |  1  |
-|  3   |        TAGE_ENABLE 设1代表开启TAGE预测器        |  1  |
-|  4   |          SC_ENABLE 设1代表开启SC预测器          |  1  |
-|  5   |         RAS_ENABLE 设1代表开启RAS预测器         |  1  |
-|  6   | LOOP_ENABLE 设1代表开启loop预测器[^sbpctl-loop] |  1  |
-| 7-31 |                  WARL                   |  0  |
+| Bit  |                           Function                            | Default Value |
+| :--: | :-----------------------------------------------------------: | :-----------: |
+|  0   |               UBTB_ENABLE set to 1 enables uftb               |       1       |
+|  1   |    BTB_ENABLE set to 1 indicates the main FTB is enabled.     |       1       |
+|  2   | BIM_ENABLE Set to 1 to enable the bim predictor[^sbpctl-bim]  |       1       |
+|  3   |       TAGE_ENABLE set to 1 enables the TAGE predictor.        |       1       |
+|  4   |           SC_ENABLE Set to 1 to enable SC predictor           |       1       |
+|  5   |           RAS_ENABLE Set to 1 enables RAS predictor           |       1       |
+|  6   | LOOP_ENABLE set to 1 enables the loop predictor[^sbpctl-loop] |       1       |
+| 7-31 |                             WARL                              |       0       |
 
 
-[^sbpctl-bim]: 当前 bim 已被移除，该位无实际功能。
+[^sbpctl-bim]: The current bim has been removed, this bit has no actual
+function.
 
-[^sbpctl-loop]: 当前 Loop 预测器尚未合入主线，该位无实际功能
+[^sbpctl-loop]: The current Loop predictor has not yet been merged into the
+mainline; this bit has no actual functionality.
 
 
 ### spfctl
 
-spfctl 的地址为 0x5C1，其初始化值为下表的默认值 ，其每一 bit 的功能如下表所示:
+The address of spfctl is 0x5C1, with its initial value set to the default values
+in the table below. The function of each bit is as follows:
 
-Table: spfctl 的 bit 功能
+Table: spfctl Bit Functions
 
-|   位   |                              功能                              | 默认值 |
-| :---: | :----------------------------------------------------------: | :-: |
-|   0   |                    控制 L1 指令预取器，设 1 代表开启预取                    |  1  |
-|   1   |                     控制 L2 预取器，设 1 代表开启预取                     |  1  |
-|   2   |                    控制 SMS 预取器，设 1 代表开启预取                     |  1  |
-|   3   | 控制 SMS 预取器是否在 hit 时接受训练：设 1 代表 hit 也会接受训练，设 0 代表只有 miss 才会训练 |  0  |
-|   4   |               控制 SMS 预取器的 agt 表，设 1 代表开启 agt 表               |  1  |
-|   5   |               控制 SMS 预取器的 pht 表，设 1 代表开启 pht 表               |  1  |
-|  6-9  |                  控制 SMS 预取器的 active page 阈值                  | 12  |
-| 10-15 |                  控制 SMS 预取器的 active page 跨度                  | 30  |
-|  16   |                             无功能                              |  1  |
-|  17   |                控制 L2 预取器是否只对 store 预取，设 1 代表是                |  0  |
-|  高位   |                          目前高位无实际功能                           |  0  |
+|       Bit       |                                                    Function                                                     | Default Value |
+| :-------------: | :-------------------------------------------------------------------------------------------------------------: | :-----------: |
+|        0        |                   Controls the L1 instruction prefetcher, where setting 1 enables prefetching                   |       1       |
+|        1        |                         Control the L2 prefetcher, where 1 represents enabling prefetch                         |       1       |
+|        2        |                           Controls the SMS prefetcher, setting 1 enables prefetching                            |       1       |
+|        3        | Controls whether the SMS prefetcher accepts training on hit: Set 1 to train on hit, set 0 to train only on miss |       0       |
+|        4        |                Controls the agt table of the SMS prefetcher. Setting to 1 enables the agt table.                |       1       |
+|        5        |                  Controls the pht table of the SMS prefetcher, setting 1 enables the pht table                  |       1       |
+|       6-9       |                            Controls the active page threshold for the SMS prefetcher                            |      12       |
+|      10-15      |                               Controls the active page span of the SMS prefetcher                               |      30       |
+|       16        |                                                No functionality                                                 |       1       |
+|       17        |                Controls whether the L2 prefetcher only prefetches for stores. Set to 1 for yes.                 |       0       |
+| High-order bits |                               Currently, the high bits have no practical function                               |       0       |
 
 
 ### slvpredctl
 
-slvpredctl 的地址为 0x5C2，其初始化值为下表的默认值 ，其每一 bit 的功能如下表所示
+The address of slvpredctl is 0x5C2, with its initial value set to the default
+values in the table below, and the function of each bit is as shown in the
+following table
 
-Table: slvpredctl 的 bit 功能
+Table: Bit functions of slvpredctl
 
-|  位  |                    功能                     | 默认值 |
-| :-: | :---------------------------------------: | :-: |
-|  0  |          控制访存违例预测器是否禁用，设 1 代表禁用           |  0  |
-|  1  |    控制访存违例预测器是否禁止 load 指令推测执行，设 1 代表禁止     |  0  |
-|  2  |     控制访存违例预测器是否会阻塞 store 指令，设 1 代表会阻塞     |  0  |
-| 4-8 | 访存违例预测器的 reset 间隔，设该位域的值为 x，则间隔为 2^(10+x) |  6  |
-| 其余位 |                 目前其余位无功能                  |  0  |
+|      Bit       |                                                             Function                                                             | Default Value |
+| :------------: | :------------------------------------------------------------------------------------------------------------------------------: | :-----------: |
+|       0        |                     Controls whether the memory access violation predictor is disabled. Set to 1 to disable.                     |       0       |
+|       1        | Controls whether the memory violation predictor prohibits speculative execution of load instructions. Setting to 1 prohibits it. |       0       |
+|       2        |           Controls whether the memory access violation predictor blocks store instructions, where 1 indicates blocking           |       0       |
+|      4-8       |           Memory access violation predictor reset interval. If the value of this field is x, the interval is 2^(10+x)            |       6       |
+| Remaining bits |                                       Currently, the remaining bits have no functionality.                                       |       0       |
 
 ### smblockctl
 
-smblockctl 的地址为 0x5C3，其初始化值为下表的默认值 ，其每一 bit 的功能如下表所示
+The address of smblockctl is 0x5C3, with its initial value set to the default
+values in the table below. Each bit's function is as shown in the following
+table.
 
-Table: smblockctl 的 bit 功能
+Table: Bit functions of smblockctl
 
-|  位  |                    功能                    | 默认值 |
-| :-: | :--------------------------------------: | :-: |
-| 0-3 |          控制 sbuffer 的 flush 阈值           |  7  |
-|  4  |        控制是否开启 ld-ld 违例检查，设 1 代表开启        |  1  |
-|  5  |      控制是否开启 soft prefetch，设 1 代表开启       |  1  |
-|  6  |     控制是否上报 cache 发生的 ecc 错误，设 1 代表开启     |  1  |
-|  7  | 控制是否支持 uncache 的 outstanding 访问，设 1 代表开启 |  0  |
-| 其余位 |                 目前其余位无功能                 |  0  |
+|      Bit       |                                           Function                                            | Default Value |
+| :------------: | :-------------------------------------------------------------------------------------------: | :-----------: |
+|      0-3       |                          Controls the flush threshold of the sbuffer                          |       7       |
+|       4        |         Controls whether to enable ld-ld violation checking, setting 1 means enabled          |       1       |
+|       5        |              Controls whether soft prefetch is enabled. Setting to 1 enables it.              |       1       |
+|       6        | Controls whether to report ECC errors occurring in the cache. Setting to 1 enables reporting. |       1       |
+|       7        |       Controls whether uncache outstanding accesses are supported. Set to 1 to enable.        |       0       |
+| Remaining bits |                     Currently, the remaining bits have no functionality.                      |       0       |
 
 ### srnctl
 
-srnctl 的地址为 0x5C4，其初始化值为下表的默认值 ，其每一 bit 的功能如下表所示
+The address of srnctl is 0x5C4, with its initial value set to the default values
+in the table below. The functionality of each bit is as described in the
+following table.
 
-Table: srnctl的 bit 功能
+Table: Bit Functions of srnctl
 
-|  位  |                  功能                  | 默认值 |
-| :-: | :----------------------------------: | :-: |
-|  0  |        fusion decoder是否开启，1开启        |  1  |
-|  1  | speculative virtual address inv 是否开启 |  1  |
-|  2  |              wfi 指令是否开启              |  1  |
-| 其余位 |               目前其余位无功能               |  0  |
+|      Bit       |                       Function                       | Default Value |
+| :------------: | :--------------------------------------------------: | :-----------: |
+|       0        | Whether the fusion decoder is enabled, 1 for enabled |       1       |
+|       1        |  Whether speculative virtual address inv is enabled  |       1       |
+|       2        |        Whether the wfi instruction is enabled        |       1       |
+| Remaining bits | Currently, the remaining bits have no functionality. |       0       |

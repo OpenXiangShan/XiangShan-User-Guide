@@ -9,68 +9,81 @@ In {{processor_name}}, the interrupt controller includes the IMSIC external
 interrupt controller and the CLINT local interrupt controller. The following is
 a detailed description.
 
-## CLINT 中断控制器
+## CLINT Interrupt Controller
 
-### 概要
+### Overview
 
-CLINT 为 HART 提供 M 特权级下的软件中断，以及 M 特权级下的 time 定时中断，以及 64bit time 计时器。
+CLINT provides software interrupts at the M privilege level for HART, as well as
+time timer interrupts at the M privilege level and a 64-bit time counter.
 
-### 寄存器映射
+### Register Mapping
 
-Table: CLINT 的寄存器排布
+Table: CLINT Register Layout
 
-| offset address | Width | attribute |   Description   |
-| :------------: | :---: | :-------: | :-------------: |
-|  0x0000_0000   |  4B   |    RW     | HART M 软中断配置寄存器 |
-|  0x0000_0004   |       |           |                 |
-|       …        |       |           |    Reserved     |
-|  0x0000_3FFF   |       |           |                 |
-|  0x0000_4000   |  8B   |    RW     |  MTIMECMP 寄存器   |
-|  0x0000_4008   |       |           |                 |
-|       …        |       |           |    Reserved     |
-|  0x0000_BFF7   |       |           |                 |
-|  0x0000_BFF8   |  8B   |    RW     |    MTIME 寄存器    |
+| offset address | Width | attribute |                   Description                    |
+| :------------: | :---: | :-------: | :----------------------------------------------: |
+|  0x0000_0000   |  4B   |    RW     | HART M Software Interrupt Configuration Register |
+|  0x0000_0004   |       |           |                                                  |
+|       …        |       |           |                     Reserved                     |
+|  0x0000_3FFF   |       |           |                                                  |
+|  0x0000_4000   |  8B   |    RW     |                MTIMECMP register                 |
+|  0x0000_4008   |       |           |                                                  |
+|       …        |       |           |                     Reserved                     |
+|  0x0000_BFF7   |       |           |                                                  |
+|  0x0000_BFF8   |  8B   |    RW     |                  MTIME Register                  |
 
 
-## IMSIC 中断控制器
+## IMSIC Interrupt Controller
 
-### 概要
+### Overview
 
-IMSIC 作为 RISCV 的外部中断控制器之一，负责 MSI 中断的接收与传递，涵盖 M, S, VS 特权级下的中断上报 。 每种特权级下的中断配置通过
-IMSIC interrupt file MMIO 空间实现，默认支持 interrupt file 数目 7 个： M, S,5 个 VS interrupt
-file.默认支持有效中断号：1-255.
+As one of RISC-V's external interrupt controllers, IMSIC is responsible for
+receiving and transmitting MSI interrupts, covering interrupt reporting at the
+M, S, and VS privilege levels. The interrupt configuration for each privilege
+level is implemented through the IMSIC interrupt file MMIO space, which by
+default supports 7 interrupt files: M, S, and 5 VS interrupt files. It also
+supports valid interrupt numbers from 1 to 255 by default.
 
-### 寄存器映射
+### Register Mapping
 
-DEVICE 通过发送中断 ID 到 IMSIC 内部 interrupt file MMIO 空间，从而实现 MSI 的发送。 RISCV AIA
-SPEC明确规定，多 interrupt files 场景下, Supervisor-level 只能访问 all Supervisor-level and
-guest interrupt files,不能访问 Machine-level interrupt files. 因此，在地址排布上，所有的
-Machine-level interrupt file 集中连续分配，Supervisor-level and guest interrupt files
-集中连续分配，这样仅用一个 PMP table entry 就能保证 Supervisor-level 没有 S/VS interrupt files
-以外的访问权限。 硬件实现上，M, S/VS interrupt file 寄存器空间，拥有各自的基地址。如下对两个特权级下的中断寄存器访问进行说明。
+DEVICE sends an interrupt ID to the IMSIC internal interrupt file MMIO space to
+achieve MSI transmission. The RISC-V AIA SPEC clearly stipulates that in
+scenarios with multiple interrupt files, the Supervisor-level can only access
+all Supervisor-level and guest interrupt files and cannot access Machine-level
+interrupt files. Therefore, in address arrangement, all Machine-level interrupt
+files are allocated continuously and collectively, while Supervisor-level and
+guest interrupt files are also allocated continuously and collectively. This
+ensures that only one PMP table entry is needed to guarantee that the
+Supervisor-level does not have access permissions beyond S/VS interrupt files.
+In hardware implementation, the M and S/VS interrupt file register spaces have
+their own base addresses. The following explains the interrupt register access
+for these two privilege levels.
 
 Table: M interrupt file
 
-| 寄存器         | 地址偏移   | 位宽  | 属性  | 复位值   | 描述                                                         |
-| ----------- | ------ | --- | --- | ----- | ---------------------------------------------------------- |
-| setipnum_le | 0x0000 | 32  | WO  | 32'h0 | interrupt file 访问寄存器。写入数据为MSI 中断ID，读取值为0.默认支持最高8bit中断ID写入。 |
+| Register    | Address Offset | Bit Width | Attribute | Reset value | Description                                                                                                                                          |
+| ----------- | -------------- | --------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| setipnum_le | 0x0000         | 32        | WO        | 32'h0       | Interrupt file access register. Write data is the MSI interrupt ID, read value is 0. By default, it supports writing the highest 8-bit interrupt ID. |
 
 
-Table: S/VS interrupt file
+Table: S/VS Interrupt File
 
-| 寄存器             | 地址偏移   | 位宽  | 属性  | 复位值   | 描述                                                                                          |
-| --------------- | ------ | --- | --- | ----- | ------------------------------------------------------------------------------------------- |
-| setipnum_le     | 0x0000 | 32  | WO  | 32'h0 | interrupt file 访问寄存器。写入数据为MSI 中断ID，读取值为0.默认支持最高8bit中断ID写入。                                  |
-| setipnum_le_s   | 0x0000 | 32  | WO  | 32'h0 | interrupt file 访问寄存器。写入数据为MSI 中断ID，读取值为0.默认支持最高8bit中断ID写入，MSI ID 超过8bit访问，硬件自动截断低8bit.      |
-| setipnum_le_vs1 | 0x1000 | 32  | WO  | 32'h0 | VS 1 interrupt file 访问寄存器。写入数据为MSI 中断ID，读取值为0.默认支持最高8bit中断ID写入，MSI ID 超过8bit访问，硬件自动截断低8bit. |
-| setipnum_le_vs2 | 0x2000 | 32  | WO  | 32'h0 | VS 2 interrupt file 访问寄存器。写入数据为MSI 中断ID，读取值为0.默认支持最高8bit中断ID写入，MSI ID 超过8bit访问，硬件自动截断低8bit. |
-| setipnum_le_vs3 | 0x3000 | 32  | WO  | 32'h0 | VS 3 interrupt file 访问寄存器。写入数据为MSI 中断ID，读取值为0.默认支持最高8bit中断ID写入，MSI ID 超过8bit访问，硬件自动截断低8bit. |
-| setipnum_le_vs4 | 0x4000 | 32  | WO  | 32'h0 | VS 4 interrupt file 访问寄存器。写入数据为MSI 中断ID，读取值为0.默认支持最高8bit中断ID写入，MSI ID 超过8bit访问，硬件自动截断低8bit. |
-| setipnum_le_vs5 | 0x5000 | 32  | WO  | 32'h0 | VS 5 interrupt file 访问寄存器。写入数据为MSI 中断ID，读取值为0.默认支持最高8bit中断ID写入，MSI ID 超过8bit访问，硬件自动截断低8bit. |
+| Register        | Address Offset | Bit Width | Attribute | Reset value | Description                                                                                                                                                                                                                                                             |
+| --------------- | -------------- | --------- | --------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| setipnum_le     | 0x0000         | 32        | WO        | 32'h0       | Interrupt file access register. Write data is the MSI interrupt ID, read value is 0. By default, it supports writing the highest 8-bit interrupt ID.                                                                                                                    |
+| setipnum_le_s   | 0x0000         | 32        | WO        | 32'h0       | Interrupt file access register. The written data is the MSI interrupt ID, and the read value is 0. By default, it supports writing up to an 8-bit interrupt ID. If the MSI ID exceeds 8 bits during access, the hardware automatically truncates the lower 8 bits.      |
+| setipnum_le_vs1 | 0x1000         | 32        | WO        | 32'h0       | VS 1 interrupt file access register. Write data is the MSI interrupt ID, read value is 0. By default, it supports writing the highest 8-bit interrupt ID. For MSI IDs exceeding 8 bits, the hardware automatically truncates the lower 8 bits.                          |
+| setipnum_le_vs2 | 0x2000         | 32        | WO        | 32'h0       | VS 2 interrupt file access register. The written data is the MSI interrupt ID, and the read value is 0. By default, it supports writing up to an 8-bit interrupt ID. If the MSI ID exceeds 8 bits during access, the hardware automatically truncates the lower 8 bits. |
+| setipnum_le_vs3 | 0x3000         | 32        | WO        | 32'h0       | VS 3 interrupt file access register. Write data is the MSI interrupt ID, read value is 0. By default, it supports writing the highest 8-bit interrupt ID. For MSI IDs exceeding 8 bits, the hardware automatically truncates the lower 8 bits.                          |
+| setipnum_le_vs4 | 0x4000         | 32        | WO        | 32'h0       | VS 4 interrupt file access register. The written data is the MSI interrupt ID, and the read value is 0. By default, it supports writing up to an 8-bit interrupt ID. If the MSI ID exceeds 8 bits during access, the hardware automatically truncates the lower 8 bits. |
+| setipnum_le_vs5 | 0x5000         | 32        | WO        | 32'h0       | VS 5 interrupt file access register. The written data is the MSI interrupt ID, and the read value is 0. By default, it supports writing up to an 8-bit interrupt ID. If the MSI ID exceeds 8 bits during access, the hardware automatically truncates the lower 8 bits. |
 
-## 核间中断
+## Inter-core interrupt
 
-多核间通信可以通过核间中断来完成，核间中断有两种方式可以实现。
+Inter-core communication can be achieved through inter-core interrupts, which
+can be implemented in two ways.
 
-- 通过配置 CLINT 软件中断，可实现 M 特权级中断上报。
-- 通过配置 IMSIC interrupt file，可实现 M, S, VS 特权级下的中断上报。
+- By configuring the CLINT software interrupt, M privilege level interrupt
+  reporting can be achieved.
+- By configuring the IMSIC interrupt file, interrupt reporting can be achieved
+  at the M, S, and VS privilege levels.

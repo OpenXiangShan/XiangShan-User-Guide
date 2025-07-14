@@ -6,69 +6,88 @@ file_authors_:
 
 # Vector {#sec:vector}
 
-## 版本支持
+## Supported Version
 
-兼容 RISC-V “V” Vector Extension, Version 1.0 。
+Compatible with RISC-V "V" Vector Extension, Version 1.0.
 
-## 向量编程模型
+## Vector programming model
 
-向量扩展支持以下特性：
+The vector extension supports the following features:
 
-* 拥有 32 个独立的向量架构寄存器 v0-v31。向量寄存器的位宽为 128 位。
-* 对于向量浮点指令，支持的元素类型为 FP16、FP32、FP64（即 SEW = 16/32/64）。
-* 对于向量整型指令，支持的元素类型为 INT8、INT16、INT32 和 INT64（即 SEW = 8/16/32/64）。
-* 支持向量寄存器的分组，以提高向量运算的效率。支持4种分组方式：每组包含 1/2/4/8 个向量寄存器，分成 32/16/8/4 个组。
+* There are 32 independent vector architectural registers v0-v31. The vector
+  registers have a bit width of 128 bits.
+* For vector floating-point instructions, the supported element types are FP16,
+  FP32, and FP64 (i.e., SEW = 16/32/64).
+* For vector integer instructions, supported element types are INT8, INT16,
+  INT32, and INT64 (i.e., SEW = 8/16/32/64).
+* Support for vector register grouping to enhance the efficiency of vector
+  operations. Four grouping modes are supported: groups containing 1/2/4/8
+  vector registers, divided into 32/16/8/4 groups.
 
-## 向量控制寄存器
+## Vector control register
 
-有 7 个非特权 CSR：
+There are 7 non-privileged CSRs:
 
 * vstart
 
-  向量起始位置寄存器指定了执行向量指令时起始元素位置。每条向量指令执行后 vstart 都会被清零。在大多数情况下，软件不需要改动
-  vstart。只有向量存储指令支持非 0 的 vstart；所有的向量运算指令都要求 vstart = 0，否则会产生非法指令异常。
+  The vector start position register specifies the starting element position
+  when executing vector instructions. The vstart register is cleared to zero
+  after each vector instruction execution. In most cases, software does not need
+  to modify vstart. Only vector store instructions support a non-zero vstart;
+  all vector arithmetic instructions require vstart = 0, otherwise, an illegal
+  instruction exception will be raised.
 
 * vxsat
 
-  定点溢出标志位寄存器，只有 bit0 有效，表示是否有定点指令产生溢出结果。
+  Fixed-point overflow flag register, where only bit0 is valid, indicating
+  whether a fixed-point instruction has produced an overflow result.
 
 * vxrm
 
-  定点舍入模式寄存器，支持4种舍入模式：向大数舍入、向偶数舍入、向零舍入和向奇数舍入。
+  Fixed-point rounding mode register supports four rounding modes: round toward
+  positive infinity, round to nearest even, round toward zero, and round to
+  nearest odd.
 
 * vcsr
 
-  向量控制状态寄存器。
+  Vector Control and Status Registers.
 
 * vl
 
-  向量长度寄存器指定了向量指令更新目的寄存器的元素范围。一般情况下，向量指令更新目的寄存器中元素序号小于 vl 的元素，元素序号大于等于 vl 的元素根据
-  vta 的值写全 1 或者保留原值。
+  The Vector Length Register (vl) specifies the element range updated by vector
+  instructions in the destination register. Generally, vector instructions
+  update elements in the destination register with indices less than vl.
+  Elements with indices greater than or equal to vl are either set to all 1s or
+  retain their original values based on the vta setting.
 
 * vtype
 
-  向量数据类型寄存器，设定向量计算的基本数据属性，包括：vill、vsew、vlmul、vta 和 vma。
+  Vector data type register, which sets the basic data attributes for vector
+  calculations, including: vill, vsew, vlmul, vta, and vma.
 
 * vlenb
 
-  向量位宽寄存器, 以字节为单位表示向量位宽。
-* 此外还支持向量状态维护功能，在 mstatus[10:9] 处定义了 VS 位，可以用于判断上下文切换时，是否需要保存向量相关的寄存器。
+  Vector Length Register (VLEN), expressed in bytes to indicate vector width.
+* Additionally, vector state maintenance functionality is supported. The VS bits
+  are defined at mstatus[10:9], which can be used to determine whether
+  vector-related registers need to be saved during context switches.
 
-## 向量相关异常
+## Vector-related exceptions
 
-向量指令可以分为三大类：
+Vector instructions can be categorized into three major types:
 
-* 向量运算
-* 向量 load
-* 向量 store
+* Vector operations
+* Vector load
+* Vector store
 
-向量运算不会触发异常。
+Vector operations do not trigger exceptions.
 
-向量 Load 与向量 Store 统称为向量访存。
+Vector Load and Vector Store are collectively referred to as vector memory
+access.
 
-向量访存可以引起手册规定的异常。
+Vector memory access can trigger exceptions as specified in the manual.
 
-向量 Load 会引发:
+Vector Load may trigger:
 
 * 3 BreakPoint
 * 4 Load address misaligned
@@ -76,7 +95,7 @@ file_authors_:
 * 13 Load page fault
 * 21 Load guest page fault
 
-向量 Store 会引发:
+Vector Store may trigger:
 
 * 3 BreakPoint
 * 6 Store address misaligned
@@ -84,13 +103,24 @@ file_authors_:
 * 15 Store page fault
 * 23 Store guest page fault
 
-实现中，向量访存不允许访存 MMIO，对于 MMIO 的向量访存会引发 Load/Store access fault 异常。
+In the implementation, vector memory access is not permitted for MMIO. Vector
+memory access to MMIO will trigger a Load/Store access fault exception.
 
-在向量访存中触发异常，根据手册规定实现如下:
+In vector memory access that triggers an exception, the implementation follows
+the specifications outlined in the manual:
 
-1. 非 fault-only-first 指令，将会设置 vstart 寄存器为触发异常的元素位置。触发异常的元素保留原值，异常元素之后的元素会根据 Tail
-   与 Mask 的配置来进行处理。
-2. fault-only-first 指令，若异常的元素为第一个元素，则会触发异常。否则将会设置 vl
-   寄存器为异常的元素位置，且不触发异常。触发异常的元素保留原值，异常元素之后的元素会根据 Tail 与 Mask 的配置来进行处理。
-3. segment 指令以 segment 为单位引发异常，在 segment 中引发异常之后，将会设置 vstart 寄存器为触发异常的 segment
-   位置。segment 中触发异常的元素之前的元素将会正常的被访问执行。
+1. For non-fault-only-first instructions, the vstart register is set to the
+   element position where the exception was triggered. The exception-triggering
+   element retains its original value, while elements following the exception
+   are processed according to Tail and Mask configurations.
+2. Fault-only-first instruction: if the exception occurs at the first element,
+   an exception will be triggered. Otherwise, the vl register will be set to the
+   position of the element causing the exception, and no exception will be
+   triggered. The element triggering the exception retains its original value,
+   while elements after the exception are processed according to the Tail and
+   Mask configurations.
+3. Segment instructions trigger exceptions per segment. After an exception
+   occurs within a segment, the vstart register is set to the segment position
+   where the exception was triggered. Elements preceding the
+   exception-triggering element in the segment are accessed and executed
+   normally.

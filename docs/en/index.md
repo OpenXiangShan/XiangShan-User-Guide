@@ -34,7 +34,7 @@ needed. Unless otherwise specified, all statements, information, and
 recommendations contained herein do not constitute any express or implied
 warranties.
 
-## 版本历史 {.unnumbered .unlisted}
+## Version History {.unnumbered .unlisted}
 
 | Date       | Version | Description   |
 | ---------- | ------- | ------------- |
