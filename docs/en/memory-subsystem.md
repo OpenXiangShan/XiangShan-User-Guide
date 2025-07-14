@@ -6,205 +6,285 @@ file_authors_:
 
 # Memory Subsystem {#sec:memory-subsystem}
 
-## L1 指令 Cache
+## L1 Instruction Cache
 
-### 概述
+### Overview
 
-L1 指令高速缓存的主要特征如下：
+The main features of the L1 instruction cache are as follows:
 
-* 指令高速缓存大小可配置，支持 16K/32K/64K
-* 4 路组相联，缓存行大小为 64B
-* 支持刷新
-* 采用 PLRU 替换算法
-* 支持提供两个连续的缓存行
-* 支持指令预取
-* 采用可配置的 MSHR 管理取指与预取请求
-* 支持路查找
-* 支持 ECC 校验
-* 支持检查地址翻译错误、物理内存保护错误
+* The instruction cache size is configurable, supporting 16K/32K/64K.
+* 4-way set-associative, cache line size of 64B
+* Support refresh
+* Uses the PLRU replacement algorithm
+* Supports providing two consecutive cache lines
+* Supports instruction prefetching.
+* Configurable MSHR management for fetch and prefetch requests.
+* Supports way lookup.
+* Supports ECC Check
+* Supports checking address translation errors and physical memory protection
+  errors
 
-### 路查找队列
+### Way lookup queue.
 
-{{processor_name}}
-为提高缓存的命中率与访问速度，实现了高速指令缓存的路查找队列（WayLookUp）。路查找队列为先进先出结构，暂存缓存命中信息和指令地址翻译缓存（ITLB）返回的结果，同时监听
-MSHR 写入 SRAM 的缓存行，对命中信息进行更新。用户可以通过配置 `nWayLookupSize`
-来改变路查找队列的深度，同时可以反压限制预取最大距离。
+To improve cache hit rates and access speed, {{processor_name}} implements a Way
+Lookup Queue (WayLookUp) for the high-speed instruction cache. The Way Lookup
+Queue is a first-in-first-out structure that temporarily stores cache hit
+information and results returned by the Instruction Translation Lookaside Buffer
+(ITLB), while monitoring cache lines written to SRAM by MSHR to update hit
+information. Users can configure `nWayLookupSize` to adjust the depth of the Way
+Lookup Queue, which also limits the maximum prefetch distance through
+backpressure.
 
-### MSHR 管理取指与预取请求
+### MSHR manages fetch and prefetch requests
 
-MSHR（Miss Status Holding Register）是一种缓存管理结构，用于跟踪和处理缓存缺失（cache
-miss）事件。当处理器请求的数据在缓存中未找到时， MSHR 会记录缺失的状态并管理随后的数据请求。 {{processor_name}}
-中，取指请求和预取请求均通过 MSHR 进行管理，所有 MSHR 公用一组数据寄存器以减少面积。用户可配置 MSRH 取指数量寄存器 `nFetchMshr`
-与 MSHR 预取数量寄存器 `nPrefetchMshr`，来分别改变取指与预取的 MSHR 寄存器数量。
+MSHR (Miss Status Holding Register) is a cache management structure used to
+track and handle cache miss events. When requested data is not found in the
+cache, MSHR records the miss status and manages subsequent data requests. In
+{{processor_name}}, both fetch and prefetch requests are managed via MSHR, with
+all MSHRs sharing a set of data registers to reduce area. Users can configure
+the fetch quantity register `nFetchMshr` and prefetch quantity register
+`nPrefetchMshr` to adjust the number of MSHR registers for fetching and
+prefetching, respectively.
 
-### ECC 校验
+### ECC verification
 
-{{processor_name}} 支持对指令高速缓存进行 ECC 校验。用户可通过配置 `DataCodeUnit` 来改变校验单元大小，单位为 bit
-。每 64 位数据对应 1 位校验位。
+{{processor_name}} supports ECC verification for the instruction cache. Users
+can configure `DataCodeUnit` to adjust the verification unit size, measured in
+bits. Each 64 bits of data corresponds to 1 parity bit.
 
-### 分支预测单元
+### Branch Prediction Unit
 
-分支预测单元（BPU）内的预测器包括分支目标缓冲（uFTB）、取指目标缓冲（FTB）、条件分支预测器（TAGE-SC）、间接分支预测器（ITTAGE）和返回地址预测器（RAS）。
+Predictors within the Branch Prediction Unit (BPU) include the micro-FTB (uFTB),
+Fetch Target Buffer (FTB), conditional branch predictor (TAGE-SC), indirect
+branch predictor (ITTAGE), and return address predictor (RAS).
 
-* uFTB 负责快速预测条件分支是否跳转
-* FTB 负责维护预测块的起始地址，终止地址，所含分支指令 PC 地址、分支指令类型、基础的方向结果
-* TAGE-SC 是条件分支指令的主预测器
-* ITTAGE 负责预测间接跳转指令
-* RAS 负责预测 return 类型的间接跳转指令跳转地址
+* uFTB is responsible for quickly predicting whether conditional branches will
+  jump.
+* The FTB is responsible for maintaining the starting address, ending address,
+  branch instruction PC addresses, branch instruction types, and basic direction
+  results of prediction blocks.
+* TAGE-SC is the main predictor for conditional branch instructions.
+* ITTAGE is responsible for predicting indirect jump instructions.
+* RAS is responsible for predicting the jump address of return-type indirect
+  jump instructions.
 
-### 分支目标缓冲
+### Branch Target Buffer
 
-为了加快连续跳转时取指单元的取指效率， {{processor_name}}
-在分支预测单元的第一级用分支目标缓冲（uFTB）为处理器作出无空泡的基础预测，其主要功能如下：
+To enhance the fetch efficiency of the instruction fetch unit during consecutive
+jumps, {{processor_name}} uses the branch target buffer (uFTB) at the first
+level of the branch prediction unit to provide bubble-free basic predictions for
+the processor. Its main functions are as follows:
 
-* 缓存 FTB 项，生成一周期预测结果。uFTB 中维护了一个小型的 FTB 项缓存，拿到 PC 之后，会在一周期之内读出 PC 所对应的 FTB 项，并从
-  FTB 项生成一阶段预测结果。
-* 维护两比特饱和计数器，提供基础条件分支结果。uFTB 中为 FTB 项缓存的每一行都维护了对应的两比特饱和计数器，其方向预测结果会反映在 uFTB
-  的预测结果输出中。
-* 根据更新请求更新 FTB 缓存和两比特饱和计数器
+* Cache FTB entries to generate single-cycle prediction results. The uFTB
+  maintains a small cache of FTB entries. Upon receiving the PC, it reads the
+  corresponding FTB entry within one cycle and generates a first-stage
+  prediction result from the FTB entry.
+* Maintains a two-bit saturating counter to provide basic conditional branch
+  outcomes. Each entry in the uFTB's FTB cache line maintains a corresponding
+  two-bit saturating counter, with its direction prediction results reflected in
+  the uFTB's prediction output.
+* Update the FTB cache and two-bit saturation counters based on update requests.
 
-uFTB 进行预测的分支指令包括：
+Branch instructions predicted by uFTB include:
 
-* BEQ、BNE、BLT、BLTU、BGE、BGEU、C.BEQZ、C.BNEZ
-* JAL、JALR、C.J、C.JAL、C.JR、C.JALR
+* BEQ, BNE, BLT, BLTU, BGE, BGEU, C.BEQZ, C.BNEZ.
+* JAL, JALR, C.J, C.JAL, C.JR, C.JALR
 
-### 条件分支预测器
+### Conditional branch predictor
 
-{{processor_name}} 使用 TAGE-SC 作为条件分支的主预测器。TAGE-SC可以看作两个功能相对独立的组件：预测部分 TAGE 和校验部分
-SC。
+{{processor_name}} uses TAGE-SC as the main predictor for conditional branches.
+TAGE-SC can be viewed as two functionally independent components: the prediction
+part (TAGE) and the verification part (SC).
 
-* 标记几何历史长度预测器 TAGE（Tagged Geometric History Length
-  Predictor）利用历史长度不同的多个预测表，可以挖掘极长的分支历史信息。TAGE
-  功能是预测一个跳转指令是否跳转，它由一个基预测表和多个历史表组成，首先通过多个历史表进行分支预测，如果没有预测结果，则再采用基础预测表的预测结果。
-* SC (Statistical Corrector) 是统计校正器。当 SC 会参考 TAGE
-  的预测结果和统计偏向的结果。并根据这两个结果，矫正最终的预测结果。
+* The Tagged Geometric History Length Predictor (TAGE) leverages multiple
+  prediction tables with varying history lengths to exploit extremely long
+  branch history information. TAGE's function is to predict whether a branch
+  instruction will be taken. It consists of a base prediction table and multiple
+  history tables. Branch prediction is first attempted using the history tables;
+  if no prediction is available, the base prediction table's result is used.
+* SC (Statistical Corrector) is a statistical corrector. It references TAGE's
+  prediction results and statistical biases to adjust the final prediction
+  outcome.
 
-在 {{processor_name}} 中，由于每个预测块最多可以有 2 条跳转指令，因此 TAGE 在每次预测最多同时预测 2 条条件分支指令。在访问
-TAGE 的各个历史表时，用预测块的起始地址作为 PC，同时取出两个预测结果，并基于相同的全局历史进行预测。
+In the {{processor_name}}, since each prediction block can have up to 2 branch
+instructions, TAGE predicts up to 2 conditional branch instructions
+simultaneously per prediction. When accessing various history tables of TAGE,
+the starting address of the prediction block is used as the PC, and two
+prediction results are fetched simultaneously, both based on the same global
+history for prediction.
 
-TAGE-SC 进行预测的分支指令包括：
+Branch instructions predicted by TAGE-SC include:
 
-* BEQ、BNE、BLT、BLTU、BGE、BGEU、C.BEQZ、C.BNEZ
+* BEQ, BNE, BLT, BLTU, BGE, BGEU, C.BEQZ, C.BNEZ.
 
-### 取指目标缓冲
+### Fetch Target Buffer.
 
-取指目标缓冲（FTB）暂存 FTB 项，为后续的 TAGE、ITTAGE、SC、RAS
-等高级预测器提供更为精确的分支指令位置、类型、目标地址等分支预测块关键信息，也为总是跳转的分支指令提供基础的方向预测。FTB 模块内有一 FTBBank
-模块负责 FTB 项的实际存储，模块内使用了一块多路 SRAM 作为存储器，采用 4 路组相联进行存储，共 2048 项，每项最多存储 2 条分支，最多可存储
-4096 条分支。
+The Fetch Target Buffer (FTB) temporarily stores FTB entries, providing more
+accurate branch instruction locations, types, target addresses, and other
+critical branch prediction block information for advanced predictors such as
+TAGE, ITTAGE, SC, and RAS. It also offers basic direction prediction for
+always-taken branch instructions. The FTB module includes an FTBBank module
+responsible for the actual storage of FTB entries. Within the module, a
+multi-port SRAM is used as memory, configured with a 4-way set-associative
+structure, totaling 2048 entries. Each entry can store up to 2 branches,
+allowing a maximum of 4096 branches to be stored.
 
-FTB 进行预测的分支指令包括：
+FTB predicts branch instructions including:
 
-* BEQ、BNE、BLT、BLTU、BGE、BGEU、C.BEQZ、C.BNEZ
-* JAL、JALR、C.J、C.JAL、C.JR、C.JALR
+* BEQ, BNE, BLT, BLTU, BGE, BGEU, C.BEQZ, C.BNEZ.
+* JAL, JALR, C.J, C.JAL, C.JR, C.JALR
 
-### 间接分支预测器
+### Indirect branch predictor
 
-{{processor_name}} 使用 ITTAGE 负责对间接分支的目标地址进行预测。ITTAGE 的每个表项在 TAGE
-表项的基础上加入了所预测的跳转地址项，最后输出结果为选出的命中预测跳转地址而非选出的跳转方向。由于每个 FTB 项仅存储至多一条间接跳转指令信息，ITTAGE
-预测器每周期也最多预测一条间接跳转指令的目标地址。
+{{processor_name}} uses ITTAGE to predict the target addresses of indirect
+branches. Each entry in ITTAGE adds a predicted jump address to the TAGE entry,
+with the final output being the selected predicted jump address rather than the
+jump direction. Since each FTB entry stores at most one indirect jump
+instruction, the ITTAGE predictor can predict the target address of at most one
+indirect jump instruction per cycle.
 
-ITTAGE 进行预测的分支指令包括：
+ITTAGE predicts branch instructions including:
 
-* JALR：源寄存器为 X1、X5 除外
-* C.JALR：源寄存器为 X5 除外
-* C.JR：源寄存器为 X1、X5 除外
+* JALR: Source register is X1, excluding X5
+* C.JALR: Excludes source register X5.
+* C.JR: Source register is X1, excluding X5.
 
-### 返回地址预测器
+### Return address predictor
 
-返回地址预测器（RAS）用于函数调用结束时，返回地址的快速准确预测。当预测块被 RAS 的前级预测器预测为函数调用指令时，RAS
-将该函数调用指令的后续指令地址入栈；当预测块被 RAS 的前级预测器预测为函数返回指令时，则从 RAS
-弹栈。为了最大限度地减少执行过程中错误猜测导致的数据污染， {{processor_name}} 使用了基于持久化栈的返回地址预测器。RAS
-分为提交栈和推测栈两个部分，推测栈利用了分支预测单元的预测结果来进行预测，并根据后端返回的信息将数据压入提交栈中。
+The Return Address Stack (RAS) is used for fast and accurate prediction of
+return addresses at the end of function calls. When a prediction block is
+predicted by the RAS's front-end predictor as a function call instruction, the
+RAS pushes the address of the subsequent instruction onto the stack; when a
+prediction block is predicted as a function return instruction, the RAS pops the
+stack. To minimize data pollution caused by mispredictions during execution,
+{{processor_name}} employs a persistent stack-based return address predictor.
+The RAS is divided into two parts: the commit stack and the speculative stack.
+The speculative stack utilizes the prediction results from the branch prediction
+unit for predictions and pushes data into the commit stack based on feedback
+from the backend.
 
-* 函数调用指令包括：JAL、JALR、C.JALR
-* 函数返回指令包括：JALR、C.JR、C.JALR
+* Function call instructions include: JAL, JALR, C.JALR.
+* Function return instructions include: JALR, C.JR, C.JALR.
 
-## L1 数据 Cache
+## L1 Data Cache.
 
-### 概述
+### Overview
 
-L1 数据高速缓存的主要特征如下：
+The main features of the L1 data cache are as follows:
 
-* 数据高速缓存大小为 64KB
-* 8 路组相联，缓存行大小为 64B
-* 虚拟地址索引，物理地址标记（VIPT）
-* 支持至多 3 个并行的 64 / 128 bits 读操作
-* 支持至多 1 个 512 bits 读操作
-* 支持至多 1 个 512 bits 写操作
-* 写策略采用写回-写分配模式
-* 支持向 L2 Cache 请求缺失数据并重填
-* 支持 Probe 请求的处理及替换数据块写回
-* 支持原子请求的处理
-* 支持 Random、LRU、PLRU 替换算法，默认 PLRU 算法
-* 支持与 L2 Cache 配合处理缓存别名问题
-* 支持 SMS、Stride 和 Stream 硬件预取
+* Data cache size is 64KB
+* 8-way set-associative, with a cache line size of 64B.
+* Virtual Index, Physical Tag (VIPT)
+* Supports up to 3 parallel 64/128-bit read operations
+* Supports up to one 512-bit read operation.
+* Supports up to one 512-bit write operation.
+* The write strategy adopts a write-back and write-allocate mode.
+* Supports requesting missing data from L2 Cache and refilling.
+* Supports processing Probe requests and writing back replaced data blocks.
+* Supports handling atomic requests
+* Supports Random, LRU, and PLRU replacement algorithms, with PLRU as the
+  default
+* Supports handling cache aliasing issues in coordination with L2 Cache.
+* Supports SMS, Stride, and Stream hardware prefetching.
 
-### L1 DCache 一致性
+### L1 DCache coherence
 
-L1 数据高速缓存采用 TileLink
-协议维护多个处理器核心数据高速缓存的一致性，该协议要求在响应内存访问操作时进行提权和降权操作，同时定义了缓存行在数据高速缓存上的 4 个状态，分别是：
+The L1 data cache uses the TileLink protocol to maintain coherence among
+multiple processor core data caches. This protocol requires privilege escalation
+and de-escalation when responding to memory access operations and defines four
+states for cache lines in the data cache, which are:
 
-* Nothing：当前没有缓存数据副本的节点，没有读写权限
-* Trunk：具有写权限的干净数据副本
-* Dirty：具有写权限的脏数据副本
-* Branch：具有只读数据缓存副本
+* Nothing: A node currently without a cached data copy has no read or write
+  permissions.
+* Trunk: A clean data copy with write permissions.
+* Dirty: A writable dirty data copy
+* Branch: A read-only data cache copy
 
-### 独占式访问
+### Exclusive access.
 
-L1 数据高速缓存支持 LR/SC 指令和 AMO 指令。用户可以使用 LR/SC
-指令构成原子锁等同步原语实现同一个核不同进程之间或者不同核之间的同步，也可以使用 AMO 指令直接进行一些简单的原子运算操作。
+The L1 data cache supports LR/SC instructions and AMO instructions. Users can
+employ LR/SC instructions to construct atomic locks and other synchronization
+primitives for synchronization between different processes on the same core or
+across different cores. Alternatively, AMO instructions can be used directly for
+simple atomic operations.
 
-MemBlock 中设置了 s_normal 和 s_atomics 两种状态，在执行原子指令时，状态被设置为
-s_atomics，此时执行流进入原子指令处理单元，开始独占式访问。对于 LR/SC 指令对，L1 数据高速缓存会在执行 LR 指令时注册
-reservation set，并独占该 reservation set 一定周期（默认 64 个时钟周期），独占期间 DCache
-会阻塞其他核心的访问，防止多核场景下 LR/SC 指令循环陷入死锁；对于 AMO 指令，L1 数据高速缓存会判断是否其是否命中缓存，决定该条 AMO
-请求是否需要进入 MissQueue。如果当前的 AMO 请求未命中缓存，则将这次请求信息写入 MissQueue；若本次 AMO 请求命中，则读取 data
-的结果，然后执行 AMO 指令的运算操作，最后向原子指令处理单元返回响应。MemBlock 中发现原子指令处理单元完成执行，则将状态修改为 s_normal
-继续执行。
+MemBlock has two states: s_normal and s_atomics. When executing atomic
+instructions, the state is set to s_atomics, and the execution flow enters the
+atomic instruction processing unit for exclusive access. For LR/SC instruction
+pairs, the L1 data cache registers a reservation set during LR instruction
+execution and exclusively holds it for a certain period (default 64 clock
+cycles). During this exclusive period, the DCache blocks accesses from other
+cores to prevent deadlocks in multi-core scenarios with LR/SC instruction loops.
+For AMO instructions, the L1 data cache checks for cache hits to determine if
+the AMO request needs to enter the MissQueue. If the current AMO request misses
+the cache, the request information is written to the MissQueue. If the AMO
+request hits, the data result is read, the AMO instruction operation is
+performed, and a response is returned to the atomic instruction processing unit.
+Once MemBlock detects the atomic instruction processing unit has completed
+execution, it reverts to s_normal to continue execution.
 
-### 替换与写回
+### Replacement and writeback
 
-L1 数据高速缓存采用写回（write-back）和写分配（write-allocate）的写策略，采用可配置 Random、LRU、PLRU
-替换策略，默认选择使用 PLRU 策略；选出替换块后将其放入写回队列中，向 L2 Cache 发出 Release 请求。
+L1 data cache adopts write-back and write-allocate policies, with configurable
+replacement strategies (Random, LRU, PLRU), defaulting to PLRU. Selected
+replacement blocks are placed into the write-back queue, and a Release request
+is issued to L2 Cache.
 
 ## L2 Cache
 
-### 概述
+### Overview
 
-L2 高速缓存的主要特征如下：
+The main features of the L2 cache are as follows:
 
-* 高速缓存大小为 1MB
-* 8 路组相联，缓存行大小为 64B
-* L2 Cache 与 L1 DCache 是严格包含关系，与 L1 ICache、PTW 是非严格包含关系
-* 物理地址索引，物理地址标记（PIPT）
-* 每次访问最大宽度为 64B
-* 写策略采用写回-写分配模式
-* 采用 DRRIP 替换算法
-* 支持指令预取、TLB 预取、数据预取机制
-* 支持 Best-Offset Prefetch（BOP）
-* 采用非阻塞流水线结构
+* Cache size is 1MB
+* 8-way set-associative, with a cache line size of 64B.
+* The L2 Cache has a strict inclusion relationship with the L1 DCache and a
+  non-strict inclusion relationship with the L1 ICache and PTW.
+* Physical address indexing, physical address tagging (PIPT)
+* Maximum access width of 64B per access
+* The write strategy adopts a write-back and write-allocate mode.
+* Adopts DRRIP replacement algorithm
+* Supports instruction prefetching, TLB prefetching, and data prefetching
+  mechanisms
+* Supports Best-Offset Prefetch (BOP).
+* Adopts a non-blocking pipeline structure
 
-### Cache 一致性
+### Cache coherence.
 
-{{processor_name}} 二级高速缓存采用类 MESI 协议维护多个处理器核心数据高速缓存的一致性，包括如下 5 个 cache 状态：
+The {{processor_name}} L2 cache employs a MESI-like protocol to maintain
+coherence among multiple processor core data caches, including the following 5
+cache states:
 
-* Invalid：表示缓存行不在该数据高速缓存中
-* BRANCH：表示缓存行可能位于多个数据高速缓存中，该拷贝有可读权限
-* TRUNK Clean：表示缓存行仅位于此核心的数据高速缓存中，该拷贝是干净块且没有读写权限，但是上游的数据缓存有读和写权限
-* TRUNK Dirty：表示缓存行仅位于此核心的数据高速缓存中，该拷贝是脏块且没有读写权限，但是上游的数据缓存有读和写权限
-* TIP Clean：表示缓存行仅位于此核心的数据高速缓存中，该拷贝是干净块且有读写权限，上游的数据或者有读权限、或者没有任何权限
-* TIP Dirty：表示缓存行仅位于此核心的数据高速缓存中，该拷贝是脏块且有读写权限，上游的数据或者有读权限、或者没有任何权限
+* Invalid: Indicates the cache line is not present in this data cache
+* BRANCH: Indicates the cache line may reside in multiple data caches, with this
+  copy having read permissions
+* TRUNK Clean: Indicates that the cache line is only present in this core's data
+  cache. The copy is clean and lacks read/write permissions, but the upstream
+  data cache has both read and write permissions.
+* TRUNK Dirty: Indicates the cache line resides only in this core's data cache,
+  is a dirty block with no read/write permissions, while the upstream data cache
+  has read and write permissions.
+* TIP Clean: Indicates the cache line resides only in this core's data cache, is
+  a clean block with read/write permissions, while upstream data either has read
+  permissions or no permissions at all
+* TIP Dirty: Indicates the cache line resides only in this core's data cache,
+  the copy is dirty with read-write permissions, while upstream data either has
+  read permissions or no permissions at all.
 
-其他可能影响总线事务的标志位：
+Other flags that may affect bus transactions:
 
-* `clients`：标志 L1 DCache 有无数据拷贝，用于辅助判断在 BRANCH 或 TIP 状态下 L1 DCache 有无可读权限的拷贝
-* `alias`：别名位，用于硬件处理 L1 DCache（VIPT）的别名问题，只在 L1 DCache 有数据拷贝时有效，记录当前物理地址在 L1
-  DCache 中的虚拟地址索引超出物理页偏移的部分
-* `prefetch`：标志该数据拷贝是否是预取块
+* `clients`: Flags whether L1 DCache has a data copy, used to assist in
+  determining if L1 DCache has a readable copy in BRANCH or TIP state.
+* `alias`: Alias bit, used for hardware handling of L1 DCache (VIPT) aliasing
+  issues, valid only when L1 DCache has a data copy, recording the portion of
+  the virtual address index in L1 DCache that exceeds the physical page offset
+  for the current physical address.
+* `prefetch`: Indicates whether the data copy is a prefetch block.
 
-### 组织形式
+### Organization structure
 
-{{processor_name}} L2 Cache 采用了分块（Slice）的流水线结构，默认为 4 个 Slice，将访问地址按照 PA[7:6] 离散在
-4 个不同的 Slice 中，允许多个访问的并行处理，从而调高访问效率。
+The {{processor_name}} L2 Cache adopts a sliced pipeline structure, defaulting
+to 4 slices. Access addresses are distributed across 4 different slices based on
+PA[7:6], allowing parallel processing of multiple accesses to improve
+efficiency.
 
