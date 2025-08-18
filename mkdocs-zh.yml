@@ -39,3 +39,4 @@ nav:
   - 总线接口: bus-interface.md
   - 调试: debug.md
   - 性能监测单元: performance-monitor.md
+  - 严重错误: critical-error.md
