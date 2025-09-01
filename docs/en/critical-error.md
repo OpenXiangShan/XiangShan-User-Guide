@@ -3,83 +3,125 @@ file_authors_:
 - zehao Liu <liuzehao19@mails.ucas.ac.cn>
 ---
 
-# 严重错误 {#sec:critical-error}
+# Critical Error {#sec:critical-error}
 
-## 概述
+## Overview
 
-{{processor_name}} 支持了 RISC-V 双重陷入系列拓展，包括 ssdbltrp 以及 smdbltrp
-拓展，用于处理系统级不可恢复错误，即严重错误 (critical error) ：此时处理器陷入一种无法通过常规异常处理流程进行修复的状态。
+{{processor_name}} supports the RISC-V double trap series extensions, including
+ssdbltrp and smdbltrp extensions, to handle system-level unrecoverable errors,
+i.e., critical errors: where the processor enters a state that cannot be
+repaired through conventional exception handling processes.
 
-RISC-V 特权级手册定义的严重错误是指在异常处理程序（非可重入阶段）发生了新的异常或中断即双重陷入 (double trap) 。这种嵌套陷入可能会导致：
+The RISC-V Privileged Specification defines a critical error as a new exception
+or interrupt occurring during an exception handler (non-reentrant phase), known
+as a double trap. Such nested traps may result in:
 
-* 上下文寄存器内容丢失或覆盖
-* 常规异常返回路径不再可靠
-* 无法恢复初始异常的执行现场
+* Context register content lost or overwritten
+* Conventional exception return paths are no longer reliable
+* Unable to restore the execution context of the initial exception
 
-因此，RISC-V 特权级手册引入了双重陷入拓展，额外定义严重错误异常处理程序，处理部分可恢复的严重错误。
+Therefore, the RISC-V Privileged Specification introduces the double trap
+extension, additionally defining critical error exception handlers to manage
+certain recoverable critical errors.
 
-## 可恢复严重错误
+## Recoverable critical errors
 
-双重陷入拓展将在监管模式 (HS/S)、虚拟监管模式（VS）以及部分机器模式（M）发生的双重陷入定义为可恢复的严重错误。
+The double trap extension defines double traps occurring in supervisor mode
+(HS/S), virtual supervisor mode (VS), and certain machine mode (M) scenarios as
+recoverable critical errors.
 
-### （虚拟）监管模式可恢复严重错误
+### (Virtual) Supervisor mode recoverable critical error
 
-（虚拟）监管模式可恢复严重错误的响应流程：
+Response flow for (virtual) supervisor-mode recoverable critical errors:
 
-第一步，根据 vs/sstatus 寄存器的 SDT 位判断是否在（虚拟）监管模式发生双重陷入；
+First step, determine whether a double trap occurred in (virtual) supervisor
+mode based on the SDT bit in the vs/sstatus register;
 
-第二步，若发生双重陷入，委托更高特权级（机器模式）对第二次陷入进行处理，从而保护当前特权级以及存在的特权寄存器，上下文寄存器等信息；
+Step two: If a double trap occurs, delegate the handling of the second trap to a
+higher privilege level (machine mode) to protect the current privilege level and
+existing privilege registers, context registers, and other information;
 
-第三步，机器模式处理第二次陷入：
+Step three: Machine mode handles the second trap:
 
-* 将 mcause 标记为 16（double trap）；
-* 将 mtval2 标记为第二次陷入类型；
+* Mark mcause as 16 (double trap);
+* Mark mtval2 as the second trap type;
 
-第四步，根据 mtvec 跳转至系统软件预先配置的双重陷入处理函数，处理二次陷入。
+Fourth step, jump to the double trap handler pre-configured by system software
+based on mtvec to handle the second trap.
 
-（虚拟）监管模式可恢复严重错误的返回流程：
+Return process for recoverable critical errors in (virtual) supervisor mode:
 
-机器模式采用 mret 指令回到第一次陷入的异常处理函数以及特权级，将对应 vs/sstatus 的 SDT
-清空，以标记二次陷入处理完成，最后继续完成后续第一次陷入处理。
+Machine mode uses the mret instruction to return to the first trapped exception
+handler and privilege level, clears the SDT bit in the corresponding vs/sstatus
+to mark the completion of the second trap handling, and finally proceeds to
+complete the subsequent first trap handling.
 
-### 机器模式可恢复严重错误
+### Machine-mode recoverable critical errors
 
-由于 {{processor_name}} 支持了 RISC-V 可恢复非屏蔽中断拓展，即 smrnmi 拓展，因此支持对机器模式严重错误进行恢复。
+Since {{processor_name}} supports the RISC-V recoverable non-maskable interrupt
+extension, namely the smrnmi extension, it enables recovery from critical errors
+in machine mode.
 
-机器模式可恢复严重错误的响应流程：
+Response flow for machine-mode recoverable critical errors:
 
-第一步，根据 mstatus 寄存器的 MDT 位判断是否在机器模式发生双重陷入；
+First step, determine whether a double trap occurred in machine mode based on
+the MDT bit in the mstatus register;
 
-第二步，若发生双重陷入，查找是否存在更高特权级对第二次陷入进行处理：
+Step two: If a double trap occurs, check whether a higher privilege level exists
+to handle the second trap:
 
-* 若非屏蔽中断状态寄存器 mnstatus.nmie 位打开，表示此时支持可恢复非屏蔽中断处理，可以委托；
-* 若 nmie 位关闭，表示此时不支持可恢复非屏蔽中断或正在进行可恢复非屏蔽中断处理，无法委托；
+* If the mnstatus.nmie bit in the non-maskable interrupt status register is set,
+  it indicates that recoverable non-maskable interrupt handling is currently
+  supported and can be delegated;
+* If the nmie bit is cleared, it indicates that recoverable non-maskable
+  interrupt handling is not currently supported or is in progress, and
+  delegation is not possible;
 
-第三步，非屏蔽中断处理二次陷入。
+Step three: Non-maskable interrupt handling for the second trap.
 
-机器模式模式可恢复严重错误的返回流程：
+Return process for recoverable critical errors in machine mode:
 
-机器模式采用 mnret 指令回到第一次陷入的异常处理函数以及特权级，将对应 mstatus 的 MDT
-清空，以标记二次陷入处理完成，最后继续完成后续第一次陷入处理。
+Machine mode uses the mnret instruction to return to the first trapped exception
+handler and privilege level, clears the MDT bit in the corresponding mstatus to
+mark the completion of the second trap handling, and finally proceeds to
+complete the subsequent first trap handling.
 
-## 不可恢复严重错误（严重错误状态）
+## Unrecoverable critical error (critical error state)
 
-双重陷入拓展将下列严重错误定义为不可恢复严重错误：
+The double trap extension defines the following critical errors as
+non-recoverable critical errors:
 
-* 不支持可恢复非屏蔽中断处理时，机器模式发生严重错误
-* 可恢复非屏蔽中断正在处理时，机器模式发生严重错误
+* When recoverable non-maskable interrupt handling is not supported, a critical
+  error occurs in machine mode
+* When a recoverable non-maskable interrupt is being processed, a critical error
+  occurs in machine mode.
 
-简单来说，上述情况都是在 mnstatus.nmie
-拉低的情况下，发生陷入。此时不存在可以委托的更高特权级，因此无法处理严重错误。双重陷入拓展将该状态定义为严重错误状态：即处理器核在支持双重陷入行为后也无法处理当前状态，后续行为未知，需要外部平台介入。
+Simply put, the above scenarios all involve traps occurring when mnstatus.nmie
+is pulled low. At this point, there is no higher privilege level available for
+delegation, making it impossible to handle the critical error. The double trap
+extension defines this state as a critical error state: even after supporting
+double trap behavior, the processor core cannot handle the current state,
+leading to unknown subsequent behavior that requires external platform
+intervention.
 
-此外，目前 {{processor_name}} 将处理器核挂死自定为严重错误状态，作为硅后判断挂死的重要手段。
+Additionally, the current {{processor_name}} defines processor core hang as a
+critical error state, serving as an important means for post-silicon hang
+determination.
 
-### 严重错误状态处理
+### Critical error state handling
 
-处理器收集到不可恢复严重错误信息后，会进入严重错误状态，即特殊停机状态。RISC-V 手册规定该状态需要对外部平台可观测、可调式：
+After collecting information about a non-recoverable critical error, the
+processor enters a critical error state, which is a special halt state. The
+RISC-V manual specifies that this state must be observable and debuggable by the
+external platform:
 
-- 处理器核提供顶层接口 riscv_critical_error ，用于外部平台观测；
-- 根据调试模式配置寄存器 dcsr.cetrig 字段，在严重错误状态可选进入调试模式处理；
-    - cetrig = 1: 不对外递送 critical error 信号，进入调试模式处理，并配置进入原因为严重错误状态：dcsr.cause =
-      7, dcsr.extcause = 0；
-    - cetrig = 0: 递送 critical error 信号，由外部平台进行 reset 或其他错误上报/容错机制。
+- The processor core provides a top-level interface riscv_critical_error for
+  external platform monitoring;
+- Depending on the dcsr.cetrig field in the debug mode configuration register,
+  optionally enter debug mode handling during a critical error state;
+    - cetrig = 1: Does not externally signal a critical error, enters debug mode
+      for handling, and configures the entry reason as a critical error state:
+      dcsr.cause = 7, dcsr.extcause = 0;
+    - cetrig = 0: Deliver a critical error signal, allowing the external
+      platform to perform a reset or other error reporting/fault tolerance
+      mechanisms.
