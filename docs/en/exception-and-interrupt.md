@@ -30,8 +30,12 @@ respond to external events.
      insufficient.
   4. Environment call (system call): When an application requests kernel
      services through a specific instruction, it also triggers an exception.
-  5. 硬件错误：当处理器执行加载或存储操作时，总线地址请求对应数据不存在时，处理器会引发异常。
-  6. 双重陷入：当处理器执行异常/中断处理程序时，再次发生异常/中断，处理器会引发异常进行双重陷入处理。
+  5. Hardware Error: When the processor executes a load or store operation and
+     the bus address request corresponds to data that does not exist, the
+     processor triggers an exception.
+  6. Double Trap: When the processor is executing an exception/interrupt handler
+     and another exception/interrupt occurs, the processor triggers an exception
+     to handle the double trap.
 * An interrupt is a signal triggered by external hardware devices (such as
   timers, peripherals, etc.), requesting the processor to pause the currently
   executing program and handle these external events. Interrupts are
@@ -57,37 +61,37 @@ respond to external events.
 
 Table: List of exceptions supported by {{processor_name}}
 
-| Exception number |                         Trap Cause                         |       tval update value       | tval2 update value |
-| :--------------: | :--------------------------------------------------------: | :---------------------------: | :----------------: |
-|        0         |               Instruction address misaligned               |               0               |         0          |
-|        1         | Instruction fetch permission exception (non-page-crossing) |   Instruction Start Address   |         0          |
-|        1         |      Instruction fetch permission fault (cross-page)       |    Next Page Start Address    |         0          |
-|        2         |                    Illegal instruction                     | Illegal instruction encoding  |         0          |
-|        3         |                         Breakpoint                         | Exception instruction address |         0          |
-|        3         |                     EBREAK instruction                     |               0               |         0          |
-|        4         |                  LOAD address misaligned                   |  Memory Access Start Address  |         0          |
-|        5         |                 LOAD Permission Exception                  | Actual fault starting address |         0          |
-|        6         |                STORE/AMO Address Misaligned                |  Memory Access Start Address  |         0          |
-|        7         |               STORE/AMO permission exception               | Actual fault starting address |         0          |
-|        8         |                          U-ECALL                           |               0               |         0          |
-|        9         |                          S-ECALL                           |               0               |         0          |
-|        10        |                          VS-ECALL                          |               0               |         0          |
-|        11        |                          M-ECALL                           |               0               |         0          |
-|        12        |         Instruction Page Fault (Non-page-crossing)         |   Instruction Start Address   |         0          |
-|        12        |           Instruction page fault (page-crossing)           |    Next Page Start Address    |         0          |
-|        13        |              LOAD page fault (non-cross-page)              |  Memory Access Start Address  |         0          |
-|        13        |              LOAD page fault (page-crossing)               | Actual fault starting address |         0          |
-|        15        |          STORE/AMO Page Fault (Non-page-crossing)          |  Memory Access Start Address  |         0          |
-|        15        |             STORE/AMO page fault (cross-page)              | Actual fault starting address |         0          |
-|        16        |                           双重陷入异常                           |               0               |      第二次异常的编号      |
-|        19        |                            硬件错误                            | Actual fault starting address |         0          |
-|        20        |      Guest instruction page fault (non-page-crossing)      |   Instruction Start Address   | Corresponding GPA  |
-|        20        |         Guest instruction page fault (cross-page)          |    Next Page Start Address    |  Actual fault GPA  |
-|        21        |           Guest LOAD page fault (non-cross-page)           |  Memory Access Start Address  | Corresponding GPA  |
-|        21        |             Guest LOAD page fault (cross-page)             | Actual fault starting address |  Actual fault GPA  |
-|        22        |            Virtualization instruction exception            | Illegal instruction encoding  |         0          |
-|        23        |       Guest STORE/AMO page fault (non-page-crossing)       |  Memory Access Start Address  | Corresponding GPA  |
-|        23        |          Guest STORE/AMO Page Fault (Cross-page)           | Actual fault starting address |  Actual fault GPA  |
+| Exception number |                         Trap cause                         |       tval update value       |            tval2 update value            |
+| :--------------: | :--------------------------------------------------------: | :---------------------------: | :--------------------------------------: |
+|        0         |               Instruction address misaligned               |               0               |                    0                     |
+|        1         | Instruction fetch permission exception (non-page-crossing) |   Instruction Start Address   |                    0                     |
+|        1         |      Instruction fetch permission fault (cross-page)       |    Next Page Start Address    |                    0                     |
+|        2         |                    Illegal instruction                     | Illegal instruction encoding  |                    0                     |
+|        3         |                         Breakpoint                         | Exception instruction address |                    0                     |
+|        3         |                     EBREAK instruction                     |               0               |                    0                     |
+|        4         |                  LOAD address misaligned                   |  Memory Access Start Address  |                    0                     |
+|        5         |                 LOAD Permission Exception                  | Actual fault starting address |                    0                     |
+|        6         |                STORE/AMO Address Misaligned                |  Memory Access Start Address  |                    0                     |
+|        7         |               STORE/AMO permission exception               | Actual fault starting address |                    0                     |
+|        8         |                          U-ECALL                           |               0               |                    0                     |
+|        9         |                          S-ECALL                           |               0               |                    0                     |
+|        10        |                          VS-ECALL                          |               0               |                    0                     |
+|        11        |                          M-ECALL                           |               0               |                    0                     |
+|        12        |         Instruction Page Fault (Non-page-crossing)         |   Instruction Start Address   |                    0                     |
+|        12        |           Instruction page fault (page-crossing)           |    Next Page Start Address    |                    0                     |
+|        13        |              LOAD page fault (non-cross-page)              |  Memory Access Start Address  |                    0                     |
+|        13        |              LOAD page fault (page-crossing)               | Actual fault starting address |                    0                     |
+|        15        |          STORE/AMO Page Fault (Non-page-crossing)          |  Memory Access Start Address  |                    0                     |
+|        15        |             STORE/AMO page fault (cross-page)              | Actual fault starting address |                    0                     |
+|        16        |                   Double Trap Exception                    |               0               | Trap cause code of the second exception. |
+|        19        |                       Hardware error                       | Actual fault starting address |                    0                     |
+|        20        |      Guest instruction page fault (non-page-crossing)      |   Instruction Start Address   |            Corresponding GPA             |
+|        20        |         Guest instruction page fault (cross-page)          |    Next Page Start Address    |             Actual fault GPA             |
+|        21        |           Guest LOAD page fault (non-cross-page)           |  Memory Access Start Address  |            Corresponding GPA             |
+|        21        |             Guest LOAD page fault (cross-page)             | Actual fault starting address |             Actual fault GPA             |
+|        22        |            Virtualization instruction exception            | Illegal instruction encoding  |                    0                     |
+|        23        |       Guest STORE/AMO page fault (non-page-crossing)       |  Memory Access Start Address  |            Corresponding GPA             |
+|        23        |          Guest STORE/AMO Page Fault (Cross-page)           | Actual fault starting address |             Actual fault GPA             |
 
 Note: Xiangshan does not actually have instruction address misalignment
 exceptions.
@@ -124,7 +128,7 @@ following operations.
 
 Table: {{processor_name}} Supported Interrupt List
 
-| Interrupt number |                  Trap Cause                  |
+| Interrupt number |                  Trap cause                  |
 | :--------------: | :------------------------------------------: |
 |        1         |     Supervisor Software Interrupt (SSI)      |
 |        2         | Virtual Supervisor Software Interrupt (VSSI) |
