@@ -58,7 +58,7 @@ complete the subsequent first trap handling.
 
 ### Machine-mode recoverable critical errors
 
-Since {{processor_name}} supports the RISC-V recoverable non-maskable interrupt
+Since {{processor_name}} supports the RISC-V resumable non-maskable interrupt
 extension, namely the smrnmi extension, it enables recovery from critical errors
 in machine mode.
 
@@ -71,11 +71,11 @@ Step two: If a double trap occurs, check whether a higher privilege level exists
 to handle the second trap:
 
 * If the mnstatus.nmie bit in the non-maskable interrupt status register is set,
-  it indicates that recoverable non-maskable interrupt handling is currently
+  it indicates that resumable non-maskable interrupt handling is currently
   supported and can be delegated;
-* If the nmie bit is cleared, it indicates that recoverable non-maskable
-  interrupt handling is not currently supported or is in progress, and
-  delegation is not possible;
+* If the nmie bit is cleared, it indicates that resumable non-maskable interrupt
+  handling is not currently supported or is in progress, and delegation is not
+  possible;
 
 Step three: Non-maskable interrupt handling for the second trap.
 
@@ -91,9 +91,9 @@ complete the subsequent first trap handling.
 The double trap extension defines the following critical errors as
 non-recoverable critical errors:
 
-* When recoverable non-maskable interrupt handling is not supported, a critical
+* When resumable non-maskable interrupt handling is not supported, a critical
   error occurs in machine mode
-* When a recoverable non-maskable interrupt is being processed, a critical error
+* When a resumable non-maskable interrupt is being processed, a critical error
   occurs in machine mode.
 
 Simply put, the above scenarios all involve traps occurring when mnstatus.nmie
