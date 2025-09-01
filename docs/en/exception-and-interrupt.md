@@ -30,6 +30,8 @@ respond to external events.
      insufficient.
   4. Environment call (system call): When an application requests kernel
      services through a specific instruction, it also triggers an exception.
+  5. 硬件错误：当处理器执行加载或存储操作时，总线地址请求对应数据不存在时，处理器会引发异常。
+  6. 双重陷入：当处理器执行异常/中断处理程序时，再次发生异常/中断，处理器会引发异常进行双重陷入处理。
 * An interrupt is a signal triggered by external hardware devices (such as
   timers, peripherals, etc.), requesting the processor to pause the currently
   executing program and handle these external events. Interrupts are
@@ -77,6 +79,8 @@ Table: List of exceptions supported by {{processor_name}}
 |        13        |              LOAD page fault (page-crossing)               | Actual fault starting address |         0          |
 |        15        |          STORE/AMO Page Fault (Non-page-crossing)          |  Memory Access Start Address  |         0          |
 |        15        |             STORE/AMO page fault (cross-page)              | Actual fault starting address |         0          |
+|        16        |                           双重陷入异常                           |               0               |      第二次异常的编号      |
+|        19        |                            硬件错误                            | Actual fault starting address |         0          |
 |        20        |      Guest instruction page fault (non-page-crossing)      |   Instruction Start Address   | Corresponding GPA  |
 |        20        |         Guest instruction page fault (cross-page)          |    Next Page Start Address    |  Actual fault GPA  |
 |        21        |           Guest LOAD page fault (non-cross-page)           |  Memory Access Start Address  | Corresponding GPA  |
