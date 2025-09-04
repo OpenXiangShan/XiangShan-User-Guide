@@ -1,6 +1,6 @@
 ---
 file_authors_:
-- Tang Haojin <tanghaojin@outlook.com>
+- Tang Haojin <tanghaojin@outlook.com> 
 ---
 
 # Processor Profile {#sec:processor}
