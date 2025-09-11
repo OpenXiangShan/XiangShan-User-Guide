@@ -7,7 +7,7 @@ on:
 
 jobs:
   manage-claim:
-    if: github.event.issue.number == 5
+    if: github.event.issue.number == 27
     runs-on: ubuntu-latest
     steps:
       - name: Parse command
