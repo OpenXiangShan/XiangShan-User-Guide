@@ -50,7 +50,7 @@ file_authors_:
 
 - 符合 AIA 1.0 的 CSR
 - 符合 AIA 1.0 的 IMSIC (注1)
-- 符合 RISC-V priviledge 的 NMI，提供单独的 NMI 信号，允许用于自行选择连接，详见中断章节
+- 符合 RISC-V privilege 的 NMI，提供单独的 NMI 信号，允许用于自行选择连接，详见中断章节
 
 ### Debug 特性
 
