@@ -61,7 +61,6 @@ file_authors_:
 * 向量 load
 * 向量 store
 
-向量运算不会触发异常。
 
 向量 Load 与向量 Store 统称为向量访存。
 
