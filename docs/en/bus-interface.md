@@ -1,6 +1,6 @@
 ---
 file_authors_:
-- Sun Jiru <yuyake02@outlook.com>
+- Sun Jiru <yuyake02@outlook.com> 
 ---
 
 # Bus Interface {#sec:bus-interface}
@@ -58,10 +58,10 @@ these channels, the bus interface also includes the following signals.
 
 | Signal Name          | I/O | Functional Description                                |
 | -------------------- | --- | ----------------------------------------------------- |
-| chi_rx_linkactiveack | O   | Determines the state of RX.                           |
-| chi_rx_linkactivereq | I   | Determines the state of RX.                           |
-| chi_tx_linkactiveact | I   | Determines the state of TX.                           |
-| chi_tx_linkactivereq | O   | Determines the state of TX.                           |
+| chi_rx_linkactiveack | O   | 决定 RX 的状态。                                            |
+| chi_rx_linkactivereq | I   | 决定 RX 的状态。                                            |
+| chi_tx_linkactiveact | I   | 决定 TX 的状态。                                            |
+| chi_tx_linkactivereq | O   | 决定 TX 的状态。                                            |
 | chi_rxsactive        | I   | Indicates that there is an ongoing transaction in RX. |
 | chi_txsactive        | O   | Indicates TX has ongoing transactions.                |
 
@@ -147,10 +147,10 @@ Table: Data flit
 | SrcID                  | id_width  | Source ID.                                                                                      |
 | TxnID                  | 8/12*     | Transaction ID.                                                                                 |
 | HomeNID                | id_width  | Home node ID, which the requester uses as TgtID when sending CompAck.                           |
-| Opcode                 | 3/4*      | Opcode.                                                                                         |
+| Opcode                 | 3/4\*     | Opcode.                                                                                         |
 | RespErr                | 2         | Corresponding error code.                                                                       |
 | Resp                   | 3         | Response status.                                                                                |
-| DataSource             | 3/4*      | Data source.                                                                                    |
+| DataSource             | 3/4\*     | Data source.                                                                                    |
 | {1'b0, FwdState[2:0]}* |           | Indicates the status in the CompData sent from the snooper to the requester.                    |
 | {1'b0, DataPull[2:0]}* |           |                                                                                                 |
 | CBusy                  | 3         | The busy level of the completer, with encoding determined by specific implementation.           |

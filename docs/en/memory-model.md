@@ -67,15 +67,15 @@ level being L2 TLB.
 
 The configuration of L1 ITLB entries is as follows in the table.
 
-| **Item name** | **item count** | **Organization structure ** | **Replacement Algorithm** | **stored content** |
-| ------------- | -------------- | --------------------------- | ------------------------- | ------------------ |
-| Page          | 48             | Fully associative           | PLRU                      | All size pages     |
+| **项名** | **项数** | **组织结构** | **替换算法** | **存储内容** |
+| ------ | ------ | -------- | -------- | -------- |
+| Page   | 48     | 全相联      | PLRU     | 全部大小页    |
 
 The configuration of L1 DTLB entries is as follows in the table
 
-| **Item name** | **item count** | **Organization structure ** | **Replacement Algorithm** | **stored content** |
-| ------------- | -------------- | --------------------------- | ------------------------- | ------------------ |
-| Page          | 48             | Fully associative           | PLRU                      | All size pages     |
+| **项名** | **项数** | **组织结构** | **替换算法** | **存储内容** |
+| ------ | ------ | -------- | -------- | -------- |
+| Page   | 48     | 全相联      | PLRU     | 全部大小页    |
 
 For instruction fetch requests, load and store requests, when accessing the ITLB
 and DTLB, if a hit occurs, the physical address and corresponding permission
@@ -239,11 +239,11 @@ mode or when executing virtualized memory access instructions.
 hgatp controls G-stage translation. The structure of hgatp and its translation
 mode are shown in the following diagram:
 
-| ** bit ** | **field** | **Description**                                                                                                                                                                                                                                                            |
-| --------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [63:60]   | MODE      | Indicates the address translation mode. When this field is 0, it is Bare mode, with no address translation or protection enabled. When the field is 8/9, it represents Sv39x4/Sv48x4 address translation modes. Any other value will trigger an illegal instruction fault. |
-| [57:44]   | VMID      | Virtual machine identifier. For the Sv39x4/Sv48x4 address translation modes adopted by {{processor_name}}, the maximum VMID length is 14                                                                                                                                   |
-| [43:0]    | PPN       | Indicates the physical page number of the root page table for the second-stage translation, obtained by right-shifting the physical address by 12 bits.                                                                                                                    |
+| **位**   | **域** | **描述**                                                                                                                                                                                                                                                                     |
+| ------- | ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [63:60] | MODE  | Indicates the address translation mode. When this field is 0, it is Bare mode, with no address translation or protection enabled. When the field is 8/9, it represents Sv39x4/Sv48x4 address translation modes. Any other value will trigger an illegal instruction fault. |
+| [57:44] | VMID  | Virtual machine identifier. For the Sv39x4/Sv48x4 address translation modes adopted by {{processor_name}}, the maximum VMID length is 14                                                                                                                                   |
+| [43:0]  | PPN   | Indicates the physical page number of the root page table for the second-stage translation, obtained by right-shifting the physical address by 12 bits.                                                                                                                    |
 
 {{processor_name}} employs the Sv39x4/Sv48x4 paging mechanism, with the virtual
 address structures of both mechanisms illustrated below.
@@ -281,11 +281,11 @@ The {{processor_name}} architecture supports an ASID (Address Space Identifier)
 with a length of 16, stored in the SATP register. The format of the SATP
 register is shown in the table.
 
-| ** bit ** | **field** | **Description**                                                                                                                                                                                                                                                        |
-| --------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [63:60]   | MODE      | Indicates the address translation mode. When this field is 0, it is Bare mode, with no address translation or protection enabled. When the field is 8/9, it represents Sv39/Sv48 address translation modes. Any other value will trigger an illegal instruction fault. |
-| [59:44]   | ASID      | Address Space Identifier. The length of ASID is configurable via parameters. For the Sv39/Sv48 address translation modes adopted by {{processor_name}}, the maximum ASID length is 16.                                                                                 |
-| [43:0]    | PPN       | Represents the physical page number of the root page table, obtained by right-shifting the physical address by 12 bits.                                                                                                                                                |
+| **位**   | **域** | **描述**                                                                                                                                                                                                                                                                 |
+| ------- | ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [63:60] | MODE  | Indicates the address translation mode. When this field is 0, it is Bare mode, with no address translation or protection enabled. When the field is 8/9, it represents Sv39/Sv48 address translation modes. Any other value will trigger an illegal instruction fault. |
+| [59:44] | ASID  | Address Space Identifier. The length of ASID is configurable via parameters. For the Sv39/Sv48 address translation modes adopted by {{processor_name}}, the maximum ASID length is 16.                                                                                 |
+| [43:0]  | PPN   | Represents the physical page number of the root page table, obtained by right-shifting the physical address by 12 bits.                                                                                                                                                |
 
 In virtualization mode, SATP is replaced by the VSATP register, and the PPN
 within it represents the guest physical page number of the guest root page table
@@ -325,26 +325,26 @@ Each PMP entry primarily consists of an 8-bit configuration register and a
 
 The address space of PMP registers is as follows in the table
 
-| **PMP register name** | **address** |
-| --------------------- | ----------- |
-| pmpcfg0               | 0x3A0       |
-| pmpcfg2               | 0x3A2       |
-| pmpaddr0              | 0x3B0       |
-| pmpaddr1              | 0x3B1       |
-| pmpaddr2              | 0x3B2       |
-| pmpaddr3              | 0x3B3       |
-| pmpaddr4              | 0x3B4       |
-| pmpaddr5              | 0x3B5       |
-| pmpaddr6              | 0x3B6       |
-| pmpaddr7              | 0x3B7       |
-| pmpaddr8              | 0x3B8       |
-| pmpaddr9              | 0x3B9       |
-| pmpaddr10             | 0x3BA       |
-| pmpaddr11             | 0x3BB       |
-| pmpaddr12             | 0x3BC       |
-| pmpaddr13             | 0x3BD       |
-| pmpaddr14             | 0x3BE       |
-| pmpaddr15             | 0x3BF       |
+| **PMP register name** | **地址** |
+| --------------------- | ------ |
+| pmpcfg0               | 0x3A0  |
+| pmpcfg2               | 0x3A2  |
+| pmpaddr0              | 0x3B0  |
+| pmpaddr1              | 0x3B1  |
+| pmpaddr2              | 0x3B2  |
+| pmpaddr3              | 0x3B3  |
+| pmpaddr4              | 0x3B4  |
+| pmpaddr5              | 0x3B5  |
+| pmpaddr6              | 0x3B6  |
+| pmpaddr7              | 0x3B7  |
+| pmpaddr8              | 0x3B8  |
+| pmpaddr9              | 0x3B9  |
+| pmpaddr10             | 0x3BA  |
+| pmpaddr11             | 0x3BB  |
+| pmpaddr12             | 0x3BC  |
+| pmpaddr13             | 0x3BD  |
+| pmpaddr14             | 0x3BE  |
+| pmpaddr15             | 0x3BF  |
 
 Among them, the layout of PMP configuration registers pmpcfg0 and pmpcfg2 is as
 shown in the figure.
@@ -353,21 +353,21 @@ shown in the figure.
 
 The format of the PMP configuration register is as shown in the table below.
 
-| ** bit ** | **field** | **Description**                                                                                                                                                                                                                         |
-| --------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 7         | L         | Indicates whether the PMP entry is locked. This field defaults to 0, meaning unlocked; when set to 1, it indicates locked and requires a reset to unlock.                                                                               |
-| [6:5]     | Reserved  | Reserved bits, default to 0                                                                                                                                                                                                             |
-| [4:3]     | A         | Indicates the address matching mode of this PMP entry. The default value is 0, meaning the PMP entry is disabled and does not match any address. Values 1, 2, and 3 represent TOR, NA4, and NAPOT address matching modes, respectively. |
-| 2         | X         | Indicates whether the address configured in this PMP entry supports instruction execution. A value of 1 indicates execution support, while 0 indicates no execution support.                                                            |
-| 1         | W         | Indicates whether the address configured in this PMP entry supports write operations. A value of 1 indicates write support, while 0 indicates no write support.                                                                         |
-| 0         | R         | Indicates whether the address configured in this PMP entry supports read operations. A value of 1 means read is supported, while 0 means read is not supported.                                                                         |
+| **位** | **域**    | **描述**                                                                                                                                                                                                                                  |
+| ----- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 7     | L        | Indicates whether the PMP entry is locked. This field defaults to 0, meaning unlocked; when set to 1, it indicates locked and requires a reset to unlock.                                                                               |
+| [6:5] | Reserved | Reserved bits, default to 0                                                                                                                                                                                                             |
+| [4:3] | A        | Indicates the address matching mode of this PMP entry. The default value is 0, meaning the PMP entry is disabled and does not match any address. Values 1, 2, and 3 represent TOR, NA4, and NAPOT address matching modes, respectively. |
+| 2     | X        | Indicates whether the address configured in this PMP entry supports instruction execution. A value of 1 indicates execution support, while 0 indicates no execution support.                                                            |
+| 1     | W        | Indicates whether the address configured in this PMP entry supports write operations. A value of 1 indicates write support, while 0 indicates no write support.                                                                         |
+| 0     | R        | Indicates whether the address configured in this PMP entry supports read operations. A value of 1 means read is supported, while 0 means read is not supported.                                                                         |
 
 The format of the PMP address register is shown in the following table.
 
-| ** bit ** | **field** | **Description**                                            |
-| --------- | --------- | ---------------------------------------------------------- |
-| [63:34]   | 0         | The upper 30 bits of the PMP address register are 0        |
-| [33:0]    | address   | Stores bits [35:2] of the PMP entry configuration address. |
+| **位**   | **域**   | **描述**                                                     |
+| ------- | ------- | ---------------------------------------------------------- |
+| [63:34] | 0       | The upper 30 bits of the PMP address register are 0        |
+| [33:0]  | address | Stores bits [35:2] of the PMP entry configuration address. |
 
 ### PMA Attribute Register
 
@@ -378,26 +378,26 @@ M-mode, defaulting to 16 entries.
 
 The address space of PMA registers is shown in the following table
 
-| **PMA register name** | **address** | **reset value**      |
-| --------------------- | ----------- | -------------------- |
-| pmacfg0               | 0x7C0       | 64'h80b080d08000000  |
-| pmacfg2               | 0x7C2       | 64'h6f0b080b080f080b |
-| pmaaddr0              | 0x7C8       | 64'h0                |
-| pmaaddr1              | 0x7C9       | 64'h0                |
-| pmaaddr2              | 0x7CA       | 64'h0                |
-| pmaaddr3              | 0x7CB       | 64'h4000000          |
-| pmaaddr4              | 0x7CC       | 64'h8000000          |
-| pmaaddr5              | 0x7CD       | 64'hc000000          |
-| pmaaddr6              | 0x7CE       | 64'hc4c4000          |
-| pmaaddr7              | 0x7CF       | 64'he000000          |
-| pmaaddr8              | 0x7D0       | 64'he004000          |
-| pmaaddr9              | 0x7D1       | 64'he008000          |
-| pmaaddr10             | 0x7D2       | 64'he008400          |
-| pmaaddr11             | 0x7D3       | 64'he400000          |
-| pmaaddr12             | 0x7D4       | 64'he400800          |
-| pmaaddr13             | 0x7D5       | 64'hf000000          |
-| pmaaddr14             | 0x7D6       | 64'h20000000         |
-| pmaaddr15             | 0x7D7       | 64'h120000000        |
+| **PMA register name** | **地址** | **reset value**      |
+| --------------------- | ------ | -------------------- |
+| pmacfg0               | 0x7C0  | 64'h80b080d08000000  |
+| pmacfg2               | 0x7C2  | 64'h6f0b080b080f080b |
+| pmaaddr0              | 0x7C8  | 64'h0                |
+| pmaaddr1              | 0x7C9  | 64'h0                |
+| pmaaddr2              | 0x7CA  | 64'h0                |
+| pmaaddr3              | 0x7CB  | 64'h4000000          |
+| pmaaddr4              | 0x7CC  | 64'h8000000          |
+| pmaaddr5              | 0x7CD  | 64'hc000000          |
+| pmaaddr6              | 0x7CE  | 64'hc4c4000          |
+| pmaaddr7              | 0x7CF  | 64'he000000          |
+| pmaaddr8              | 0x7D0  | 64'he004000          |
+| pmaaddr9              | 0x7D1  | 64'he008000          |
+| pmaaddr10             | 0x7D2  | 64'he008400          |
+| pmaaddr11             | 0x7D3  | 64'he400000          |
+| pmaaddr12             | 0x7D4  | 64'he400800          |
+| pmaaddr13             | 0x7D5  | 64'hf000000          |
+| pmaaddr14             | 0x7D6  | 64'h20000000         |
+| pmaaddr15             | 0x7D7  | 64'h120000000        |
 
 The layout of pmacfg0 and pmacfg2 is as shown in the figure.
 
@@ -405,27 +405,27 @@ The layout of pmacfg0 and pmacfg2 is as shown in the figure.
 
 The format of PMA configuration registers is shown in the following table
 
-| ** bit ** | **field** | **Description**                                                                                                                                                                                                                                         |
-| --------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 7         | L         | Indicates whether the PMA entry is locked. This field defaults to 0, meaning unlocked; when set to 1, it indicates locked.                                                                                                                              |
-| 6         | C         | Indicates whether the address configured in this PMA entry is cacheable. A value of 1 means it is cacheable, while 0 means the address belongs to MMIO space and is not cacheable.                                                                      |
-| 5         | Atomic    | Indicates whether the address configured in this PMA entry allows atomic access. A value of 1 means atomic access is permitted, and 1 means atomic access is not permitted.                                                                             |
-| [4:3]     | A         | Indicates the address matching mode of this PMA entry. This field defaults to 0, meaning the PMA entry is disabled and does not match any address. When this field is 1, 2, or 3, it represents TOR, NA4, or NAPOT address matching modes respectively. |
-| 2         | X         | Indicates whether the address configured in this PMA entry supports instruction execution. When this field is 1, it supports instruction execution; when 0, it does not.                                                                                |
-| 1         | W         | Indicates whether the address configured in this PMA entry supports write operations. A value of 1 means write is supported, and 0 means write is not supported.                                                                                        |
-| 0         | R         | Indicates whether the address configured by this PMA entry supports read operations. A value of 1 indicates read support, while 0 indicates no read support.                                                                                            |
+| **位** | **域**  | **描述**                                                                                                                                                                                                                                                  |
+| ----- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 7     | L      | Indicates whether the PMA entry is locked. This field defaults to 0, meaning unlocked; when set to 1, it indicates locked.                                                                                                                              |
+| 6     | C      | Indicates whether the address configured in this PMA entry is cacheable. A value of 1 means it is cacheable, while 0 means the address belongs to MMIO space and is not cacheable.                                                                      |
+| 5     | Atomic | Indicates whether the address configured in this PMA entry allows atomic access. A value of 1 means atomic access is permitted, and 1 means atomic access is not permitted.                                                                             |
+| [4:3] | A      | Indicates the address matching mode of this PMA entry. This field defaults to 0, meaning the PMA entry is disabled and does not match any address. When this field is 1, 2, or 3, it represents TOR, NA4, or NAPOT address matching modes respectively. |
+| 2     | X      | Indicates whether the address configured in this PMA entry supports instruction execution. When this field is 1, it supports instruction execution; when 0, it does not.                                                                                |
+| 1     | W      | Indicates whether the address configured in this PMA entry supports write operations. A value of 1 means write is supported, and 0 means write is not supported.                                                                                        |
+| 0     | R      | Indicates whether the address configured by this PMA entry supports read operations. A value of 1 indicates read support, while 0 indicates no read support.                                                                                            |
 
 The format of the PMA address register is shown in the table below.
 
-| ** bit ** | **field** | **Description**                                               |
-| --------- | --------- | ------------------------------------------------------------- |
-| [63:34]   | 0         | The upper 30 bits of the PMA address register are 0           |
-| [33:0]    | address   | Stores bits [35:2] of the address for PMA entry configuration |
+| **位**   | **域**   | **描述**                                                        |
+| ------- | ------- | ------------------------------------------------------------- |
+| [63:34] | 0       | The upper 30 bits of the PMA address register are 0           |
+| [33:0]  | address | Stores bits [35:2] of the address for PMA entry configuration |
 
 The address space and attributes described by the PMA registers are shown in the
 following table:
 
-| **Lower address bound** | **Upper Address Bound** | **Description** | **attribute** |
+| **Lower address bound** | **Upper Address Bound** | **描述**          | **attribute** |
 | ----------------------- | ----------------------- | --------------- | ------------- |
 | 0x00_0000_0000          | 0x00_0FFF_FFFF          | Reserved        |               |
 | 0x00_1000_0000          | 0x00_1FFF_FFFF          | QSPI Flash      | RX            |
@@ -488,7 +488,7 @@ following table:
 
 The entry information of the PMA registers is shown in the following table
 
-| **address** | **c** | **atomic** | **a** | **x** | **w** | **r** |
+| **地址**      | **c** | **atomic** | **a** | **x** | **w** | **r** |
 | ----------- | ----- | ---------- | ----- | ----- | ----- | ----- |
 | 0x0         | false | false      | 0     | false | false | false |
 | 0x0         | false | false      | 0     | false | false | false |
@@ -520,20 +520,20 @@ listed in the following table
 | **module** | **Possible Exceptions**         | ** processing flow **                                                                             |
 | ---------- | ------------------------------- | ------------------------------------------------------------------------------------------------- |
 | ITLB       |                                 |                                                                                                   |
-|            | Generate inst page fault        | Deliver to Icache or IFU for processing based on request source                                   |
-|            | Generate inst guest page fault  | Deliver to Icache or IFU for processing based on request source                                   |
-|            | Generate inst access fault      | Deliver to Icache or IFU for processing based on request source                                   |
+|            | Generate inst page fault        | 根据请求来源，分别交付给 Icache 或 IFU 处理                                                                      |
+|            | Generate inst guest page fault  | 根据请求来源，分别交付给 Icache 或 IFU 处理                                                                      |
+|            | Generate inst access fault      | 根据请求来源，分别交付给 Icache 或 IFU 处理                                                                      |
 | DTLB       |                                 |                                                                                                   |
-|            | Generates a load page fault     | Hand over to LoadUnits for processing.                                                            |
-|            | Generate load guest page fault  | Hand over to LoadUnits for processing.                                                            |
-|            | Generate store page fault       | Based on the request source, it is processed by StoreUnits or AtomicsUnit respectively            |
+|            | Generates a load page fault     | 交付给 LoadUnits 进行处理                                                                                |
+|            | Generate load guest page fault  | 交付给 LoadUnits 进行处理                                                                                |
+|            | Generate store page fault       | 根据请求来源，分别交付给 StoreUnits 或 AtomicsUnit 处理                                                          |
 |            | Generate store guest page fault | Based on the request source, it is dispatched to either StoreUnits or AtomicsUnit for processing. |
-|            | Generate a load access fault    | Hand over to LoadUnits for processing.                                                            |
-|            | Generate store access fault     | Based on the request source, it is processed by StoreUnits or AtomicsUnit respectively            |
+|            | Generate a load access fault    | 交付给 LoadUnits 进行处理                                                                                |
+|            | Generate store access fault     | 根据请求来源，分别交付给 StoreUnits 或 AtomicsUnit 处理                                                          |
 | L2 TLB     |                                 |                                                                                                   |
-|            | Generate guest page fault       | Delivered to L1 TLB, which processes the request based on its origin                              |
-|            | Generate page fault             | Delivered to L1 TLB, which processes the request based on its origin                              |
-|            | Generate access fault           | Delivered to L1 TLB, which processes the request based on its origin                              |
+|            | Generate guest page fault       | 交付给 L1 TLB，L1 TLB 根据请求来源交付处理                                                                      |
+|            | Generate page fault             | 交付给 L1 TLB，L1 TLB 根据请求来源交付处理                                                                      |
+|            | Generate access fault           | 交付给 L1 TLB，L1 TLB 根据请求来源交付处理                                                                      |
 |            | ECC check error                 | Invalidate the current entry, return a miss result, and restart Page Walk.                        |
 
 Additionally, according to the RISC-V manual, Page Fault has higher priority
@@ -552,16 +552,16 @@ Scenario 1: CPU does not perform VA-PA translation
 
 - The CPU needs to access PA;
 - Look up address attributes;
-- PMP check, verify address read, write, and execute permissions;
-- Perform address access.
+- PMP 检查，确认地址读写执行权限；
+- 执行地址访问。
 
 Scenario 2: VA-PA translation in non-virtualized environment
 
 - CPU attempts to access VA;
 - Perform address translation via MMU to obtain the page table entry;
-- Look up address, attributes, and permission information based on PTE;
-- PMP check, verify address read, write, and execute permissions;
-- Perform address access.
+- 根据 PTE 查找地址、属性与权限信息；
+- PMP 检查，确认地址读写执行权限；
+- 执行地址访问。
 
 Scenario 3: VA-PA translation in a virtualized environment
 
@@ -569,6 +569,6 @@ Scenario 3: VA-PA translation in a virtualized environment
 - Check virtualization registers to confirm whether two-stage address
   translation is enabled.
 - The MMU performs two-stage address translation to obtain the page table entry;
-- Look up address, attributes, and permission information based on PTE;
-- PMP check, verify address read, write, and execute permissions;
-- Perform address access.
+- 根据 PTE 查找地址、属性与权限信息；
+- PMP 检查，确认地址读写执行权限；
+- 执行地址访问。
