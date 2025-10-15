@@ -11,12 +11,12 @@ a detailed description.
 
 ## CLINT Interrupt Controller
 
-### Overview
+### 概要
 
 CLINT provides software interrupts at the M privilege level for HART, as well as
 time timer interrupts at the M privilege level and a 64-bit time counter.
 
-### Register Mapping
+### 寄存器映射
 
 Table: CLINT Register Layout
 
@@ -35,7 +35,7 @@ Table: CLINT Register Layout
 
 ## IMSIC Interrupt Controller
 
-### Overview
+### 概要
 
 As one of RISC-V's external interrupt controllers, IMSIC is responsible for
 receiving and transmitting MSI interrupts, covering interrupt reporting at the
@@ -44,7 +44,7 @@ level is implemented through the IMSIC interrupt file MMIO space, which by
 default supports 7 interrupt files: M, S, and 5 VS interrupt files. It also
 supports valid interrupt numbers from 1 to 255 by default.
 
-### Register Mapping
+### 寄存器映射
 
 DEVICE sends an interrupt ID to the IMSIC internal interrupt file MMIO space to
 achieve MSI transmission. The RISC-V AIA SPEC clearly stipulates that in
@@ -61,22 +61,22 @@ for these two privilege levels.
 
 Table: M interrupt file
 
-| Register    | Address Offset | Bit Width | Attribute | Reset value | Description                                                                                                                                          |
-| ----------- | -------------- | --------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| setipnum_le | 0x0000         | 32        | WO        | 32'h0       | Interrupt file access register. Write data is the MSI interrupt ID, read value is 0. By default, it supports writing the highest 8-bit interrupt ID. |
+| 寄存器         | 地址偏移   | 位宽  | 属性  | 复位值   | 描述                                                         |
+| ----------- | ------ | --- | --- | ----- | ---------------------------------------------------------- |
+| setipnum_le | 0x0000 | 32  | WO  | 32'h0 | interrupt file 访问寄存器。写入数据为MSI 中断ID，读取值为0.默认支持最高8bit中断ID写入。 |
 
 
 Table: S/VS Interrupt File
 
-| Register        | Address Offset | Bit Width | Attribute | Reset value | Description                                                                                                                                                                                                                                                             |
-| --------------- | -------------- | --------- | --------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| setipnum_le     | 0x0000         | 32        | WO        | 32'h0       | Interrupt file access register. Write data is the MSI interrupt ID, read value is 0. By default, it supports writing the highest 8-bit interrupt ID.                                                                                                                    |
-| setipnum_le_s   | 0x0000         | 32        | WO        | 32'h0       | Interrupt file access register. The written data is the MSI interrupt ID, and the read value is 0. By default, it supports writing up to an 8-bit interrupt ID. If the MSI ID exceeds 8 bits during access, the hardware automatically truncates the lower 8 bits.      |
-| setipnum_le_vs1 | 0x1000         | 32        | WO        | 32'h0       | VS 1 interrupt file access register. Write data is the MSI interrupt ID, read value is 0. By default, it supports writing the highest 8-bit interrupt ID. For MSI IDs exceeding 8 bits, the hardware automatically truncates the lower 8 bits.                          |
-| setipnum_le_vs2 | 0x2000         | 32        | WO        | 32'h0       | VS 2 interrupt file access register. The written data is the MSI interrupt ID, and the read value is 0. By default, it supports writing up to an 8-bit interrupt ID. If the MSI ID exceeds 8 bits during access, the hardware automatically truncates the lower 8 bits. |
-| setipnum_le_vs3 | 0x3000         | 32        | WO        | 32'h0       | VS 3 interrupt file access register. Write data is the MSI interrupt ID, read value is 0. By default, it supports writing the highest 8-bit interrupt ID. For MSI IDs exceeding 8 bits, the hardware automatically truncates the lower 8 bits.                          |
-| setipnum_le_vs4 | 0x4000         | 32        | WO        | 32'h0       | VS 4 interrupt file access register. The written data is the MSI interrupt ID, and the read value is 0. By default, it supports writing up to an 8-bit interrupt ID. If the MSI ID exceeds 8 bits during access, the hardware automatically truncates the lower 8 bits. |
-| setipnum_le_vs5 | 0x5000         | 32        | WO        | 32'h0       | VS 5 interrupt file access register. The written data is the MSI interrupt ID, and the read value is 0. By default, it supports writing up to an 8-bit interrupt ID. If the MSI ID exceeds 8 bits during access, the hardware automatically truncates the lower 8 bits. |
+| 寄存器             | 地址偏移   | 位宽  | 属性  | 复位值   | 描述                                                                                                                                                                                                                                                                      |
+| --------------- | ------ | --- | --- | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| setipnum_le     | 0x0000 | 32  | WO  | 32'h0 | interrupt file 访问寄存器。写入数据为MSI 中断ID，读取值为0.默认支持最高8bit中断ID写入。                                                                                                                                                                                                              |
+| setipnum_le_s   | 0x0000 | 32  | WO  | 32'h0 | Interrupt file access register. The written data is the MSI interrupt ID, and the read value is 0. By default, it supports writing up to an 8-bit interrupt ID. If the MSI ID exceeds 8 bits during access, the hardware automatically truncates the lower 8 bits.      |
+| setipnum_le_vs1 | 0x1000 | 32  | WO  | 32'h0 | VS 1 interrupt file access register. Write data is the MSI interrupt ID, read value is 0. By default, it supports writing the highest 8-bit interrupt ID. For MSI IDs exceeding 8 bits, the hardware automatically truncates the lower 8 bits.                          |
+| setipnum_le_vs2 | 0x2000 | 32  | WO  | 32'h0 | VS 2 interrupt file access register. The written data is the MSI interrupt ID, and the read value is 0. By default, it supports writing up to an 8-bit interrupt ID. If the MSI ID exceeds 8 bits during access, the hardware automatically truncates the lower 8 bits. |
+| setipnum_le_vs3 | 0x3000 | 32  | WO  | 32'h0 | VS 3 interrupt file access register. Write data is the MSI interrupt ID, read value is 0. By default, it supports writing the highest 8-bit interrupt ID. For MSI IDs exceeding 8 bits, the hardware automatically truncates the lower 8 bits.                          |
+| setipnum_le_vs4 | 0x4000 | 32  | WO  | 32'h0 | VS 4 interrupt file access register. The written data is the MSI interrupt ID, and the read value is 0. By default, it supports writing up to an 8-bit interrupt ID. If the MSI ID exceeds 8 bits during access, the hardware automatically truncates the lower 8 bits. |
+| setipnum_le_vs5 | 0x5000 | 32  | WO  | 32'h0 | VS 5 interrupt file access register. The written data is the MSI interrupt ID, and the read value is 0. By default, it supports writing up to an 8-bit interrupt ID. If the MSI ID exceeds 8 bits during access, the hardware automatically truncates the lower 8 bits. |
 
 ## Inter-core interrupt
 
