@@ -1,6 +1,6 @@
 ---
 file_authors_:
-- XiaoFeibao <some@example.com>
+- XiaoFeibao <some@example.com> 
 - WangZhiZun <some@example.com>
 ---
 
@@ -79,8 +79,6 @@ Vector instructions can be categorized into three major types:
 * Vector operations
 * Vector load
 * Vector store
-
-Vector operations do not trigger exceptions.
 
 Vector Load and Vector Store are collectively referred to as vector memory
 access.
