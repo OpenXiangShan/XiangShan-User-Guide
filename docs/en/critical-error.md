@@ -1,6 +1,6 @@
 ---
 file_authors_:
-- zehao Liu <liuzehao19@mails.ucas.ac.cn>
+- zehao Liu <liuzehao19@mails.ucas.ac.cn> 
 ---
 
 # Critical Error {#sec:critical-error}
@@ -104,16 +104,11 @@ double trap behavior, the processor core cannot handle the current state,
 leading to unknown subsequent behavior that requires external platform
 intervention.
 
-Additionally, the current {{processor_name}} defines processor core hang as a
-critical error state, serving as an important means for post-silicon hang
-determination.
+此外，目前 {{processor_name}} 将处理器核挂死自定义为严重错误状态，作为硅后判断挂死的重要手段。
 
 ### Critical error state handling
 
-After collecting information about a non-recoverable critical error, the
-processor enters a critical error state, which is a special halt state. The
-RISC-V manual specifies that this state must be observable and debuggable by the
-external platform:
+处理器收集到不可恢复严重错误信息后，会进入严重错误状态，即特殊停机状态。RISC-V 手册规定该状态需要对外部平台可观测、可调试：
 
 - The processor core provides a top-level interface riscv_critical_error for
   external platform monitoring;

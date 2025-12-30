@@ -1,6 +1,6 @@
 ---
 file_authors_:
-- Tang Haojin <tanghaojin@outlook.com>
+- Tang Haojin <tanghaojin@outlook.com> 
 ---
 
 # Instruction Set {#sec:instruction-set}

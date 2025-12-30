@@ -1,6 +1,6 @@
 ---
 file_authors_:
-- Tang Haojin <tanghaojin@outlook.com>
+- Tang Haojin <tanghaojin@outlook.com> 
 ---
 
 # Processor Profile {#sec:processor}
@@ -58,28 +58,14 @@ issuance.
 The execution unit comprises the integer execution unit, floating-point
 execution unit, and vector execution unit.
 
-The integer execution unit includes the Arithmetic Logic Unit (ALU),
-Multiplication Unit (MUL), Division Unit (DIV), Branch Jump Unit (BJU), and
-Control Status Unit (CSR). The ALU performs 64-bit integer operations. The MUL
-handles integer multiplication. The DIV unit employs a radix-16 SRT algorithm,
-with execution cycles varying based on operands. The BJU calculates jump
-addresses in a single cycle and determines branch prediction accuracy. The CSR
-processes control status register read/write instructions and optimizes
-pipelining for certain CSR read operations.
+整数运算单元包括算术逻辑单元（ALU）、乘法单元（MUL）、除法单元（DIV）、分支跳转单元（BJU）和控制状态单元（CSR）等。 ALU 执行 64
+位整数操作。MUL 执行整数乘法运算。DIV 的设计采用了基 16 的 SRT 算法，执行周期数根据操作数的不同而变化。 BJU
+可以在一个周期内计算出跳转地址，并判断分支预测是否正确。CSR 可以处理控制状态寄存器读写指令，并针对部分读 CSR 指令进行了可流水优化。
 
-The floating-point execution unit consists of the floating-point arithmetic
-logic unit (FALU), floating-point multiply-accumulate unit (FMA), floating-point
-division unit (FDIV), and floating-point conversion unit (FCVT). The FALU
-handles addition, subtraction, comparison, sign injection, classification, etc.
-The FMA handles standard multiplication, fused multiply-accumulate, etc. The
-FDIV handles floating-point division, etc. The FCVT handles floating-point
-conversion, etc.
+浮点运算单元包括浮点算术逻辑单元（FALU）、浮点融合乘加单元（FMA）、浮点除法单元（FDIV）和浮点转换单元（FCVT）。 FALU
+负责加减、比较、符号注入、分类等操作。FMA 负责普通乘法、融合乘加等操作。FDIV 负责浮点除法等操作。 FCVT 负责浮点转换等操作。
 
-The vector execution unit is broadly divided into the vector integer execution
-unit and the vector floating-point execution unit, with the integer and
-floating-point units further subdivided into arithmetic logic units,
-multiply-accumulate units, floating-point units, and conversion units, among
-others.
+向量运算单元总体可分为向量整数运算单元和向量浮点运算单元，其中的整数和浮点单元又被进一步细分为算术逻辑单元、 融合乘加单元、浮点运算单元和浮点转换单元等。
 
 ### Memory Unit
 

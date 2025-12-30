@@ -78,8 +78,7 @@ controller (AIA IMSIC), Timer, Debug, and other modules.
 
 - CSR compliant with AIA 1.0.
 - IMSIC compliant with AIA 1.0 (Note 1).
-- Compliant with RISC-V privilege NMI, provides a separate NMI signal, allowing
-  for custom connections. For details, see the interrupt section.
+- 符合 RISC-V privilege 的 NMI，提供单独的 NMI 信号，允许用于自行选择连接，详见中断章节
 
 ### Debug features
 
