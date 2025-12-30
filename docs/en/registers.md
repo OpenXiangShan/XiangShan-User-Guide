@@ -12,21 +12,21 @@ following table
 
 Table: General-purpose registers
 
-| Register | ABI Name | Description                       | Preserved |
-| -------- | -------- | --------------------------------- | --------- |
-| x0       | zero     | Hardwired to 0                    | \         |
-| x1       | ra       | Return Address                    | Caller    |
-| x2       | sp       | stack pointer                     | callee    |
-| x3       | gp       | Global Pointer                    | \         |
-| x4       | tp       | Thread pointer                    | \         |
-| x5       | t0       | Temporary/Alternate Link Register | Caller    |
-| x6-7     | t1-2     | Temporary registers               | Caller    |
-| x8       | s0/fp    | Reserved Register/Frame Pointer   | callee    |
-| x9       | s1       | reserved register                 | callee    |
-| x10-11   | a0-1     | Function parameters/return values | Caller    |
-| x12-17   | a2-7     | function parameters               | Caller    |
-| x18-27   | s2-11    | reserved register                 | callee    |
-| x28-31   | t3-6     | Temporary registers               | Caller    |
+| 寄存器    | ABI名称 | 描述                                | 保存者  |
+| ------ | ----- | --------------------------------- | ---- |
+| x0     | zero  | Hardwired to 0                    | \    |
+| x1     | ra    | Return Address                    | 调用者  |
+| x2     | sp    | stack pointer                     | 被调用者 |
+| x3     | gp    | Global Pointer                    | \    |
+| x4     | tp    | Thread pointer                    | \    |
+| x5     | t0    | Temporary/Alternate Link Register | 调用者  |
+| x6-7   | t1-2  | 临时寄存器                             | 调用者  |
+| x8     | s0/fp | Reserved Register/Frame Pointer   | 被调用者 |
+| x9     | s1    | 保留寄存器                             | 被调用者 |
+| x10-11 | a0-1  | Function parameters/return values | 调用者  |
+| x12-17 | a2-7  | function parameters               | 调用者  |
+| x18-27 | s2-11 | 保留寄存器                             | 被调用者 |
+| x28-31 | t3-6  | 临时寄存器                             | 调用者  |
 
 ## Floating-Point Registers
 
@@ -36,14 +36,14 @@ manual definitions, as outlined in the following table:
 
 Table: Floating-Point Registers
 
-| Register | ABI Name | Description                            | Preserved |
-| -------- | -------- | -------------------------------------- | --------- |
-| f0-7     | ft0-7    | Floating-point Temporary Register      | Caller    |
-| f8-9     | fs0-1    | Floating-point saved registers         | callee    |
-| f10-11   | fa0-1    | Floating-Point Arguments/Return Values | Caller    |
-| f12-17   | fa2-7    | Floating-point Argument                | Caller    |
-| f18-27   | fs2-11   | Floating-point saved registers         | callee    |
-| f28-31   | ft8-11   | Floating-point Temporary Register      | Caller    |
+| 寄存器    | ABI名称  | 描述                                     | 保存者  |
+| ------ | ------ | -------------------------------------- | ---- |
+| f0-7   | ft0-7  | 浮点临时寄存器                                | 调用者  |
+| f8-9   | fs0-1  | 浮点保留寄存器                                | 被调用者 |
+| f10-11 | fa0-1  | Floating-Point Arguments/Return Values | 调用者  |
+| f12-17 | fa2-7  | Floating-point Argument                | 调用者  |
+| f18-27 | fs2-11 | 浮点保留寄存器                                | 被调用者 |
+| f28-31 | ft8-11 | 浮点临时寄存器                                | 调用者  |
 
 The {{processor_name}} supports both single-precision and double-precision
 floating-point operations. When performing single-precision floating-point
