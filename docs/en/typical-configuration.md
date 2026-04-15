@@ -1,7 +1,7 @@
 ## Typical Configurations 
 Below is the typical Kunminghu V2 core configurations:
 
-|                            |                                |
+|                            | Configuration                  |
 | -------------------------- | ------------------------------ |
 | Pipeline stage             | 13                             |
 | Decoder width              | 6                              |
