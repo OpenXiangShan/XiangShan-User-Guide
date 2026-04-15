@@ -1,7 +1,7 @@
 ## 典型配置
 以下是昆明湖 V2 核心的典型配置：
 
-| Feature                | KUNMINGHU (XiangShan-3)        |
+| Feature                | KUNMINGHU (XiangShan Gen 3)    |
 | ---------------------- | ------------------------------ |
 | 流水级数               | 13                             |
 | 译码宽度               | 6                              |
@@ -79,6 +79,7 @@
 昆明湖 V2 具有以下执行单元：
 
 **整数执行单元 (4 发射队列, 每个队列 24 项):**
+
 - ALU0: ALU + MUL + BKU
 - ALU1: ALU + MUL + BKU
 - ALU2: ALU
@@ -89,6 +90,7 @@
 - BJU3: CSR + Fence + DIV
 
 **浮点执行单元 (3 发射队列, 每个队列 18 项):**
+
 - FEX0: FALU + FMA + FCVT + F2V
 - FEX1: FDIV
 - FEX2: FALU + FMA
@@ -96,11 +98,13 @@
 - FEX4: FALU + FMA
 
 **访存单元:**
+
 - 3 Load Units (LDU)
 - 2 Store Address Units (STA)
 - 2 Store Data Units (STD)
 
 **向量执行单元:**
+
 - VFEX0: VFMA + VIALU + VIMAC + VPPU
 - VFEX1: VFALU + VFCVT + VIPU + VSet
 - VFEX2: VFMA + VIALU

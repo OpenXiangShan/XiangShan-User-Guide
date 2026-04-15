@@ -1,7 +1,7 @@
 ## Typical Configurations 
 Below is the typical Kunminghu V2 core configurations:
 
-| Feature                    | Kunminghu V2 (XiangShan-3)     |
+| Feature                    | Kunminghu V2 (XiangShan Gen 3) |
 | -------------------------- | ------------------------------ |
 | Pipeline stage             | 13                             |
 | Decoder width              | 6                              |
@@ -79,6 +79,7 @@ Most arithmetic instructions are single-cycle (Latency = 1). Multi-cycle instruc
 Kunminghu V2 features the following execution units:
 
 **Integer Execution Units (4 Issue Queues, 24 entries each):**
+
 - ALU0: ALU + MUL + BKU
 - ALU1: ALU + MUL + BKU
 - ALU2: ALU
@@ -89,6 +90,7 @@ Kunminghu V2 features the following execution units:
 - BJU3: CSR + Fence + DIV
 
 **Floating-Point Execution Units (3 Issue Queues, 18 entries each):**
+
 - FEX0: FALU + FMA + FCVT + F2V
 - FEX1: FDIV
 - FEX2: FALU + FMA
@@ -96,11 +98,13 @@ Kunminghu V2 features the following execution units:
 - FEX4: FALU + FMA
 
 **Memory Execution Units:**
+
 - 3 Load Units (LDU)
 - 2 Store Address Units (STA)
 - 2 Store Data Units (STD)
 
 **Vector Execution Units:**
+
 - VFEX0: VFMA + VIALU + VIMAC + VPPU
 - VFEX1: VFALU + VFCVT + VIPU + VSet
 - VFEX2: VFMA + VIALU
