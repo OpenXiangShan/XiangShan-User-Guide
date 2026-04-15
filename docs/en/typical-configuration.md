@@ -1,7 +1,7 @@
 ## Typical Configurations 
 Below is the typical Kunminghu V2 core configurations:
 
-| Feature                    | Kunminghu V2 (XiangShan Gen 3) |
+|                            |                                |
 | -------------------------- | ------------------------------ |
 | Pipeline stage             | 13                             |
 | Decoder width              | 6                              |
