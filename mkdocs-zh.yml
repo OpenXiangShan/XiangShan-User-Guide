@@ -28,6 +28,7 @@ nav:
   - 前言: index.md
   - 概述: introduction.md
   - 微架构简介: processor.md
+  - 典型配置: typical-configuration.md
   - 指令集: instruction-set.md
   - 数据寄存器: registers.md
   - 特权模式与控制状态寄存器: mode-and-csr.md
