@@ -1,6 +1,6 @@
 ---
 file_authors_:
-- Tang Haojin <tanghaojin@outlook.com>
+- Tang Haojin <tanghaojin@outlook.com> 
 ---
 
 # Processor Profile {#sec:processor}
@@ -60,26 +60,27 @@ execution unit, and vector execution unit.
 
 The integer execution unit includes the Arithmetic Logic Unit (ALU),
 Multiplication Unit (MUL), Division Unit (DIV), Branch Jump Unit (BJU), and
-Control Status Unit (CSR). The ALU performs 64-bit integer operations. The MUL
-handles integer multiplication. The DIV unit employs a radix-16 SRT algorithm,
-with execution cycles varying based on operands. The BJU calculates jump
-addresses in a single cycle and determines branch prediction accuracy. The CSR
-processes control status register read/write instructions and optimizes
-pipelining for certain CSR read operations.
+Control State Unit (CSR), among others. The ALU performs 64-bit integer
+operations. MUL performs integer multiplication operations. The design of DIV
+adopts a base-16 SRT algorithm, and the number of execution cycles varies
+depending on the operands. BJU can compute the jump address within one cycle and
+determine whether the branch prediction is correct. CSR can handle control
+status register read/write instructions and has been optimized for pipeline
+execution of certain read CSR instructions.
 
-The floating-point execution unit consists of the floating-point arithmetic
-logic unit (FALU), floating-point multiply-accumulate unit (FMA), floating-point
-division unit (FDIV), and floating-point conversion unit (FCVT). The FALU
-handles addition, subtraction, comparison, sign injection, classification, etc.
-The FMA handles standard multiplication, fused multiply-accumulate, etc. The
-FDIV handles floating-point division, etc. The FCVT handles floating-point
-conversion, etc.
+The floating-point execution unit includes the Floating-Point Arithmetic Logic
+Unit (FALU), Floating-Point Fused Multiply-Add Unit (FMA), Floating-Point
+Division Unit (FDIV), and Floating-Point Conversion Unit (FCVT). FALU is
+responsible for operations such as addition, subtraction, comparison, sign
+injection, and classification. FMA handles ordinary multiplication, fused
+multiply-add, and similar operations. FDIV manages floating-point division
+operations. FCVT handles floating-point conversion operations.
 
-The vector execution unit is broadly divided into the vector integer execution
-unit and the vector floating-point execution unit, with the integer and
-floating-point units further subdivided into arithmetic logic units,
-multiply-accumulate units, floating-point units, and conversion units, among
-others.
+The vector execution unit can be broadly divided into a vector integer execution
+unit and a vector floating-point execution unit, where the integer and
+floating-point units are further subdivided into Arithmetic Logic Units, Fused
+Multiply-Add Units, Floating-Point Operation Units, and Floating-Point
+Conversion Units, among others.
 
 ### Memory Unit
 

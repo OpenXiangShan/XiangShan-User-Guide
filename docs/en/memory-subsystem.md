@@ -87,7 +87,7 @@ the processor. Its main functions are as follows:
 
 Branch instructions predicted by uFTB include:
 
-* BEQ, BNE, BLT, BLTU, BGE, BGEU, C.BEQZ, C.BNEZ.
+* BEQ, BNE, BLT, BLTU, BGE, BGEU, C.BEQZ, C.BNEZ
 * JAL, JALR, C.J, C.JAL, C.JR, C.JALR
 
 ### Conditional branch predictor
@@ -115,7 +115,7 @@ history for prediction.
 
 Branch instructions predicted by TAGE-SC include:
 
-* BEQ, BNE, BLT, BLTU, BGE, BGEU, C.BEQZ, C.BNEZ.
+* BEQ, BNE, BLT, BLTU, BGE, BGEU, C.BEQZ, C.BNEZ
 
 ### Fetch Target Buffer.
 
@@ -131,7 +131,7 @@ allowing a maximum of 4096 branches to be stored.
 
 FTB predicts branch instructions including:
 
-* BEQ, BNE, BLT, BLTU, BGE, BGEU, C.BEQZ, C.BNEZ.
+* BEQ, BNE, BLT, BLTU, BGE, BGEU, C.BEQZ, C.BNEZ
 * JAL, JALR, C.J, C.JAL, C.JR, C.JALR
 
 ### Indirect branch predictor
@@ -173,12 +173,12 @@ from the backend.
 The main features of the L1 data cache are as follows:
 
 * Data cache size is 64KB
-* 8-way set-associative, with a cache line size of 64B.
+* 8-way set associative, cache line size 64B
 * Virtual Index, Physical Tag (VIPT)
 * Supports up to 3 parallel 64/128-bit read operations
 * Supports up to one 512-bit read operation.
 * Supports up to one 512-bit write operation.
-* The write strategy adopts a write-back and write-allocate mode.
+* The write policy uses write-back with write-allocate mode
 * Supports requesting missing data from L2 Cache and refilling.
 * Supports processing Probe requests and writing back replaced data blocks.
 * Supports handling atomic requests
@@ -237,12 +237,12 @@ is issued to L2 Cache.
 The main features of the L2 cache are as follows:
 
 * Cache size is 1MB
-* 8-way set-associative, with a cache line size of 64B.
+* 8-way set associative, cache line size 64B
 * The L2 Cache has a strict inclusion relationship with the L1 DCache and a
   non-strict inclusion relationship with the L1 ICache and PTW.
 * Physical address indexing, physical address tagging (PIPT)
 * Maximum access width of 64B per access
-* The write strategy adopts a write-back and write-allocate mode.
+* The write policy uses write-back with write-allocate mode
 * Adopts DRRIP replacement algorithm
 * Supports instruction prefetching, TLB prefetching, and data prefetching
   mechanisms
