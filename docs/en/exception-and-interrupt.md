@@ -64,34 +64,34 @@ Table: List of exceptions supported by {{processor_name}}
 | Exception number |                         Trap cause                         |       tval update value       |            tval2 update value            |
 | :--------------: | :--------------------------------------------------------: | :---------------------------: | :--------------------------------------: |
 |        0         |               Instruction address misaligned               |               0               |                    0                     |
-|        1         | Instruction fetch permission exception (non-page-crossing) |   Instruction Start Address   |                    0                     |
-|        1         |      Instruction fetch permission fault (cross-page)       |    Next Page Start Address    |                    0                     |
+|        1         | Instruction fetch permission exception (non-page-crossing) |   Instruction start address   |                    0                     |
+|        1         |      Instruction fetch permission fault (cross-page)       |    Next page head address     |                    0                     |
 |        2         |                    Illegal instruction                     | Illegal instruction encoding  |                    0                     |
 |        3         |                         Breakpoint                         | Exception instruction address |                    0                     |
 |        3         |                     EBREAK instruction                     |               0               |                    0                     |
-|        4         |                  LOAD address misaligned                   |  Memory Access Start Address  |                    0                     |
-|        5         |                 LOAD Permission Exception                  | Actual fault starting address |                    0                     |
-|        6         |                STORE/AMO Address Misaligned                |  Memory Access Start Address  |                    0                     |
-|        7         |               STORE/AMO permission exception               | Actual fault starting address |                    0                     |
+|        4         |                  LOAD address misaligned                   |     Access start address      |                    0                     |
+|        5         |                 LOAD Permission Exception                  |  Actual fault start address   |                    0                     |
+|        6         |                STORE/AMO Address Misaligned                |     Access start address      |                    0                     |
+|        7         |               STORE/AMO permission exception               |  Actual fault start address   |                    0                     |
 |        8         |                          U-ECALL                           |               0               |                    0                     |
 |        9         |                          S-ECALL                           |               0               |                    0                     |
 |        10        |                          VS-ECALL                          |               0               |                    0                     |
 |        11        |                          M-ECALL                           |               0               |                    0                     |
-|        12        |         Instruction Page Fault (Non-page-crossing)         |   Instruction Start Address   |                    0                     |
-|        12        |           Instruction page fault (page-crossing)           |    Next Page Start Address    |                    0                     |
-|        13        |              LOAD page fault (non-cross-page)              |  Memory Access Start Address  |                    0                     |
-|        13        |              LOAD page fault (page-crossing)               | Actual fault starting address |                    0                     |
-|        15        |          STORE/AMO Page Fault (Non-page-crossing)          |  Memory Access Start Address  |                    0                     |
-|        15        |             STORE/AMO page fault (cross-page)              | Actual fault starting address |                    0                     |
+|        12        |         Instruction Page Fault (Non-page-crossing)         |   Instruction start address   |                    0                     |
+|        12        |           Instruction page fault (page-crossing)           |    Next page head address     |                    0                     |
+|        13        |              LOAD page fault (non-cross-page)              |     Access start address      |                    0                     |
+|        13        |              LOAD page fault (page-crossing)               |  Actual fault start address   |                    0                     |
+|        15        |          STORE/AMO Page Fault (Non-page-crossing)          |     Access start address      |                    0                     |
+|        15        |             STORE/AMO page fault (cross-page)              |  Actual fault start address   |                    0                     |
 |        16        |                   Double Trap Exception                    |               0               | Trap cause code of the second exception. |
-|        19        |                       Hardware error                       | Actual fault starting address |                    0                     |
-|        20        |      Guest instruction page fault (non-page-crossing)      |   Instruction Start Address   |            Corresponding GPA             |
-|        20        |         Guest instruction page fault (cross-page)          |    Next Page Start Address    |             Actual fault GPA             |
-|        21        |           Guest LOAD page fault (non-cross-page)           |  Memory Access Start Address  |            Corresponding GPA             |
-|        21        |             Guest LOAD page fault (cross-page)             | Actual fault starting address |             Actual fault GPA             |
+|        19        |                       Hardware error                       |  Actual fault start address   |                    0                     |
+|        20        |      Guest instruction page fault (non-page-crossing)      |   Instruction start address   |            Corresponding GPA             |
+|        20        |         Guest instruction page fault (cross-page)          |    Next page head address     |             Actual fault GPA             |
+|        21        |           Guest LOAD page fault (non-cross-page)           |     Access start address      |            Corresponding GPA             |
+|        21        |             Guest LOAD page fault (cross-page)             |  Actual fault start address   |             Actual fault GPA             |
 |        22        |            Virtualization instruction exception            | Illegal instruction encoding  |                    0                     |
-|        23        |       Guest STORE/AMO page fault (non-page-crossing)       |  Memory Access Start Address  |            Corresponding GPA             |
-|        23        |          Guest STORE/AMO Page Fault (Cross-page)           | Actual fault starting address |             Actual fault GPA             |
+|        23        |       Guest STORE/AMO page fault (non-page-crossing)       |     Access start address      |            Corresponding GPA             |
+|        23        |          Guest STORE/AMO Page Fault (Cross-page)           |  Actual fault start address   |             Actual fault GPA             |
 
 Note: Xiangshan does not actually have instruction address misalignment
 exceptions.
@@ -141,21 +141,21 @@ Table: {{processor_name}} Supported Interrupt List
 |        11        |    Machine-mode external interrupt (MEI)     |
 |        12        |  Supervisor Guest External Interrupt (SGEI)  |
 |        13        |  Local Counter Overflow Interrupt (LCOFIP)   |
-|      16-23       |           Standard Local Interrupt           |
-|      24-31       |               Custom Interrupt               |
-|      32-47       |           Standard Local Interrupt           |
-|      48-63       |               Custom Interrupt               |
+|      16-23       |           Standard local interrupt           |
+|      24-31       |               Custom interrupt               |
+|      32-47       |           Standard local interrupt           |
+|      48-63       |               Custom interrupt               |
 
 We use machine mode as an example to explain the steps of interrupt handling
 
-### Interrupt Priority
+### Interrupt priority
 
 The interrupt priorities of {{processor_name}} are as shown in the following
 table:
 
 Table: {{processor_name}} Interrupt Priorities
 
-| Interrupt Priority |     Group      | Number     | Descrption                                                    |
+| Interrupt priority |     Group      | Number     | Descrption                                                    |
 | :----------------: | :------------: | ---------- | ------------------------------------------------------------- |
 |      Highest       | Custom Group 0 | 63, 31, 62 | Highest Priority Custom Interrupt                             |
 |                    |                | 61, 30, 60 |                                                               |

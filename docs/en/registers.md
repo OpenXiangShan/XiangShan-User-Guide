@@ -12,21 +12,21 @@ following table
 
 Table: General-purpose registers
 
-| Register | ABI Name | Description                       | Preserved |
-| -------- | -------- | --------------------------------- | --------- |
-| x0       | zero     | Hardwired to 0                    | \         |
-| x1       | ra       | Return Address                    | Caller    |
-| x2       | sp       | stack pointer                     | callee    |
-| x3       | gp       | Global Pointer                    | \         |
-| x4       | tp       | Thread pointer                    | \         |
-| x5       | t0       | Temporary/Alternate Link Register | Caller    |
-| x6-7     | t1-2     | Temporary registers               | Caller    |
-| x8       | s0/fp    | Reserved Register/Frame Pointer   | callee    |
-| x9       | s1       | reserved register                 | callee    |
-| x10-11   | a0-1     | Function parameters/return values | Caller    |
-| x12-17   | a2-7     | function parameters               | Caller    |
-| x18-27   | s2-11    | reserved register                 | callee    |
-| x28-31   | t3-6     | Temporary registers               | Caller    |
+| Register | ABI Name | Description                       | Callee-saved |
+| -------- | -------- | --------------------------------- | ------------ |
+| x0       | zero     | Hardwired to 0                    | \            |
+| x1       | ra       | Return Address                    | Caller       |
+| x2       | sp       | stack pointer                     | Callee       |
+| x3       | gp       | Global Pointer                    | \            |
+| x4       | tp       | Thread pointer                    | \            |
+| x5       | t0       | Temporary/Alternate Link Register | Caller       |
+| x6-7     | t1-2     | Temporary Register                | Caller       |
+| x8       | s0/fp    | Reserved Register/Frame Pointer   | Callee       |
+| x9       | s1       | Saved Register                    | Callee       |
+| x10-11   | a0-1     | Function parameters/return values | Caller       |
+| x12-17   | a2-7     | function parameters               | Caller       |
+| x18-27   | s2-11    | Saved Register                    | Callee       |
+| x28-31   | t3-6     | Temporary Register                | Caller       |
 
 ## Floating-Point Registers
 
@@ -36,14 +36,14 @@ manual definitions, as outlined in the following table:
 
 Table: Floating-Point Registers
 
-| Register | ABI Name | Description                            | Preserved |
-| -------- | -------- | -------------------------------------- | --------- |
-| f0-7     | ft0-7    | Floating-point Temporary Register      | Caller    |
-| f8-9     | fs0-1    | Floating-point saved registers         | callee    |
-| f10-11   | fa0-1    | Floating-Point Arguments/Return Values | Caller    |
-| f12-17   | fa2-7    | Floating-point Argument                | Caller    |
-| f18-27   | fs2-11   | Floating-point saved registers         | callee    |
-| f28-31   | ft8-11   | Floating-point Temporary Register      | Caller    |
+| Register | ABI Name | Description                            | Callee-saved |
+| -------- | -------- | -------------------------------------- | ------------ |
+| f0-7     | ft0-7    | Floating-point Temporary Register      | Caller       |
+| f8-9     | fs0-1    | Floating-point Saved Register          | Callee       |
+| f10-11   | fa0-1    | Floating-Point Arguments/Return Values | Caller       |
+| f12-17   | fa2-7    | Floating-point Argument                | Caller       |
+| f18-27   | fs2-11   | Floating-point Saved Register          | Callee       |
+| f28-31   | ft8-11   | Floating-point Temporary Register      | Caller       |
 
 The {{processor_name}} supports both single-precision and double-precision
 floating-point operations. When performing single-precision floating-point

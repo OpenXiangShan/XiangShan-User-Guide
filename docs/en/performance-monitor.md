@@ -1,6 +1,6 @@
 ---
 file_authors_:
-- zehao Liu <liuzehao19@mails.ucas.ac.cn>
+- zehao Liu <liuzehao19@mails.ucas.ac.cn> 
 ---
 
 # Performance Monitor {#sec:performance-monitor}
@@ -30,12 +30,8 @@ The basic usage of PMU is as follows:
 * Disable all performance event monitoring via the mcountinhibit register.
 * Initialize echo performance event counters, including: mcycle, minstret,
   mhpmcounter3 - mhpmcounter31.
-* Configure each performance event selector, including: mhpmcounter3 -
-  mhpmcounter31. {{processor_name}} allows up to four event combinations per
-  event selector. After writing the event index value, event combination method,
-  and sampling privilege level into the event selector, normal counting of
-  configured events can proceed under the specified sampling privilege level,
-  with results accumulated into the event counter based on the combined outcome.
+* 配置各个监测单元性能事件选择器，包括: mhpmevent3 - mhpmevent31。 {{processor_name}}
+  对每个事件选择器可以配置最多四种事件组合，将事件索引值、事件组合方法、采样特权级写入事件选择器后，即可在规定的采样特权级下对配置的事件正常计数，并根据组合后结果累加到事件计数器中。
 * Configure xcounteren for access permission authorization
 * Enable all performance event monitoring via mcountinhibit register and start
   counting.
@@ -60,18 +56,18 @@ required, counters can be disabled to reduce processor power consumption.
 Table: Machine Mode Performance Event Count Prohibit Register Description
 
 +--------+--------+-------+--------------------------------------------+----------+
-| Name | Bitfield | R/W | Behavior | Reset Value |
+| 名称 | 位域 | 读写 | 行为 | 复位值 |
 +========+========+=======+============================================+==========+
-| HPMx | 31:4 | RW | mhpmcounterx register count disable bit: | 0 | | | | | | |
-| | | | 0: Normal counting | | | | | | | | | | | | 1: Counting disabled | |
+| HPMx | 31:3 | RW | mhpmcounterx 寄存器禁止计数位: | 0 | | | | | | | | | | | 0: 正常计数 |
+| | | | | | | | | | | 1: 禁止计数 | |
 +--------+--------+-------+--------------------------------------------+----------+
-| IR | 3 | RW | minstret register count disable bit: | 0 | | | | | | | | | | |
-0: Normal counting | | | | | | | | | | | | 1: Counting disabled | |
+| IR | 2 | RW | minstret 寄存器禁止计数位: | 0 | | | | | | | | | | | 0: 正常计数 | | | | | |
+| | | | | | 1: 禁止计数 | |
 +--------+--------+-------+--------------------------------------------+----------+
-| -- | 2 | RO 0 | Reserved | 0 |
+| -- | 1 | RO 0 | 保留位 | 0 |
 +--------+--------+-------+--------------------------------------------+----------+
-| CY | 1 | RW | mcycle register count disable bit: | 0 | | | | | | | | | | | 0:
-Normal counting | | | | | | | | | | | | 1: Counting disabled | |
+| CY | 0 | RW | mcycle 寄存器禁止计数位: | 0 | | | | | | | | | | | 0: 正常计数 | | | | | | |
+| | | | | 1: 禁止计数 | |
 +--------+--------+-------+--------------------------------------------+----------+
 
 ### Machine-mode Performance Counter Event Access Enable Register (MCOUNTEREN)
@@ -85,23 +81,19 @@ Table: Machine Mode Performance Event Counter Access Authorization Register
 Description
 
 +--------+--------+-------+------------------------------------------------+----------+
-| Name | Bits | R/W | Behavior | Reset |
+| 名称 | 位域 | 读写 | 行为 | 复位值 |
 +========+========+=======+================================================+==========+
-| HPMx | 31:4 | RW | hpmcounterenx register M-mode lower privilege access bits:
-| 0 | | | | | | | | | | | 0: Accessing hpmcounterx raises illegal instruction
-exception | | | | | | | | | | | | 1: Allows normal access to hpmcounterx | |
+| HPMx | 31:3 | RW | hpmcounterenx 寄存器 M-mode 以下访问权限位: | 0 | | | | | | | | | | |
+0: 访问 hpmcounterx 报非法指令异常 | | | | | | | | | | | | 1: 允许正常访问 hpmcounterx | |
 +--------+--------+-------+------------------------------------------------+----------+
-| IR | 3 | RW | instret register M-mode lower privilege access bit: | 0 | | | |
-| | | | | | | 0: Accessing instret raises illegal instruction exception | | | |
-| | | | | | | | 1: Allows normal access | |
+| IR | 2 | RW | instret 寄存器 M-mode 以下访问权限位: | 0 | | | | | | | | | | | 0: 访问
+instret 报非法指令异常 | | | | | | | | | | | | 1: 允许正常访问 | |
 +--------+--------+-------+------------------------------------------------+----------+
-| TM | 2 | RW | time/stimecmp register M-mode lower privilege access bit: | 0 |
-| | | | | | | | | | 0: Accessing time raises illegal instruction exception | | |
-| | | | | | | | | 1: Allows normal access | |
+| TM | 1 | RW | time/stimecmp 寄存器 M-mode 以下访问权限位: | 0 | | | | | | | | | | | 0:
+访问 time 报非法指令异常 | | | | | | | | | | | | 1: 允许正常访问 | |
 +--------+--------+-------+------------------------------------------------+----------+
-| CY | 1 | RW | cycle register M-mode lower privilege access bit: | 0 | | | | |
-| | | | | | 0: Accessing cycle raises illegal instruction exception | | | | | |
-| | | | | | 1: Allows normal access | |
+| CY | 0 | RW | cycle 寄存器 M-mode 以下访问权限位: | 0 | | | | | | | | | | | 0: 访问 cycle
+报非法指令异常 | | | | | | | | | | | | 1: 允许正常访问 | |
 +--------+--------+-------+------------------------------------------------+----------+
 
 ### Supervisor-mode Performance Counter Access Enable Register (SCOUNTEREN)
@@ -114,23 +106,19 @@ Table: Supervisor Mode Performance Event Counter Access Authorization Register
 Description
 
 +--------+--------+-------+------------------------------------------------+----------+
-| Name | Bits | R/W | Behavior | Reset |
+| 名称 | 位域 | 读写 | 行为 | 复位值 |
 +========+========+=======+================================================+==========+
-| HPMx | 31:4 | RW | hpmcounterenx register user-mode access bit: | 0 | | | | |
-| | | | | | 0: Accessing hpmcounterx raises illegal instruction exception | | |
-| | | | | | | | | 1: Normal access to hpmcounterx allowed | |
+| HPMx | 31:3 | RW | hpmcounterenx 寄存器 用户模式访问权限位: | 0 | | | | | | | | | | | 0:
+访问 hpmcounterx 报非法指令异常 | | | | | | | | | | | | 1: 允许正常访问 hpmcounterx | |
 +--------+--------+-------+------------------------------------------------+----------+
-| IR | 3 | RW | instret register user-mode access bit: | 0 | | | | | | | | | | |
-0: Accessing instret raises illegal instruction exception | | | | | | | | | | |
-| 1: Normal access allowed | |
+| IR | 2 | RW | instret 寄存器 用户模式访问权限位: | 0 | | | | | | | | | | | 0: 访问 instret
+报非法指令异常 | | | | | | | | | | | | 1: 允许正常访问 | |
 +--------+--------+-------+------------------------------------------------+----------+
-| TM | 2 | RW | time register user-mode access bit: | 0 | | | | | | | | | | | 0:
-Accessing time raises illegal instruction exception | | | | | | | | | | | | 1:
-Normal access allowed | |
+| TM | 1 | RW | time 寄存器 用户模式访问权限位: | 0 | | | | | | | | | | | 0: 访问 time 报非法指令异常
+| | | | | | | | | | | | 1: 允许正常访问 | |
 +--------+--------+-------+------------------------------------------------+----------+
-| CY | 1 | RW | cycle register user-mode access bit: | 0 | | | | | | | | | | |
-0: Accessing cycle raises illegal instruction exception | | | | | | | | | | | |
-1: Normal access allowed | |
+| CY | 0 | RW | cycle 寄存器 用户模式访问权限位: | 0 | | | | | | | | | | | 0: 访问 cycle
+报非法指令异常 | | | | | | | | | | | | 1: 允许正常访问 | |
 +--------+--------+-------+------------------------------------------------+----------+
 
 ### Virtualization Mode Performance Event Counter Access Authorization Register (HCOUNTEREN)
@@ -144,24 +132,19 @@ Table: Supervisor Mode Performance Event Counter Access Authorization Register
 Description
 
 +--------+--------+-------+------------------------------------------------+----------+
-| Name | Bitfield | R/W | Behavior | Reset Value |
+| 名称 | 位域 | 读写 | 行为 | 复位值 |
 +========+========+=======+================================================+==========+
-| HPMx | 31:4 | RW | hpmcounterenx register guest VM access permission bit: | 0
-| | | | | | | | | | | 0: Accessing hpmcounterx raises illegal instruction
-exception | | | | | | | | | | | | 1: Normal access to hpmcounterx is permitted |
-|
+| HPMx | 31:3 | RW | hpmcounterenx 寄存器 客户虚拟机访问权限位: | 0 | | | | | | | | | | | 0:
+访问 hpmcounterx 报非法指令异常 | | | | | | | | | | | | 1: 允许正常访问 hpmcounterx | |
 +--------+--------+-------+------------------------------------------------+----------+
-| IR | 3 | RW | instret register guest VM access permission bit: | 0 | | | | | |
-| | | | | 0: Accessing instret raises illegal instruction exception | | | | | |
-| | | | | | 1: Normal access is permitted | |
+| IR | 2 | RW | instret 寄存器 客户虚拟机访问权限位: | 0 | | | | | | | | | | | 0: 访问 instret
+报非法指令异常 | | | | | | | | | | | | 1: 允许正常访问 | |
 +--------+--------+-------+------------------------------------------------+----------+
-| TM | 2 | RW | time/vstimecmp(via stimecmp) register guest VM | 0 | | | | |
-access permission bit: | | | | | | | | | | | | 0: Accessing time raises illegal
-instruction exception | | | | | | | | | | | | 1: Normal access is permitted | |
+| TM | 1 | RW | time/vstimecmp(via stimecmp) 寄存器 客户虚拟机 | 0 | | | | | 访问权限位: | |
+| | | | | | | | | | 0: 访问 time 报非法指令异常 | | | | | | | | | | | | 1: 允许正常访问 | |
 +--------+--------+-------+------------------------------------------------+----------+
-| CY | 1 | RW | cycle register guest VM access permission bit: | 0 | | | | | | |
-| | | | 0: Accessing cycle raises illegal instruction exception | | | | | | | |
-| | | | 1: Normal access is permitted | |
+| CY | 0 | RW | cycle 寄存器 客户虚拟机访问权限位: | 0 | | | | | | | | | | | 0: 访问 cycle
+报非法指令异常 | | | | | | | | | | | | 1: 允许正常访问 | |
 +--------+--------+-------+------------------------------------------------+----------+
 
 ### Supervisor Mode Time Compare Register (STIMECMP)
