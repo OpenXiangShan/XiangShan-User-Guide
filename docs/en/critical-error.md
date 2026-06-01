@@ -106,7 +106,13 @@ intervention.
 
 In addition, currently {{processor_name}} defines a processor core hang as a
 severe error state, serving as an important means for post-silicon hang
-detection.
+detection. The ROB commit stuck timeout check is controlled by the custom CSR
+mcorepwr[1]: mcorepwr is located at 0xBC0, and bit 1 is
+COMMIT_STUCK_CHECK_ENABLE with a reset value of 0. When software writes 1 to
+this bit, the ROB commit stuck timeout check is enabled and reports a critical
+error on timeout. When software writes 0 to this bit, the check is disabled, and
+the processor does not report a critical error for this class of commit stuck
+timeout.
 
 ### Critical error state handling
 
