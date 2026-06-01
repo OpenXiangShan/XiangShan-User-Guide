@@ -314,6 +314,7 @@ Table: List of MRW CSRs Supported by {{processor_name}}
 | mhpmcounter3  |        M        | 0xB03  |           Machine Mode Performance Monitoring Counter 3            |             Machine Counter             |
 |      ...      |       ...       |  ...   |                                ...                                 |                   ...                   |
 | mhpmcounter31 |        M        | 0xB1F  |           Machine-mode performance monitoring counter 31           |             Machine Counter             |
+|   mcorepwr    |        M        | 0xBC0  |               Machine-mode core power control register             |          Machine Power Control          |
 
 ### Machine-mode read-only CSRs
 
@@ -447,3 +448,17 @@ Table: Bit Functions of srnctl
 |       1        |  Whether speculative virtual address inv is enabled  |       1       |
 |       2        |        Whether the wfi instruction is enabled        |       1       |
 | Remaining bits | Currently, the remaining bits have no functionality. |       0       |
+
+### mcorepwr
+
+The address of mcorepwr is 0xBC0, with its initial value set to the default
+values in the table below. The functionality of each bit is as described in the
+following table.
+
+Table: Bit Functions of mcorepwr
+
+|      Bit       |                                                Function                                                | Default Value |
+| :------------: | :----------------------------------------------------------------------------------------------------: | :-----------: |
+|       0        |             Controls whether the core can issue power-down requests. Set to 1 to allow them.            |       0       |
+|       1        | Controls whether the ROB commit stuck timeout check reports a critical error. Set to 1 to enable it, or set to 0 to disable it. |       0       |
+| Remaining bits |                          Currently, the remaining bits have no functionality.                           |       0       |
