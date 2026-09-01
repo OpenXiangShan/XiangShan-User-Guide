@@ -4,7 +4,7 @@ file_authors_:
 - Yujunjie <yujunjie21@mails.ucas.ac.cn>
 ---
 
-# Memory Model {#sec:memory-model}
+# 内存模型 {#sec:memory-model}
 
 ## Overview of Memory Model
 

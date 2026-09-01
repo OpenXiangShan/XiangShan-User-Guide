@@ -3,7 +3,7 @@ file_authors_:
 - Zhao Hong <zhaohong@bosc.ac.cn>
 ---
 
-# Interruption Controller {#sec:interruption-controller}
+# 中断控制器 {#sec:interruption-controller}
 
 In {{processor_name}}, the interrupt controller includes the IMSIC external
 interrupt controller and the CLINT local interrupt controller. The following is

@@ -3,7 +3,7 @@ file_authors_:
 - ZHANG Jian <zhangjian@bosc.ac.cn>
 ---
 
-# Introduction {#sec:introduction}
+# 概述 {#sec:introduction}
 
 This chapter provides an overview of the {{processor_name}} . The
 {{processor_name}} is the V2R2 version of the third-generation
@@ -47,7 +47,7 @@ first IP in the Xiangshan series to support the CHI protocol.
 The {{processor_name}} series IP includes CPU Core (with L2), on-core interrupt
 controller (AIA IMSIC), Timer, Debug, and other modules.
 
-## Features {#sec:feature}
+## 特性 {#sec:feature}
 
 ### Processor Core Features.
 

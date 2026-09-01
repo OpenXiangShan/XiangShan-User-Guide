@@ -2,7 +2,7 @@
 file_authors_:
 - zengjinhong <zengjinhong21@mails.ucas.ac.cn>
 ---
-# Registers {#sec:registers}
+# 数据寄存器 {#sec:registers}
 
 ## General Purpose Registers
 

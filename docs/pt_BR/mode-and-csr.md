@@ -23,7 +23,6 @@ Table: {{processor_name}} 支持的特权模式列表
 | 调试模式（Debug mode）                |  D   |     |     |
 
 {{processor_name}} 初始化时处在 M 模式。对于一般场景，各模式权限高低为 M > S > U；对于虚拟化场景，各模式权限高低为 M > HS
-> VS > VU。
 
 ### 机器模式
 
@@ -276,6 +275,7 @@ Table: {{processor_name}} 支持的 MRW 的 CSRs 列表
 | mhpmcounter3  |    M    | 0xB03 |       机器模式性能监测计数器3       |   机器计数器    |
 |      ...      |   ...   |  ...  |           ...            |    ...     |
 | mhpmcounter31 |    M    | 0xB1F |      机器模式性能监测计数器31       |   机器计数器    |
+|   mcorepwr    |    M    | 0xBC0 |     机器模式处理器核功耗控制寄存器      |   机器功耗控制   |
 
 ### 机器模式只读的 CSRs
 
@@ -399,3 +399,15 @@ Table: srnctl的 bit 功能
 |  1  | speculative virtual address inv 是否开启 |  1  |
 |  2  |              wfi 指令是否开启              |  1  |
 | 其余位 |               目前其余位无功能               |  0  |
+
+### mcorepwr
+
+mcorepwr 的地址为 0xBC0，其初始化值为下表的默认值，其每一 bit 的功能如下表所示：
+
+Table: mcorepwr 的 bit 功能
+
+|  位  |                                  功能                                  | 默认值 |
+| :-: | :------------------------------------------------------------------: | :-: |
+|  0  |                 控制是否允许处理器核发起 power-down 请求，设 1 代表允许                  |  0  |
+|  1  | 控制是否开启 ROB commit stuck 超时检查并在超时时上报 critical error，设 1 代表开启，设 0 代表关闭 |  0  |
+| 其余位 |                               目前其余位无功能                               |  0  |

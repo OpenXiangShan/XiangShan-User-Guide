@@ -72,7 +72,10 @@ RISC-V 特权级手册定义的严重错误是指在异常处理程序（非可�
 简单来说，上述情况都是在 mnstatus.nmie
 拉低的情况下，发生陷入。此时不存在可以委托的更高特权级，因此无法处理严重错误。双重陷入拓展将该状态定义为严重错误状态：即处理器核在支持双重陷入行为后也无法处理当前状态，后续行为未知，需要外部平台介入。
 
-此外，目前 {{processor_name}} 将处理器核挂死自定义为严重错误状态，作为硅后判断挂死的重要手段。
+此外，目前 {{processor_name}} 将处理器核挂死自定义为严重错误状态，作为硅后判断挂死的重要手段。其中 ROB commit stuck
+超时检查由自定义 CSR mcorepwr[1] 控制：mcorepwr 的地址为 0xBC0，bit 1 为
+COMMIT_STUCK_CHECK_ENABLE，复位值为 0。软件将该位写 1 时开启 ROB commit stuck 超时检查，超时后上报
+critical error；写 0 时关闭该检查，处理器不会因该类 commit stuck 超时上报 critical error。
 
 ### 严重错误状态处理
 

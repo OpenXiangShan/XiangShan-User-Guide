@@ -3,7 +3,7 @@ file_authors_:
 - Sun Jiru <yuyake02@outlook.com> 
 ---
 
-# Bus Interface {#sec:bus-interface}
+# 总线接口 {#sec:bus-interface}
 
 The bus interface of {{processor_name}} has a width of 256 bits and supports a
 subset of AMBA CHI Issue B or Issue E.b. For detailed information about this

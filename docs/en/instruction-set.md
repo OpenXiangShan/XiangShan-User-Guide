@@ -3,7 +3,7 @@ file_authors_:
 - Tang Haojin <tanghaojin@outlook.com> 
 ---
 
-# Instruction Set {#sec:instruction-set}
+# 指令集 {#sec:instruction-set}
 
 ## Supported ISA Extensions
 

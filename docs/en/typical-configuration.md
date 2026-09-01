@@ -1,4 +1,4 @@
-## Typical Configurations 
+## Typical Configurations
 Below is the typical Kunminghu V2 core configurations:
 
 |                            | Configuration                  |
@@ -32,7 +32,8 @@ Below is the typical Kunminghu V2 core configurations:
 
 ## 指令延迟
 
-Most arithmetic instructions are single-cycle (Latency = 1). Multi-cycle instructions are listed as follows.
+Most arithmetic instructions are single-cycle (Latency = 1). Multi-cycle
+instructions are listed as follows.
 
 ### 整数操作
 
@@ -40,41 +41,41 @@ Most arithmetic instructions are single-cycle (Latency = 1). Multi-cycle instruc
 | --------------------------- | ------------ | ------------------------ |
 | `LD`                        | 4 (to use)   | Load operations (to use) |
 | `MUL`                       | 3 (pipeline) | Integer multiplier       |
-| `DIV` (32-bit)              | 4~11         | Integer divider (SRT16)  |
-| `DIV` (64-bit)              | 4~19         | Integer divider (SRT16)  |
+| `DIV` (32-bit)              | 4~11         | 整数除法（SRT16）              |
+| `DIV` (64-bit)              | 4~19         | 整数除法（SRT16）              |
 
-### Floating-Point Operations 
+### Floating-Point Operations
 
-| Instruction(s) / Operations           | Latency | Descriptions                                                |
-| ------------------------------------- | ------- | ----------------------------------------------------------- |
-| `FMUL`                                | 4       | Floating-point multiply operations                          |
-| `FMA`                                 | 4       | Floating-point multiply-add instruction                     |
-| `FDIV` (32-bit)                       | 3~9     | Floating-point divide operations                            |
-| `FDIV` (64-bit)                       | 3~14    | Floating-point divide operations                            |
-| `FSQRT` (32-bit)                      | 3~10    | Floating-point sqrt operations                              |
-| `FSQRT` (64-bit)                      | 3~16    | Floating-point sqrt operations                              |
-| `FCVT` (F2I, F2F)                     | 3       | Floating-point convert operations                           |
-| `FCVT` (I2F)                          | 3       | Integer to float convert operations                         |
-| `FMV` (I2F)                           | 1       | Integer to float move operations                            |
-| `FMV` (F2I)                           | 3       | Float to integer move operations                            |
-| `FCMP`, `FMIN/MAX`, `FCLASS`, `FSGNJ` | 2       | Floating-point compare/min/max/class/sign-inject operations |
+| Instruction(s) / Operations           | Latency      | Descriptions                                                |
+| ------------------------------------- | ------------ | ----------------------------------------------------------- |
+| `FMUL`                                | 4 (to use)   | Floating-point multiply operations                          |
+| `FMA`                                 | 4 (to use)   | Floating-point multiply-add instruction                     |
+| `FDIV` (32-bit)                       | 3~9          | 浮点除法运算                                                      |
+| `FDIV` (64-bit)                       | 3~14         | 浮点除法运算                                                      |
+| `FSQRT` (32-bit)                      | 3~10         | 浮点平方根运算                                                     |
+| `FSQRT` (64-bit)                      | 3~16         | 浮点平方根运算                                                     |
+| `FCVT` (F2I, F2F)                     | 3 (pipeline) | Floating-point convert operations                           |
+| `FCVT` (I2F)                          | 3 (pipeline) | Integer to float convert operations                         |
+| `FMV` (I2F)                           | 1            | Integer to float move operations                            |
+| `FMV` (F2I)                           | 3 (pipeline) | Float to integer move operations                            |
+| `FCMP`, `FMIN/MAX`, `FCLASS`, `FSGNJ` | 2            | Floating-point compare/min/max/class/sign-inject operations |
 
 ### Bit Manipulation Operations
 
-| Instruction(s) / Operations                    | Latency | Descriptions                                   |
-| ---------------------------------------------- | ------- | ---------------------------------------------- |
-| `CLZ(W)`, `CTZ(W)`, `CPOP(W)`                  | 3       | Count leading/trailing zeros, population count |
-| `CLMUL(H/R)`                                   | 3       | Carry-less multiplication                      |
-| `XPERM`                                        | 3       | Crossbar permutation                           |
-| `AES64*`, `SHA256*`, `SHA512*`, `SM3*`, `SM4*` | 3       | Scalar crypto operations                       |
+| Instruction(s) / Operations                    | Latency      | Descriptions                                   |
+| ---------------------------------------------- | ------------ | ---------------------------------------------- |
+| `CLZ(W)`, `CTZ(W)`, `CPOP(W)`                  | 3 (pipeline) | Count leading/trailing zeros, population count |
+| `CLMUL(H/R)`                                   | 3 (pipeline) | Carry-less multiplication                      |
+| `XPERM`                                        | 3 (pipeline) | Crossbar permutation                           |
+| `AES64*`, `SHA256*`, `SHA512*`, `SM3*`, `SM4*` | 3 (pipeline) | Scalar crypto operations                       |
 
-### Store Operations 
+### Store Operations
 
-| Instruction(s) / Operations | Latency | Descriptions     |
-| --------------------------- | ------- | ---------------- |
-| `ST`                        | 4       | Store operations |
+| Instruction(s) / Operations | Latency    | Descriptions     |
+| --------------------------- | ---------- | ---------------- |
+| `ST`                        | 4 (to use) | Store Operations |
 
-### Execution Units Configuration 
+### Execution Units Configuration
 
 Kunminghu V2 features the following execution units:
 

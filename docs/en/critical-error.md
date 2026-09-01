@@ -3,7 +3,7 @@ file_authors_:
 - zehao Liu <liuzehao19@mails.ucas.ac.cn> 
 ---
 
-# Critical Error {#sec:critical-error}
+# 严重错误 {#sec:critical-error}
 
 ## Overview
 
@@ -104,15 +104,10 @@ double trap behavior, the processor core cannot handle the current state,
 leading to unknown subsequent behavior that requires external platform
 intervention.
 
-In addition, currently {{processor_name}} defines a processor core hang as a
-severe error state, serving as an important means for post-silicon hang
-detection. The ROB commit stuck timeout check is controlled by the custom CSR
-mcorepwr[1]: mcorepwr is located at 0xBC0, and bit 1 is
-COMMIT_STUCK_CHECK_ENABLE with a reset value of 0. When software writes 1 to
-this bit, the ROB commit stuck timeout check is enabled and reports a critical
-error on timeout. When software writes 0 to this bit, the check is disabled, and
-the processor does not report a critical error for this class of commit stuck
-timeout.
+此外，目前 {{processor_name}} 将处理器核挂死自定义为严重错误状态，作为硅后判断挂死的重要手段。其中 ROB commit stuck
+超时检查由自定义 CSR mcorepwr[1] 控制：mcorepwr 的地址为 0xBC0，bit 1 为
+COMMIT_STUCK_CHECK_ENABLE，复位值为 0。软件将该位写 1 时开启 ROB commit stuck 超时检查，超时后上报
+critical error；写 0 时关闭该检查，处理器不会因该类 commit stuck 超时上报 critical error。
 
 ### Critical error state handling
 

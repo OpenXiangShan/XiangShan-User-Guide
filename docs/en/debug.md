@@ -3,7 +3,7 @@ file_authors_:
 - ChengGuanghui <wissycgh@gmail.com> 
 ---
 
-# Debug Module {#sec:debug}
+# 调试 {#sec:debug}
 
 This chapter is the design document for the Kunminghu debug module. The
 Kunminghu debug module is compatible with the RISC-V Debug V0.13 Specification.
