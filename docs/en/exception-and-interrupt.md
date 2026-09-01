@@ -3,7 +3,7 @@ file_authors_:
 - zengjinhong <zengjinhong21@mails.ucas.ac.cn>
 ---
 
-# Exception and Interrupt {#sec:exception-and-interrupt}
+# 异常与中断 {#sec:exception-and-interrupt}
 
 ## Overview
 

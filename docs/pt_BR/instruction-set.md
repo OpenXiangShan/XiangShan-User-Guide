@@ -5,7 +5,7 @@ file_authors_:
 
 # 指令集 {#sec:instruction-set}
 
-## Supported ISA Extensions
+## 支持的指令集扩展
 
 i, m, a, f, d, c, b, v, h, sdtrig, sha, shcounterenw, shgatpa, shlcofideleg,
 shtvala, shvsatpa, shvstvala, shvstvecd, smaia, smcsrind, smdbltrp, smmpm,
