@@ -71,6 +71,6 @@ Table: Debug-related csr implemented in Kunming Lake
 | Tinfo             | 0x7A4   | RO         | Trigger info             | 0x40                |
 | Dcsr              | 0x7B0   | RW         | Debug Control and Status | 0x40000003          |
 | Dpc               | 0x7B1   | RW         | Debug PC                 | 0x0                 |
-| Dscratch0         | 0x7B2   | RW         | 调试暂存寄存器0                 | -                   |
+| Dscratch0         | 0x7B2   | RW         | Debug Scratch Register 0 | -                   |
 | Dscratch1         | 0x7B3   | RW         | Debug Scratch Register 1 | -                   |
 

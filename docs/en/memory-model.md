@@ -112,11 +112,11 @@ virtual and physical addresses as shown in the diagram. Traversing the page
 table requires four memory accesses, necessitating the use of TLB to cache the
 page table.
 
-![Sv38 Virtual Address Structure](figs/Sv39vaddr.svg)
+![Sv39 Virtual Address Structure](figs/Sv39vaddr.svg)
 
-![Sv48 Virtual Address Structure](figs/Sv48vaddr.png)
+![Sv48 Virtual Address Structure](figs/Sv48vaddr.svg)
 
-![Physical Address Structure](figs/paddr.png)
+![Physical Address Structure](figs/paddr.svg)
 
 During address translation, instruction fetch at the frontend uses ITLB for
 address translation, while memory access at the backend uses DTLB. If ITLB or
@@ -128,9 +128,17 @@ The page table of {{processor_name}} is used to store the entry addresses of
 lower-level page tables or the physical information of final page tables. The
 page table structure is shown in Figure 6.3:
 
-![Page Table Structure](figs/pte.png)
+![Page Table Structure](figs/pte.svg)
 
 {{processor_name}} Page Table Structure Bit Attributes:
+
+**N: NAPOT page**
+
+The N bit (bit 63) from the Svnapot extension. When set, the PTE describes a
+NAPOT (naturally aligned power-of-two) page. {{processor_name}} currently supports
+only **64 KiB** NAPOT pages: with N=1 the PTE is required to have
+`PPN[3:0] = 4'b1000`, and any other encoding is treated as an invalid page table
+entry.
 
 **PBMT: Page-Based Memory Types**
 
@@ -151,7 +159,7 @@ enabling the PBMTE bit in the menvcfg register.)
   takes precedence. For attributes that are forcibly overridden, PBMT takes
   precedence.
 
-![Definition of PMBT](figs/pmbt.png)
+![Definition of PMBT](figs/pmbt.svg)
 
 **RSW: Reserved for use by Supervisor softWare**
 
@@ -230,7 +238,7 @@ The CPU enables two-stage translation based on vsatp and hgatp. The structure of
 vsatp is shown in the following figure (SXLEN is fixed at 64 in
 {{processor_name}})
 
-![vsatp structure](figs/vsatp.png)
+![vsatp structure](figs/vsatp.svg)
 
 vsatp controls VS-stage translation. By default, vsatp remains enabled, meaning
 VS-stage address translation is automatically activated during virtualization
@@ -241,16 +249,19 @@ mode are shown in the following diagram:
 
 | ** bit ** | ** domain ** | ** describing **                                                                                                                                                                                                                                                           |
 | --------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [63:60]   | MODE         | Indicates the address translation mode. When this field is 0, it is Bare mode, with no address translation or protection enabled. When the field is 8/9, it represents Sv39x4/Sv48x4 address translation modes. Any other value will trigger an illegal instruction fault. |
+| [63:60]   | MODE         | Indicates the address translation mode. When this field is 0, it is Bare mode, with no address translation or protection enabled. When the field is 8/9, it represents Sv39x4/Sv48x4 address translation modes. **An unsupported MODE is not written, but VMID and PPN are still written according to their own WARL rules** — unlike satp, whose entire write is discarded. |
 | [57:44]   | VMID         | Virtual machine identifier. For the Sv39x4/Sv48x4 address translation modes adopted by {{processor_name}}, the maximum VMID length is 14                                                                                                                                   |
 | [43:0]    | PPN          | Indicates the physical page number of the root page table for the second-stage translation, obtained by right-shifting the physical address by 12 bits.                                                                                                                    |
 
 {{processor_name}} employs the Sv39x4/Sv48x4 paging mechanism, with the virtual
-address structures of both mechanisms illustrated below.
+address structures of both mechanisms illustrated below. The guest physical
+address (GPA) width is limited to **41 bits** for Sv39x4 and **50 bits** for
+Sv48x4; bits above that width must be zero, otherwise the address is treated as
+invalid.
 
 ![sv39x4 Virtual Address Structure](figs/sv39x4.svg)
 
-![sv48x4 Virtual Address Structure](figs/sv48x4.png)
+![sv48x4 Virtual Address Structure](figs/sv48x4.svg)
 
 The VS-stage is responsible for translating guest virtual addresses into guest
 physical addresses, while the G-stage translates guest physical addresses into
@@ -283,7 +294,7 @@ register is shown in the table.
 
 | ** bit ** | ** domain ** | ** describing **                                                                                                                                                                                                                                                       |
 | --------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [63:60]   | MODE         | Indicates the address translation mode. When this field is 0, it is Bare mode, with no address translation or protection enabled. When the field is 8/9, it represents Sv39/Sv48 address translation modes. Any other value will trigger an illegal instruction fault. |
+| [63:60]   | MODE         | Indicates the address translation mode. When this field is 0, it is Bare mode, with no address translation or protection enabled. When the field is 8/9, it represents Sv39/Sv48 address translation modes. The hardware supports only these three values: **writing any other value makes the entire satp write have no effect, leaving every field unchanged**. No illegal instruction exception is raised here — exceptions triggered by privilege level or by conditions such as `mstatus.TVM` are a different mechanism. |
 | [59:44]   | ASID         | Address Space Identifier. The length of ASID is configurable via parameters. For the Sv39/Sv48 address translation modes adopted by {{processor_name}}, the maximum ASID length is 16.                                                                                 |
 | [43:0]    | PPN          | Represents the physical page number of the root page table, obtained by right-shifting the physical address by 12 bits.                                                                                                                                                |
 
@@ -349,7 +360,7 @@ The address space of PMP registers is as follows in the table
 Among them, the layout of PMP configuration registers pmpcfg0 and pmpcfg2 is as
 shown in the figure.
 
-![PMP Address Register](figs/pmp.png)
+![PMP Address Register](figs/pmp.svg)
 
 The format of the PMP configuration register is as shown in the table below.
 
@@ -366,8 +377,8 @@ The format of the PMP address register is shown in the following table.
 
 | ** bit ** | ** domain ** | ** describing **                                           |
 | --------- | ------------ | ---------------------------------------------------------- |
-| [63:34]   | 0            | The upper 30 bits of the PMP address register are 0        |
-| [33:0]    | address      | Stores bits [35:2] of the PMP entry configuration address. |
+| [63:46]   | 0            | Not implemented; reads as zero                             |
+| [45:0]    | address      | Address encoding field, corresponding to `PA[47:2]`; what the low bits read back depends on the PMP granularity and the matching mode |
 
 ### PMA Attribute Register
 
@@ -401,7 +412,7 @@ The address space of PMA registers is shown in the following table
 
 The layout of pmacfg0 and pmacfg2 is as shown in the figure.
 
-![PMA Address Register](figs/pma.png)
+![PMA Address Register](figs/pma.svg)
 
 The format of PMA configuration registers is shown in the following table
 
@@ -409,7 +420,7 @@ The format of PMA configuration registers is shown in the following table
 | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 7         | L            | Indicates whether the PMA entry is locked. This field defaults to 0, meaning unlocked; when set to 1, it indicates locked.                                                                                                                              |
 | 6         | C            | Indicates whether the address configured in this PMA entry is cacheable. A value of 1 means it is cacheable, while 0 means the address belongs to MMIO space and is not cacheable.                                                                      |
-| 5         | Atomic       | 表示该 PMA 表项配置的地址是否允许原子访问。该域为 1 时表示可原子访问，为 0 时表示不可原子访问                                                                                                                                                                                                    |
+| 5         | Atomic       | Indicates whether the address configured in this PMA entry permits atomic accesses. A value of 1 means atomic accesses are permitted, while 0 means they are not.                                                                                        |
 | [4:3]     | A            | Indicates the address matching mode of this PMA entry. This field defaults to 0, meaning the PMA entry is disabled and does not match any address. When this field is 1, 2, or 3, it represents TOR, NA4, or NAPOT address matching modes respectively. |
 | 2         | X            | Indicates whether the address configured in this PMA entry supports instruction execution. When this field is 1, it supports instruction execution; when 0, it does not.                                                                                |
 | 1         | W            | Indicates whether the address configured in this PMA entry supports write operations. A value of 1 means write is supported, and 0 means write is not supported.                                                                                        |
@@ -419,8 +430,8 @@ The format of the PMA address register is shown in the table below.
 
 | ** bit ** | ** domain ** | ** describing **                                              |
 | --------- | ------------ | ------------------------------------------------------------- |
-| [63:34]   | 0            | The upper 30 bits of the PMA address register are 0           |
-| [33:0]    | address      | Stores bits [35:2] of the address for PMA entry configuration |
+| [63:46]   | 0            | Not implemented; reads as zero                                |
+| [45:0]    | address      | Address encoding field, corresponding to `PA[47:2]`           |
 
 The address space and attributes described by the PMA registers are shown in the
 following table:

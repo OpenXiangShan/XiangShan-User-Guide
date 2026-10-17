@@ -141,8 +141,8 @@ Table: Data flit
 | RespErr                 | 2        | 相应错误码。 |
 | Resp                    | 3        | 响应状态。 |
 | DataSource              | 3/4\*    | 数据来源。 |
-| {1'b0，FwdState[2:0]}\* |          | 指示从监听者发送到请求者的 CompData 中的状态。 |
-| {1'b0, DataPull[2:0]}\* |          |
+| {1'b0, FwdState[2:0]}\* |          | 指示从监听者发送到请求者的 CompData 中的状态。 |
+| {1'b0, DataPull[2:0]}\* |          |          |
 | CBusy                   | 3        | 完成者的繁忙程度，其编码由具体的实现决定。 |
 | DBID                    | 8/12\*   | 数据缓冲区 ID，用于请求方的 TxnID。 |
 | CCID                    | 2        | 关键数据块的 ID。 |
@@ -170,7 +170,7 @@ Table: Request flit
 | Endian                  |          | 用于原子事务，0 表示小端，1 表示大端。|
 | Deep                    |          | 在响应之前是否必须先写入最终目的地。|
 | ReturnTxnID             | 8/12\*   | 用于DMT。|
-| {6'b0，StashLPIDValid，StashLPID[4:0]}\* | | StashLPIDValid：用于 stash 事务，StashLPID 的有效信号。StashLPID：用于 Stash 事务。 |
+| {6'b0, StashLPIDValid, StashLPID[4:0]}\* | | StashLPIDValid：用于 stash 事务，StashLPID 的有效信号。StashLPID：用于 Stash 事务。 |
 | Opcode                  | 6/7\*    | 操作码。 |
 | Size                    | 3        | 数据大小。 |
 | Addr                    | RAW      | 地址。 |
@@ -185,7 +185,7 @@ Table: Request flit
 | PGroupID                | 5/8\*    | 用于 PCMO 事务。 |
 | StashGroupID            |          | 用于 StashOnceSep 事务。 |
 | TagGroupID              |          | 用于标记。 |
-| {3'b0，LPID[4:0]}\*     |          | 逻辑处理器 ID，用于一个请求者包含多个逻辑处理器的情况。 |
+| {3'b0, LPID[4:0]}\*     |          | 逻辑处理器 ID，用于一个请求者包含多个逻辑处理器的情况。 |
 | Excl                    | 1        | 用于 exclusive 事务。 |
 | SnoopMe                 |          | 用于原子事务，指定是否必须向请求者发送 Snoop。 |
 | ExpCompAck              | 1        | 表示事务是否包含了一个 CompAck 响应。|
@@ -205,12 +205,12 @@ Table: Response flit
 | RespErr       | 2        | 响应错误码。 |
 | Resp          | 3        | 响应状态。 |
 | FwdState      | 3        | 用于 DCT，指示从监听者发送到请求者的 CompData 中的状态。 |
-| {2'b0，DataPull} |       | 用于 Stash 事务，指示 Snoop 响应是否需要 Data Pull。 |
+| {2'b0, DataPull} |       | 用于 Stash 事务，指示 Snoop 响应是否需要 Data Pull。 |
 | CBusy         | 3        | 完成者的繁忙程度，其编码由具体的实现决定。 |
 | DBID          | 8/12\*   | 数据缓冲区 ID，用于请求方的 TxnID。 |
-| {4'b0，PGroupID[7:0]}     | | 用于 Persistent CMO 事务。 |
-| {4'b0，StashGroupID[7:0]} | | 用于 Stash 事务。 |
-| {4'b0，TagGroupID[7:0]}   | | 用于标记。 |
+| {4'b0, PGroupID[7:0]}     | | 用于 Persistent CMO 事务。 |
+| {4'b0, StashGroupID[7:0]} | | 用于 Stash 事务。 |
+| {4'b0, TagGroupID[7:0]}   | | 用于标记。 |
 | PCrdType      | 4 | Credit 类型。 |
 | TagOp         | 2 | 表示要对 Tag 执行的操作。 |
 | TraceTag      | 1 | 标记，用于跟踪。 |
@@ -224,8 +224,8 @@ Table: Snoop flit
 | TxnID                | 8/12\*   | 事务 ID。 |
 | FwdNID               | id_width | 指示 CompData 响应可以转发到哪个请求者。 |
 | FwdTxnID             | 8/12\*   | 用于 DCT。|
-| {6'b0，StashLPIDValid[0:0]，StashLPID[4:0]}\* | | StashLPIDValid：用于 Stash 事务，StashLPID 的有效位。StashLPID：用于 Stash 事务。 |
-| {4'b0，VMIDExt[7:0]}\* |          | VMIDExt：用于 DVM 事务。|
+| {6'b0, StashLPIDValid[0:0], StashLPID[4:0]}\* | | StashLPIDValid：用于 Stash 事务，StashLPID 的有效位。StashLPID：用于 Stash 事务。 |
+| {4'b0, VMIDExt[7:0]}\* |          | VMIDExt：用于 DVM 事务。|
 | Opcode               | 5        | 操作码。 |
 | Addr                 | SAW      | 地址。 |
 | NS                   | 1        | 用于指示物理地址空间。 |

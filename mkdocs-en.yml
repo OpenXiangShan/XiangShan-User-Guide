@@ -3,7 +3,7 @@ INHERIT: utils/mkdocs-base.yml
 docs_dir: 'docs/en'
 site_dir: 'site/en'
 
-site_name: XiangShan User Guide
+site_name: XSAI User Guide
 repo_url: https://github.com/OpenXiangShan/XiangShan-User-Guide
 repo_name: XiangShan-User-Guide
 
@@ -29,17 +29,60 @@ extra:
   
 nav:
   - Preface: index.md
-  - Introduction: introduction.md
-  - Microarchitecture: processor.md
-  - Typical Configurations: typical-configuration.md
-  - Instruction Set: instruction-set.md
-  - Data Registers: registers.md
-  - Privileged Modes and Control Status Registers: mode-and-csr.md
-  - Exceptions and Interrupts: exception-and-interrupt.md
-  - Memory Model: memory-model.md
-  - Memory Subsystem: memory-subsystem.md
-  - Vector: vector.md
-  - Interrupt Controller: interruption-controller.md
-  - Bus Interface: bus-interface.md
-  - Debug Module: debug.md
-  - Performance Monitor: performance-monitor.md
+  - Getting Started:
+      - XSAI AI Software and Hardware Overview: start/overview.md
+      - Getting Started in 15 Minutes: start/quickstart.md
+      - Reader Paths:
+          - Framework Adaptation Path: start/path-framework.md
+          - Performance Analysis Path: start/path-perf.md
+  - ISA and Architecture:
+      - Instruction Set Extensions: isa/instruction-set.md
+      - Matrix Data Registers: isa/registers.md
+      - Matrix CSRs: isa/csr.md
+      - Matrix Exceptions and Interrupts: isa/exception.md
+  - Hardware:
+      - Microarchitecture Delta: hardware/microarchitecture.md
+      - Memory Subsystem and HBL2: hardware/memory.md
+      - Performance Monitoring and Top-down Analysis: hardware/pmu.md
+      - Matrix Debug Support: hardware/debug.md
+  - Software Stack:
+      - Compiler and Operator DSL: software/compiler.md
+      - Kernel Libraries and Inference Frameworks: software/frameworks.md
+      - System Software and Runtime: software/system.md
+      - Functional Simulators: software/simulators.md
+  - Co-design and Optimization:
+      - Co-design: optimization/co-design.md
+      - Performance Analysis and Tuning: optimization/perf.md
+  - Simulation, Verification and Bring-up:
+      - Environment Setup: verification/environment.md
+      - Verilator Simulation: verification/verilator.md
+      - VCS Simulation and Testbench: verification/vcs.md
+      - Differential Testing: verification/difftest.md
+      - Checkpoint and Slicing: verification/checkpoint.md
+      - Troubleshooting: verification/troubleshooting.md
+  - Development SDK:
+      - SDK Layout and Directory Structure: sdk/layout.md
+      - Build System and make Targets: sdk/build.md
+      - Submodules and Version Management: sdk/submodules.md
+      - Workflow and Contribution: sdk/workflow.md
+  - Known Limitations: known-limitations.md
+  - Appendix:
+      - A Delta over Kunminghu V2R2: appendix/diff.md
+      - B Glossary: appendix/glossary.md
+      - C References and Repositories: appendix/references.md
+  - Baseline Manual (Kunminghu V2R2, unmodified):
+      - Introduction: introduction.md
+      - Microarchitecture: processor.md
+      - Typical Configurations: typical-configuration.md
+      - Instruction Set: instruction-set.md
+      - Data Registers: registers.md
+      - Privileged Modes and Control Status Registers: mode-and-csr.md
+      - Exceptions and Interrupts: exception-and-interrupt.md
+      - Memory Model: memory-model.md
+      - Memory Subsystem: memory-subsystem.md
+      - Vector: vector.md
+      - Interrupt Controller: interruption-controller.md
+      - Bus Interface: bus-interface.md
+      - Debug Module: debug.md
+      - Performance Monitor: performance-monitor.md
+      - Critical Error: critical-error.md

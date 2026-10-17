@@ -2,6 +2,8 @@ build/
 site/
 venv/
 .venv/
+__pycache__/
+*.pyc
 *.aux
 *.log
 *.pdf
@@ -11,3 +13,6 @@ venv/
 *.tex
 *.html
 
+
+# 画图参考用的论文原图：第三方版权，不随仓库发布；索引见 figs-src/refs/README.md
+figs-src/refs/*/*.png

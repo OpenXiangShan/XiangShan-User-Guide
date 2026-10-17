@@ -98,13 +98,10 @@ Table: {{processor_name}} 支持的 URW 的 CSRs 列表
 | vxsat |   U   | 0x009 |  定点溢出标志位寄存器  | 非特权向量 |
 |  vxrm  |   U   | 0x00A |   定点舍入模式寄存器   | 非特权向量 |
 |  vcsr  |   U   | 0x00F |  向量控制和状态寄存器  | 非特权向量 |
-|   vl   |   U   | 0xC20 |     向量长度寄存器     | 非特权向量 |
-| vtype |   U   | 0xC21 |   向量数据类型寄存器   | 非特权向量 |
-| vlenb |   U   | 0xC22 | 向量寄存器字节数寄存器 | 非特权向量 |
 
 ### 用户模式只读的 CSRs
 
-{{processor_name}} 中实现的权限为用户模式只读（URO）的 RISC-V 的 CSRs 如下表所示：
+{{processor_name}} 中实现的权限为用户模式只读（URO）的 RISC-V 的 CSRs 如下表所示。其中 `vl`、`vtype` 由向量配置指令（`vsetvli` / `vsetivli`）更新，**不支持普通 CSR 写入**：
 
 Table: {{processor_name}} 支持的 URO 的 CSRs 列表
 
@@ -116,6 +113,9 @@ Table: {{processor_name}} 支持的 URO 的 CSRs 列表
 | hpmcounter3 |   U   | 0xC03 |    用户模式计数器3    | 用户模式计数器 |
 |     ...     |  ...  |  ...  |          ...          |      ...      |
 | hpmcounter31 |   U   | 0xC1F |    用户模式计数器31    | 用户模式计数器 |
+|   vl   |   U   | 0xC20 |     向量长度寄存器     | 非特权向量 |
+| vtype |   U   | 0xC21 |   向量数据类型寄存器   | 非特权向量 |
+| vlenb |   U   | 0xC22 | 向量寄存器字节数寄存器 | 非特权向量 |
 
 ### 监管模式可读写的 CSRs
 
@@ -258,8 +258,8 @@ Table: {{processor_name}} 支持的 MRW 的 CSRs 列表
 |    tdata2    | M/Debug | 0x7A2 |  第二个 Debug/Trace 触发器数据寄存器  |      调试寄存器      |
 |    tdata3    | M/Debug | 0x7A3 |  第三个 Debug/Trace 触发器数据寄存器  |      调试寄存器      |
 |     tinfo     | M/Debug | 0x7A4 |      Debug/Trace 触发器信息寄存器      |      调试寄存器      |
-|   tcontrol   | M/Debug | 0x7A2 |        机器模式触发器使能寄存器        |      调试寄存器      |
-|   mcontext   | M/Debug | 0x7A3 |          机器模式上下文寄存器          |      调试寄存器      |
+|   tcontrol   | M/Debug | 0x7A5 |     机器模式触发器使能寄存器（本版未实现）     |      调试寄存器      |
+|   mcontext   | M/Debug | 0x7A8 |          机器模式上下文寄存器          |      调试寄存器      |
 |    pmacfg0    |    M    | 0x7C0 |             PMA配置寄存器0             |       PMA配置       |
 |    pmacfg2    |    M    | 0x7C2 |             PMA配置寄存器2             |       PMA配置       |
 |   pmaaddr0   |    M    | 0x7C8 |             PMA地址寄存器0             |       PMA地址       |

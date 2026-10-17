@@ -136,14 +136,13 @@ Table: List of URW CSRs Supported by {{processor_name}}
 | vxsat  |        U        | 0x009  |          Fixed-point overflow flag register           |     Non-privileged Vector     |
 |  vxrm  |        U        | 0x00A  |          Fixed-point rounding mode register           |     Non-privileged Vector     |
 |  vcsr  |        U        | 0x00F  |          Vector control and status register           |     Non-privileged Vector     |
-|   vl   |        U        | 0xC20  |                Vector Length Register                 |     Non-privileged Vector     |
-| vtype  |        U        | 0xC21  |               Vector Data Type Register               |     Non-privileged Vector     |
-| vlenb  |        U        | 0xC22  |          Vector register byte count register          |     Non-privileged Vector     |
 
 ### User-mode read-only CSRs
 
 The RISC-V CSRs implemented in {{processor_name}} with user-mode read-only (URO)
-permissions are listed in the following table:
+permissions are listed in the following table. Among them, `vl` and `vtype` are
+updated by the vector configuration instructions (`vsetvli` / `vsetivli`) and
+do **not** support ordinary CSR writes:
 
 Table: List of URO CSRs Supported by {{processor_name}}
 
@@ -155,6 +154,9 @@ Table: List of URO CSRs Supported by {{processor_name}}
 | hpmcounter3  |        U        | 0xC03  |          User Mode Counter 3          | User mode counter |
 |     ...      |       ...       |  ...   |                  ...                  |        ...        |
 | hpmcounter31 |        U        | 0xC1F  |         User-mode Counter 31          | User mode counter |
+|   vl   |        U        | 0xC20  |                Vector Length Register                 |     Non-privileged Vector     |
+| vtype  |        U        | 0xC21  |               Vector Data Type Register               |     Non-privileged Vector     |
+| vlenb  |        U        | 0xC22  |          Vector register byte count register          |     Non-privileged Vector     |
 
 ### Supervisor mode readable/writable CSRs
 
@@ -302,8 +304,8 @@ Table: List of MRW CSRs Supported by {{processor_name}}
 |    tdata2     |     M/Debug     | 0x7A2  |              Second Debug/Trace Trigger Data Register              |             Debug register              |
 |    tdata3     |     M/Debug     | 0x7A3  |            The third Debug/Trace Trigger Data Register             |             Debug register              |
 |     tinfo     |     M/Debug     | 0x7A4  |              Debug/Trace Trigger Information Register              |             Debug register              |
-|   tcontrol    |     M/Debug     | 0x7A2  |                Machine mode trigger enable register                |             Debug register              |
-|   mcontext    |     M/Debug     | 0x7A3  |                   Machine-mode context register                    |             Debug register              |
+|   tcontrol    |     M/Debug     | 0x7A5  |      Machine mode trigger enable register (not implemented)       |             Debug register              |
+|   mcontext    |     M/Debug     | 0x7A8  |                   Machine-mode context register                    |             Debug register              |
 |    pmacfg0    |        M        | 0x7C0  |                    PMA Configuration Register 0                    |            PMA Configuration            |
 |    pmacfg2    |        M        | 0x7C2  |                    PMA Configuration Register 2                    |            PMA Configuration            |
 |   pmaaddr0    |        M        | 0x7C8  |                       PMA address register 0                       |               PMA Address               |

@@ -1,19 +1,19 @@
 # 前言 {.unnumbered .unlisted}
 
-本文档为《香山开源处理器用户手册》，适用于 {{processor_name}} 。
+香炉峰（XSAI，读音 kesai）是一款 AICPU IP。它在通用 RISC-V 处理器昆明湖 V2R2 的基础上增加矩阵运算单元与特殊向量操作，保留 CPU 编程模型的同时加速 AI 推理，即通用计算与 AI 推理一体的"通推一体"。
 
-您可从以下渠道获取最新版的本文档：
+本手册只描述香炉峰相对昆明湖 V2R2 **新增或修改的部分**，以及仿真、调试与软件开发的使用说明。与基线相同的部分（特权模式、中断控制器、总线接口、内存模型基础语义等）请参见《香山开源处理器用户手册》对应章节；本手册末尾保留了同样的基线章节，便于对照查阅。
 
-* 网页版：[https://docs.xiangshan.cc/projects/user-guide/](https://docs.xiangshan.cc/projects/user-guide/)
-* PDF 文件：[https://github.com/OpenXiangShan/XiangShan-User-Guide/releases](https://github.com/OpenXiangShan/XiangShan-User-Guide/releases)
+## 阅读约定 {.unnumbered .unlisted}
 
-您可访问香山文档网站 [docs.xiangshan.cc](https://docs.xiangshan.cc/) 获取更多文档。
-
-本文档源语言为中文，托管于 GitHub，采用 Weblate 平台进行协作翻译。欢迎您参与校对、纠错与翻译工作，共同完善文档内容！
+* 本手册采用增量写法，只写与昆明湖 V2R2 的差异。
+* 指令编码、控制状态寄存器（Control Status Register，CSR）编号与寄存器位域以最新版 ISA 规范和 RTL 实现为准。
+* 示例命令以 `xsai-env` 统一环境为前提，见[环境准备](verification/environment.md#sec:sim-environment)。
+* 标有 `TODO` 的段落表示内容尚未定稿。
 
 ## 声明 {.unnumbered .unlisted}
 
-版权所有 © 2024 - 2025 香山开源处理器团队·北京开源芯片研究院
+版权所有 © 2024 - 2026 香山开源处理器团队·北京开源芯片研究院
 
 本文档采用“[知识共享 署名 4.0](https://creativecommons.org/licenses/by/4.0/deed.zh-hans)”协议公开发布。您可以根据该协议的规定，自由地使用、修改、分发本文档，但必须给出恰当的署名、表明原始许可协议、标注是否对原始文档作了修改。具体许可条款以知识共享组织公布的完整法律文本为准。
 
@@ -21,6 +21,6 @@
 
 ## 版本历史 {.unnumbered .unlisted}
 
-| 日期       | 版本   | 说明       |
-| ---------- | ------ | ---------- |
-| 2025-01-16 | alpha1 | 第一次发布 |
+| 日期       | 版本   | 说明                     |
+| ---------- | ------ | ------------------------ |
+| 2026-10-13 | draft1 | 首版框架：增量章节与使用说明 |

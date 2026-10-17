@@ -1,41 +1,42 @@
 # Preface {.unnumbered .unlisted}
 
-This document is _XiangShan Open-Source Processor User Guide_, which is
-applicable to {{processor_name}} .
+XSAI (pronounced "kesai") is an AICPU IP. It adds a matrix compute
+unit and special vector operations to the general-purpose RISC-V processor
+Kunminghu V2R2, keeping the CPU programming model while accelerating AI
+inference — a single IP for both general-purpose compute and AI inference.
 
-You can obtain an latest version of this document from:
+This manual documents only what XSAI **adds to or changes over** Kunminghu
+V2R2, plus how to use its simulation, debug and software toolchains. For
+everything identical to the baseline processor (privileged modes, interrupt
+controller, bus interface, base memory-model semantics), see the corresponding
+chapters of the _XiangShan Open-Source Processor User Guide_; the same baseline
+chapters are kept at the end of this manual for convenience.
 
-* Website:
-  [https://docs.xiangshan.cc/projects/user-guide/](https://docs.xiangshan.cc/projects/user-guide/)
-* PDF file:
-  [https://github.com/OpenXiangShan/XiangShan-User-Guide/releases](https://github.com/OpenXiangShan/XiangShan-User-Guide/releases)
+## Conventions {.unnumbered .unlisted}
 
-You could visist XiangShan Document Center
-[docs.xiangshan.cc](https://docs.xiangshan.cc/) to get more documents.
-
-The original language of this document is Chinese. It is hosted on GitHub and
-collaboratively translated using the Weblate platform. You are welcome to join
-us in proofreading, correcting errors, and contributing to the translation to
-help improve the documentation!
+* The manual is written as a delta against Kunminghu V2R2.
+* Instruction encodings, CSR numbers and register fields follow the latest ISA
+  specification and the RTL implementation.
+* Example commands assume the `xsai-env` workspace; see
+  [Environment Setup](verification/environment.md#sec:sim-environment).
+* Paragraphs marked `TODO` are not finalised yet.
 
 ## Notice {.unnumbered .unlisted}
 
-Copyright © 2024–2025 The XiangShan Team · Beijing Institute of Open Source Chip
+Copyright © 2024 - 2026 The XiangShan Team, Beijing Institute of Open Source Chip
 
-This document is publicly released under the “[Creative Commons Attribution 4.0
-International](https://creativecommons.org/licenses/by/4.0/deed.zh-hans)”
-license. You are free to use, modify, and distribute this document under the
-terms of the license, provided that you give appropriate credit, indicate the
-original license, and note if any changes were made. For full details, please
-refer to the complete legal text published by Creative Commons.
+This document is released under the
+[Creative Commons Attribution 4.0](https://creativecommons.org/licenses/by/4.0/)
+license. You may use, modify and redistribute it provided that you give
+appropriate credit, indicate the license and note any changes. The full legal
+text published by Creative Commons prevails.
 
-This document provides interim information and may be updated periodically as
-needed. Unless otherwise specified, all statements, information, and
-recommendations contained herein do not constitute any express or implied
-warranties.
+This document provides status information only and may be updated from time to
+time. Unless otherwise agreed, nothing herein constitutes any express or implied
+warranty.
 
-## Version History {.unnumbered .unlisted}
+## Version history {.unnumbered .unlisted}
 
-| Date       | Version | Description   |
-| ---------- | ------- | ------------- |
-| 2025-01-16 | alpha1  | First Release |
+| Date       | Version | Notes                                  |
+| ---------- | ------- | -------------------------------------- |
+| 2026-10-13 | draft1  | First framework: delta and usage chapters |

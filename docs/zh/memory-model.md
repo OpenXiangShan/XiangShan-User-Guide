@@ -74,19 +74,23 @@ MMU 负责将虚拟地址翻译成物理地址，并用翻译得到的物理地�
 
  {{processor_name}} 的物理地址为 48 位，虚拟地址和物理地址的结构如图所示。遍历页表需要进行四次内存访问，需要通过 TLB 对页表做缓存。
 
-![Sv38 虚拟地址结构](figs/Sv39vaddr.svg)
+![Sv39 虚拟地址结构](figs/Sv39vaddr.svg)
 
-![Sv48 虚拟地址结构](figs/Sv48vaddr.png)
+![Sv48 虚拟地址结构](figs/Sv48vaddr.svg)
 
-![物理地址结构](figs/paddr.png)
+![物理地址结构](figs/paddr.svg)
 
 在进行地址翻译时，前端取指通过 ITLB 进行地址翻译，后端访存通过 DTLB 进行地址翻译。ITLB 和 DTLB 如果 miss，会通过 Repeater 向 L2 TLB 发送请求。前端取指和后端访存对 TLB 均采用非阻塞式访问，如果 TLB 返回缺失，可以重新调度查询其他请求。
 
 {{processor_name}} 页表用于存储下级页表的入口地址或者最终页表的物理信息，页表结构如图 6.3 所示：
 
-![页表结构](figs/pte.png)
+![页表结构](figs/pte.svg)
 
 {{processor_name}} 页表结构各 bit 属性：
+
+**N：NAPOT 页**
+
+Svnapot 扩展的 N 位（bit 63）。该位为 1 时，PTE 描述一个 NAPOT（naturally aligned power-of-two）大页。{{processor_name}} 当前只支持 **64 KiB** 的 NAPOT 页，即 N=1 时要求 `PPN[3:0] = 4'b1000`；其余编码按非法页表项处理。
 
 **PBMT：Page-Based Memory Types**
 
@@ -100,7 +104,7 @@ menvcfg 寄存器的 PBMTE 位）
 - SVPBMT 中未涉及到的 PMA 属性，以原来物理地址的 PMA 为准，强制覆盖的属性，以 PBMT 为
 准。
 
-![PMBT 的定义](figs/pmbt.png)
+![PMBT 的定义](figs/pmbt.svg)
 
 **RSW：Reserved for use by Supervisor softWare**
 
@@ -146,7 +150,7 @@ CPU 要访问某个虚拟地址，若 TLB 命中，则从 TLB 中直接获取物
 
 CPU 根据 vsatp 与 hgatp 开启两阶段翻译，vsatp 结构如下图所示（ {{processor_name}} 中 SXLEN 固定为 64）
 
-![vsatp 结构](figs/vsatp.png)
+![vsatp 结构](figs/vsatp.svg)
 
 vsatp 控制 VS-stage 阶段翻译，一般默认 vsatp 保持开启，即在虚拟化模式或者执行虚拟化访存指令时，默认开启 VS-stage 阶段地址翻译。
 
@@ -154,15 +158,15 @@ hgatp 控制 G-stage 阶段翻译，hgatp 结构与翻译模式如下图所示
 
 | **位**  | **域** | **描述**                                                       |
 | ------- | ------ | :------------------------------------------------------------ |
-| [63:60] | MODE   | 表示地址转换的模式。该域为 0 时为 Bare mode，不开启地址翻译或地址保护，该域为 8/9 时表示 Sv39x4/Sv48x4 地址转换模式，如果该域为其他值会上报 illegal instruction fault |
+| [63:60] | MODE   | 表示地址转换的模式。该域为 0 时为 Bare mode，不开启地址翻译或地址保护，该域为 8/9 时表示 Sv39x4/Sv48x4 地址转换模式。**写入不支持的 MODE 时不更新 MODE，但 VMID 与 PPN 仍按各自 WARL 规则写入**——与 satp「整体丢弃」的语义不同 |
 | [57:44] | VMID   | 虚拟机标识符。对于 {{processor_name}} 采用的 Sv39x4/Sv48x4 地址转换模式，VMID 长度最大值都为 14 |
 | [43:0]  | PPN    | 表示第二阶段翻译的根页表的物理页号，由物理地址右移 12 位得到 |
 
-{{processor_name}} 使用 Sv39x4/Sv48x4 分页机制，两机制的虚拟地址结构如下图所示
+{{processor_name}} 使用 Sv39x4/Sv48x4 分页机制，两机制的虚拟地址结构如下图所示。客户机物理地址（GPA）宽度分别受限于 **41 位**（Sv39x4）与 **50 位**（Sv48x4）；超出该宽度的高位必须为零，否则视为非法。
 
 ![sv39x4 虚拟地址结构](figs/sv39x4.svg)
 
-![sv48x4 虚拟地址结构](figs/sv48x4.png)
+![sv48x4 虚拟地址结构](figs/sv48x4.svg)
 
 VS-stage 负责将客户机虚拟地址转换成客户机物理地址，G-stage 负责将客户机的物理地址转换成主机的物理地址。第一阶段的翻译和非虚拟化的翻译过程基本一致，第二阶段的翻译在 PTW 与 LLPTW 模块中进行，查询逻辑为：首先在 Page Cache 中查找，如果找到则返回给 PTW 或者 LLPTW，如果没找到就进入 HPTW 进行翻译，由 HPTW 返回并填入 Page Cache。
 
@@ -180,7 +184,7 @@ VS-stage 负责将客户机虚拟地址转换成客户机物理地址，G-stage 
 
 | **位**  | **域** | **描述**                                                       |
 | ------- | ------ | :------------------------------------------------------------ |
-| [63:60] | MODE | 表示地址转换的模式。该域为 0 时为 Bare mode，不开启地址翻译或地址保护，该域为 8/9 时表示 Sv39/Sv48 地址转换模式，如果该域为其他值会上报 illegal instruction fault |
+| [63:60] | MODE | 表示地址转换的模式。该域为 0 时为 Bare mode，不开启地址翻译或地址保护，该域为 8/9 时表示 Sv39/Sv48 地址转换模式。硬件只支持这三种取值：**写入其他值时整个 satp 写入无效，所有字段保持原值**。这里不产生非法指令异常——由权限级或 `mstatus.TVM` 等条件引发的异常是另一机制 |
 | [59:44] | ASID | 地址空间标识符。ASID 的长度可参数化配置，对于 {{processor_name}} 采用的 Sv39/Sv48 地址转换模式，ASID 长度最大值为 16 |
 | [43:0] | PPN | 表示根页表的物理页号，由物理地址右移 12 位得到 |
 
@@ -233,7 +237,7 @@ PMP 寄存器的地址空间如下表
 
 其中，PMP 配置寄存器 pmpcfg0，pmpcfg2 的布局如图所示
 
-![PMP 地址寄存器](figs/pmp.png)
+![PMP 地址寄存器](figs/pmp.svg)
 
 PMP 配置寄存器的格式如下表
 
@@ -250,8 +254,8 @@ PMP 地址寄存器的格式如下表
 
 | **位** | **域** | **描述** |
 | --- | --- | --- |
-| [63:34] | 0 | PMP 地址寄存器的高 30 位为 0 |
-| [33:0] | address | 存储 PMP 表项配置的地址的 [35:2] 位 |
+| [63:46] | 0 | 未实现，读为零 |
+| [45:0] | address | 地址编码字段，对应物理地址的 `PA[47:2]`；低位回读受 PMP 粒度和匹配模式约束 |
 
 ### PMA 属性寄存器
 
@@ -282,7 +286,7 @@ PMA 寄存器的地址空间如下表
 
 其中，pmacfg0、pmacfg2 的布局如图所示
 
-![PMA 地址寄存器](figs/pma.png)
+![PMA 地址寄存器](figs/pma.svg)
 
 PMA 配置寄存器的格式如下表
 
@@ -300,8 +304,8 @@ PMA 地址寄存器的格式如下表
 
 | **位** | **域** | **描述** |
 | --- | --- | --- |
-| [63:34] | 0 | PMA 地址寄存器的高 30 位为 0 |
-| [33:0] | address | 存储 PMA 表项配置的地址的 [35:2] 位 |
+| [63:46] | 0 | 未实现，读为零 |
+| [45:0] | address | 地址编码字段，对应物理地址的 `PA[47:2]` |
 
 PMA 寄存器描述的地址空间及属性如下表
 

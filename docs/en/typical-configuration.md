@@ -30,11 +30,11 @@ Below is the typical Kunminghu V2 core configurations:
 | Virtualization             | Y                              |
 | Vector                     | Y                              |
 
-## 指令延迟
+## Instruction Latency
 
 Most arithmetic instructions are single-cycle (Latency = 1). Multi-cycle instructions are listed as follows.
 
-### 整数操作
+### Integer Operations
 
 | Instruction(s) / Operations | Latency      | Descriptions             |
 | --------------------------- | ------------ | ------------------------ |

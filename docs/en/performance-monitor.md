@@ -30,8 +30,13 @@ The basic usage of PMU is as follows:
 * Disable all performance event monitoring via the mcountinhibit register.
 * Initialize echo performance event counters, including: mcycle, minstret,
   mhpmcounter3 - mhpmcounter31.
-* 配置各个监测单元性能事件选择器，包括: mhpmevent3 - mhpmevent31。 {{processor_name}}
-  对每个事件选择器可以配置最多四种事件组合，将事件索引值、事件组合方法、采样特权级写入事件选择器后，即可在规定的采样特权级下对配置的事件正常计数，并根据组合后结果累加到事件计数器中。
+* Configure the performance event selector of each monitoring unit, including
+  mhpmevent3 - mhpmevent31. In {{processor_name}} each event selector can be
+  configured with up to four event combinations; after writing the event index
+  values, the event combination method and the sampling privilege level into the
+  event selector, the configured events are counted normally at the specified
+  sampling privilege level, and the combined result is accumulated into the
+  event counter.
 * Configure xcounteren for access permission authorization
 * Enable all performance event monitoring via mcountinhibit register and start
   counting.
@@ -39,10 +44,10 @@ The basic usage of PMU is as follows:
 ### PMU event overflow interrupt
 
 The LCOFIP overflow interrupt initiated by the {{processor_name}} performance
-monitoring unit has a unified interrupt vector number of 12. The enabling and
+monitoring unit has a unified interrupt vector number of 13. The enabling and
 handling process of this interrupt is consistent with ordinary private
 interrupts. For details, refer to [Exceptions and
-Interrupts](./exception-and-interrupt.md).
+Interrupts](exception-and-interrupt.md).
 
 ## PMU-related control registers
 
@@ -55,20 +60,12 @@ required, counters can be disabled to reduce processor power consumption.
 
 Table: Machine Mode Performance Event Count Prohibit Register Description
 
-+--------+--------+-------+--------------------------------------------+----------+
-| 名称 | 位域 | 读写 | 行为 | 复位值 |
-+========+========+=======+============================================+==========+
-| HPMx | 31:3 | RW | mhpmcounterx 寄存器禁止计数位: | 0 | | | | | | | | | | | 0: 正常计数 |
-| | | | | | | | | | | 1: 禁止计数 | |
-+--------+--------+-------+--------------------------------------------+----------+
-| IR | 2 | RW | minstret 寄存器禁止计数位: | 0 | | | | | | | | | | | 0: 正常计数 | | | | | |
-| | | | | | 1: 禁止计数 | |
-+--------+--------+-------+--------------------------------------------+----------+
-| -- | 1 | RO 0 | 保留位 | 0 |
-+--------+--------+-------+--------------------------------------------+----------+
-| CY | 0 | RW | mcycle 寄存器禁止计数位: | 0 | | | | | | | | | | | 0: 正常计数 | | | | | | |
-| | | | | 1: 禁止计数 | |
-+--------+--------+-------+--------------------------------------------+----------+
+| Name | Bits | R/W | Behavior | Reset |
+| ---- | ---- | ---- | ---- | ----- |
+| HPMx | 31:3 | RW | mhpmcounterx count inhibit bit:<br>0: Normal counting<br>1: Counting inhibited | 0 |
+| IR | 2 | RW | minstret count inhibit bit:<br>0: Normal counting<br>1: Counting inhibited | 0 |
+| -- | 1 | RO 0 | Reserved | 0 |
+| CY | 0 | RW | mcycle count inhibit bit:<br>0: Normal counting<br>1: Counting inhibited | 0 |
 
 ### Machine-mode Performance Counter Event Access Enable Register (MCOUNTEREN)
 
@@ -80,21 +77,12 @@ user-mode performance monitoring counters at privilege levels below machine mode
 Table: Machine Mode Performance Event Counter Access Authorization Register
 Description
 
-+--------+--------+-------+------------------------------------------------+----------+
-| 名称 | 位域 | 读写 | 行为 | 复位值 |
-+========+========+=======+================================================+==========+
-| HPMx | 31:3 | RW | hpmcounterenx 寄存器 M-mode 以下访问权限位: | 0 | | | | | | | | | | |
-0: 访问 hpmcounterx 报非法指令异常 | | | | | | | | | | | | 1: 允许正常访问 hpmcounterx | |
-+--------+--------+-------+------------------------------------------------+----------+
-| IR | 2 | RW | instret 寄存器 M-mode 以下访问权限位: | 0 | | | | | | | | | | | 0: 访问
-instret 报非法指令异常 | | | | | | | | | | | | 1: 允许正常访问 | |
-+--------+--------+-------+------------------------------------------------+----------+
-| TM | 1 | RW | time/stimecmp 寄存器 M-mode 以下访问权限位: | 0 | | | | | | | | | | | 0:
-访问 time 报非法指令异常 | | | | | | | | | | | | 1: 允许正常访问 | |
-+--------+--------+-------+------------------------------------------------+----------+
-| CY | 0 | RW | cycle 寄存器 M-mode 以下访问权限位: | 0 | | | | | | | | | | | 0: 访问 cycle
-报非法指令异常 | | | | | | | | | | | | 1: 允许正常访问 | |
-+--------+--------+-------+------------------------------------------------+----------+
+| Name | Bits | R/W | Behavior | Reset |
+| ---- | ---- | ---- | ---- | ----- |
+| HPMx | 31:3 | RW | hpmcounterenx access permission bit below M-mode:<br>0: Accessing hpmcounterx raises an illegal instruction exception<br>1: Normal access to hpmcounterx allowed | 0 |
+| IR | 2 | RW | instret access permission bit below M-mode:<br>0: Accessing instret raises an illegal instruction exception<br>1: Normal access allowed | 0 |
+| TM | 1 | RW | time/stimecmp access permission bit below M-mode:<br>0: Accessing time raises an illegal instruction exception<br>1: Normal access allowed | 0 |
+| CY | 0 | RW | cycle access permission bit below M-mode:<br>0: Accessing cycle raises an illegal instruction exception<br>1: Normal access allowed | 0 |
 
 ### Supervisor-mode Performance Counter Access Enable Register (SCOUNTEREN)
 
@@ -105,21 +93,12 @@ performance monitoring counters in HU-mode/VU-mode.
 Table: Supervisor Mode Performance Event Counter Access Authorization Register
 Description
 
-+--------+--------+-------+------------------------------------------------+----------+
-| 名称 | 位域 | 读写 | 行为 | 复位值 |
-+========+========+=======+================================================+==========+
-| HPMx | 31:3 | RW | hpmcounterenx 寄存器 用户模式访问权限位: | 0 | | | | | | | | | | | 0:
-访问 hpmcounterx 报非法指令异常 | | | | | | | | | | | | 1: 允许正常访问 hpmcounterx | |
-+--------+--------+-------+------------------------------------------------+----------+
-| IR | 2 | RW | instret 寄存器 用户模式访问权限位: | 0 | | | | | | | | | | | 0: 访问 instret
-报非法指令异常 | | | | | | | | | | | | 1: 允许正常访问 | |
-+--------+--------+-------+------------------------------------------------+----------+
-| TM | 1 | RW | time 寄存器 用户模式访问权限位: | 0 | | | | | | | | | | | 0: 访问 time 报非法指令异常
-| | | | | | | | | | | | 1: 允许正常访问 | |
-+--------+--------+-------+------------------------------------------------+----------+
-| CY | 0 | RW | cycle 寄存器 用户模式访问权限位: | 0 | | | | | | | | | | | 0: 访问 cycle
-报非法指令异常 | | | | | | | | | | | | 1: 允许正常访问 | |
-+--------+--------+-------+------------------------------------------------+----------+
+| Name | Bits | R/W | Behavior | Reset |
+| ---- | ---- | ---- | ---- | ----- |
+| HPMx | 31:3 | RW | hpmcounterenx user-mode access permission bit:<br>0: Accessing hpmcounterx raises an illegal instruction exception<br>1: Normal access to hpmcounterx allowed | 0 |
+| IR | 2 | RW | instret user-mode access permission bit:<br>0: Accessing instret raises an illegal instruction exception<br>1: Normal access allowed | 0 |
+| TM | 1 | RW | time user-mode access permission bit:<br>0: Accessing time raises an illegal instruction exception<br>1: Normal access allowed | 0 |
+| CY | 0 | RW | cycle user-mode access permission bit:<br>0: Accessing cycle raises an illegal instruction exception<br>1: Normal access allowed | 0 |
 
 ### Virtualization Mode Performance Event Counter Access Authorization Register (HCOUNTEREN)
 
@@ -128,24 +107,15 @@ The Virtualization Mode Performance Event Counter Access Authorization Register
 performance monitoring counter access permissions in guest virtual machines
 (VS-mode/VU-mode).
 
-Table: Supervisor Mode Performance Event Counter Access Authorization Register
+Table: Virtualization Mode Performance Event Counter Access Authorization Register
 Description
 
-+--------+--------+-------+------------------------------------------------+----------+
-| 名称 | 位域 | 读写 | 行为 | 复位值 |
-+========+========+=======+================================================+==========+
-| HPMx | 31:3 | RW | hpmcounterenx 寄存器 客户虚拟机访问权限位: | 0 | | | | | | | | | | | 0:
-访问 hpmcounterx 报非法指令异常 | | | | | | | | | | | | 1: 允许正常访问 hpmcounterx | |
-+--------+--------+-------+------------------------------------------------+----------+
-| IR | 2 | RW | instret 寄存器 客户虚拟机访问权限位: | 0 | | | | | | | | | | | 0: 访问 instret
-报非法指令异常 | | | | | | | | | | | | 1: 允许正常访问 | |
-+--------+--------+-------+------------------------------------------------+----------+
-| TM | 1 | RW | time/vstimecmp(via stimecmp) 寄存器 客户虚拟机 | 0 | | | | | 访问权限位: | |
-| | | | | | | | | | 0: 访问 time 报非法指令异常 | | | | | | | | | | | | 1: 允许正常访问 | |
-+--------+--------+-------+------------------------------------------------+----------+
-| CY | 0 | RW | cycle 寄存器 客户虚拟机访问权限位: | 0 | | | | | | | | | | | 0: 访问 cycle
-报非法指令异常 | | | | | | | | | | | | 1: 允许正常访问 | |
-+--------+--------+-------+------------------------------------------------+----------+
+| Name | Bits | R/W | Behavior | Reset |
+| ---- | ---- | ---- | ---- | ----- |
+| HPMx | 31:3 | RW | hpmcounterenx guest virtual machine access permission bit:<br>0: Accessing hpmcounterx raises an illegal instruction exception<br>1: Normal access to hpmcounterx allowed | 0 |
+| IR | 2 | RW | instret guest virtual machine access permission bit:<br>0: Accessing instret raises an illegal instruction exception<br>1: Normal access allowed | 0 |
+| TM | 1 | RW | time/vstimecmp (via stimecmp) guest virtual machine access permission bit:<br>0: Accessing time raises an illegal instruction exception<br>1: Normal access allowed | 0 |
+| CY | 0 | RW | cycle guest virtual machine access permission bit:<br>0: Accessing cycle raises an illegal instruction exception<br>1: Normal access allowed | 0 |
 
 ### Supervisor Mode Time Compare Register (STIMECMP)
 
@@ -192,36 +162,22 @@ selector, the corresponding event counter begins normal counting.
 
 Table: Machine Mode Performance Event Selector Description
 
-+----------------+--------+-------+-----------------------------------------------+----------+
 | Name | Bits | R/W | Behavior | Reset |
-+================+========+=======+===============================================+==========+
-| OF | 63 | RW | Performance counter overflow flag: | 0 | | | | | | | | | | | 0:
-Set to 1 when counter overflows, triggers interrupt | | | | | | | | | | | | 1:
-Counter value remains unchanged on overflow, no interrupt | |
-+----------------+--------+-------+-----------------------------------------------+----------+
-| MINH | 62 | RW | When set to 1, disables M-mode sampling | 0 |
-+----------------+--------+-------+-----------------------------------------------+----------+
-| SINH | 61 | RW | When set to 1, disables S-mode sampling | 0 |
-+----------------+--------+-------+-----------------------------------------------+----------+
-| UINH | 60 | RW | When set to 1, disables U-mode sampling | 0 |
-+----------------+--------+-------+-----------------------------------------------+----------+
-| VSINH | 59 | RW | When set to 1, disables VS-mode sampling | 0 |
-+----------------+--------+-------+-----------------------------------------------+----------+
-| VUINH | 58 | RW | When set to 1, disables VU-mode sampling | 0 |
-+----------------+--------+-------+-----------------------------------------------+----------+
+| ---- | ---- | ---- | ---- | ----- |
+| OF | 63 | RW | Performance counter overflow flag:<br>0: Set to 1 when the corresponding counter overflows, which raises an overflow interrupt<br>1: Counter value is unchanged on overflow, no overflow interrupt | 0 |
+| MINH | 62 | RW | When set to 1, sampling in M-mode is inhibited | 0 |
+| SINH | 61 | RW | When set to 1, sampling in S-mode is inhibited | 0 |
+| UINH | 60 | RW | When set to 1, sampling in U-mode is inhibited | 0 |
+| VSINH | 59 | RW | When set to 1, sampling in VS-mode is inhibited | 0 |
+| VUINH | 58 | RW | When set to 1, sampling in VU-mode is inhibited | 0 |
 | -- | 57:55 | RW | -- | 0 |
-+----------------+--------+-------+-----------------------------------------------+----------+
-| | | | Counter event combination method control bits: | | | | | | | | | | | |
-5'b00000: OR operation combination | | | OP_TYPE2 | 54:50 | | | | | OP_TYPE1 |
-49:45 | RW | 5'b00001: AND operation combination | 0 | | OP_TYPE0 | 44:40 | | |
-| | | | | 5'b00010: XOR operation combination | | | | | | | | | | | | 5'b00100:
-ADD operation combination | |
-+----------------+--------+-------+-----------------------------------------------+----------+
-| | | | Counter performance event index values: | | | EVENT3 | 39:30 | | | | |
-EVENT2 | 29:20 | RW | 0: Corresponding event counter does not count | -- | |
-EVENT1 | 19:10 | | | | | EVENT0 | 9:0 | | 1: Corresponding event counter counts
-the event | | | | | | | |
-+----------------+--------+-------+-----------------------------------------------+----------+
+| OP_TYPE2 | 54:50 | RW | Counter event combination method control bits:<br>5'b00000: OR combination<br>5'b00001: AND combination<br>5'b00010: XOR combination<br>5'b00100: ADD combination | 0 |
+| OP_TYPE1 | 49:45 | RW | Same as above | 0 |
+| OP_TYPE0 | 44:40 | RW | Same as above | 0 |
+| EVENT3 | 39:30 | RW | Counter performance event index value:<br>0: The corresponding event counter does not count<br>1: The corresponding event counter counts the event | -- |
+| EVENT2 | 29:20 | RW | Same as above | -- |
+| EVENT1 | 19:10 | RW | Same as above | -- |
+| EVENT0 | 9:0 | RW | Same as above | -- |
 
 The combination method for counter events is:
 
@@ -674,14 +630,10 @@ interrupt flag register (SCOUNTOVF)
 Table: Supervisor Mode Counter Overflow Interrupt Flag Register (SCOUNTOVF)
 Description
 
-+------------+--------+-------+-----------------------------------------------+--------+
 | Name | Bits | R/W | Behavior | Reset |
-+============+========+=======+===============================================+========+
-| OFVEC | 31:3 | RO | mhpmcounterx register overflow flag: | 0 | | | | | | | | |
-| | 1: Overflow occurred | | | | | | | | | | | | 0: No overflow occurred | |
-+------------+--------+-------+-----------------------------------------------+--------+
+| ---- | ---- | ---- | ---- | ----- |
+| OFVEC | 31:3 | RO | mhpmcounterx overflow flag:<br>1: Overflow occurred<br>0: No overflow occurred | 0 |
 | -- | 2:0 | RO 0 | -- | 0 |
-+------------+--------+-------+-----------------------------------------------+--------+
 
 scountovf serves as a read-only mapping of the OF bit in the mhpmcounter
 register, controlled by xcounteren:
