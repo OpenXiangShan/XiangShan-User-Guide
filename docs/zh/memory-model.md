@@ -389,7 +389,9 @@ PMA 寄存器的条目信息如下表
 
 ## 异常处理机制
 
-{{processor_name}} MMU 模块可能产生 4 种异常，包括 guest page fault、page fault、access fault以及 L2 TLB page cache 的 ECC 校验出错。根据请求来源分别交付给对应模块处理。
+{{processor_name}} MMU 模块可能产生 guest page fault、page fault 和 access fault，并根据请求来源交付给对应模块处理。
+
+Page Cache 的 l0/l1 SRAM 项支持可选 SECDED，但 `enablePTWECC` 默认关闭。开启后，检错失败会失效对应 set、返回 miss 并重新进行 Page Walk；后续 Page Walk 中的其他异常仍按原流程处理。详见 [ECC、总线错误与 RNMI](ras.md)。
 
 MMU 可能产生的异常以及处理流程如下表
 
@@ -410,7 +412,7 @@ MMU 可能产生的异常以及处理流程如下表
 |          | 产生 guest page fault       | 交付给 L1 TLB，L1 TLB 根据请求来源交付处理              |
 |          | 产生 page fault             | 交付给 L1 TLB，L1 TLB 根据请求来源交付处理              |
 |          | 产生 access fault           | 交付给 L1 TLB，L1 TLB 根据请求来源交付处理              |
-|          | ecc 校验出错                | 无效掉当前项，返回 miss 结果并重新进行 Page Walk        |
+|          | l0/l1 本地 ECC 校验失败     | 失效对应 set 的全部 way，返回 miss 结果并重新进行 Page Walk |
 
 另外，根据 RISC-V 手册，Page Fault 的优先级高于 Access Fault，但是如果 Page Table Walk 过程中，出现了 PMP 检查或 PMA 检查的 Access Fault，此时页表项为非法，会发生 Page Fault 和 Access Fault 一起出现的特殊情况， {{processor_name}} 选择报 Access Fault。其余情况下均满足 Page Fault 的优先级高于Access Fault。
 

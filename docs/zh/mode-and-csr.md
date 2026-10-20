@@ -377,9 +377,11 @@ Table: smblockctl 的 bit 功能
 |  0-3  |               控制 sbuffer 的 flush 阈值               |   7   |
 |   4   |       控制是否开启 ld-ld 违例检查，设 1 代表开启       |   1   |
 |   5   |        控制是否开启 soft prefetch，设 1 代表开启        |   1   |
-|   6   |    控制是否上报 cache 发生的 ecc 错误，设 1 代表开启    |   1   |
+|   6   | DCache/Uncache 错误报告及部分执行单元错误处理使能，设 1 开启 |   1   |
 |   7   | 控制是否支持 uncache 的 outstanding 访问，设 1 代表开启 |   0   |
 | 其余位 |                    目前其余位无功能                    |   0   |
+
+bit 6 控制 DCache/Uncache 到 BEU 的错误报告，也用于可选精确 Load 错误和部分原子操作的错误处理。它不是全部缓存 ECC 的总开关；ICache 检查使能、L2 编译配置、BEU 本地/全局中断掩码以及 `mnstatus.NMIE` 分别控制不同环节。详见 [ECC、总线错误与 RNMI](ras.md)。
 
 ### srnctl
 
