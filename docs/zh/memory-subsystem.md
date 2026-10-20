@@ -33,7 +33,9 @@ MSHR（Miss Status Holding Register）是一种缓存管理结构，用于跟踪
 
 ### ECC 校验
 
-{{processor_name}} 支持对指令高速缓存进行 ECC 校验。用户可通过配置 `DataCodeUnit` 来改变校验单元大小，单位为 bit 。每 64 位数据对应 1 位校验位。
+{{processor_name}} 默认对指令高速缓存使用 parity 校验。`DataCodeUnit` 的默认值为 64 bit，每个数据单元使用 1 bit 校验位；64B 缓存行共有 8 bit 数据校验，另有 1 bit Meta 校验。parity 可以检测奇数个比特错误，但无法检出偶数个比特错误，也不能直接纠错。
+
+本地校验错误会向 BEU 报告，并通过失效和从 L2 重取恢复；重取收到下级 TL corrupt 时仍可产生 Instruction Access Fault。详见 [ECC、总线错误与 RNMI](ras.md)。
 
 ### 分支预测单元
 
@@ -173,4 +175,3 @@ L2 高速缓存的主要特征如下：
 ### 组织形式
 
 {{processor_name}} L2 Cache 采用了分块（Slice）的流水线结构，默认为 4 个 Slice，将访问地址按照 PA[7:6] 离散在 4 个不同的 Slice 中，允许多个访问的并行处理，从而调高访问效率。
-
