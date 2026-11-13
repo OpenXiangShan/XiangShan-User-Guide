@@ -1,0 +1,7 @@
+# disable line-length rule
+MD013: false
+
+# allow inline <br> tag
+MD033:
+  allowed_elements:
+    - br

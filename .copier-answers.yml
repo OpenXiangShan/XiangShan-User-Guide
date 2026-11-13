@@ -1,0 +1,14 @@
+# Changes here will be overwritten by Copier; NEVER EDIT MANUALLY.
+_commit: b5445c4
+_src_path: https://github.com/OpenXiangShan/docs-utils.git
+default_branch: kunminghu-v3
+description_en: Documentation for the XiangShan processor
+description_zh: 香山开源处理器用户手册
+docs_project_slug: user-guide
+document_slug: xiangshan-user-guide
+github_owner: OpenXiangShan
+include_starter_docs: false
+pdf_top_level_division: chapter
+repository_name: XiangShan-User-Guide
+site_name_en: XiangShan User Guide
+site_name_zh: 香山开源处理器用户手册
